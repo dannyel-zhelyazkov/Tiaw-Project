@@ -131,4 +131,29 @@ public class GameAccServiceImpl implements GameAccService {
 		
 		return this.modelMapper.map(this.gameAccRepository.saveAndFlush(gameAcc), GameAccServiceModel.class);
 	}
+
+	@Override
+	public GameAccServiceModel wonFight(String defender, String attacker, String ubp, String ebp) {
+		User defenderAcc = this.userRepository.findByUsername(defender).orElseThrow(IllegalArgumentException::new);
+		User attackerAcc = this.userRepository.findByUsername(attacker).orElseThrow(IllegalArgumentException::new);
+				
+		attackerAcc.getGameAcc().setBattlePoints(attackerAcc.getGameAcc().getBattlePoints() + Integer.parseInt(ubp));
+		attackerAcc.getGameAcc().setGold(attackerAcc.getGameAcc().getGold() + 5L);
+		defenderAcc.getGameAcc().setBattlePoints(defenderAcc.getGameAcc().getBattlePoints() - Integer.parseInt(ebp));
+		
+		this.gameAccRepository.saveAndFlush(defenderAcc.getGameAcc());
+		return this.modelMapper.map(this.gameAccRepository.saveAndFlush(attackerAcc.getGameAcc()), GameAccServiceModel.class);
+	}
+	
+	@Override
+	public GameAccServiceModel lostFight(String defender, String attacker, String ubp, String ebp) {
+		User defenderAcc = this.userRepository.findByUsername(defender).orElseThrow(IllegalArgumentException::new);
+		User attackerAcc = this.userRepository.findByUsername(attacker).orElseThrow(IllegalArgumentException::new);
+				
+		attackerAcc.getGameAcc().setBattlePoints(attackerAcc.getGameAcc().getBattlePoints() - Integer.parseInt(ubp));
+		defenderAcc.getGameAcc().setBattlePoints(defenderAcc.getGameAcc().getBattlePoints() + Integer.parseInt(ebp));
+		
+		this.gameAccRepository.saveAndFlush(defenderAcc.getGameAcc());
+		return this.modelMapper.map(this.gameAccRepository.saveAndFlush(attackerAcc.getGameAcc()), GameAccServiceModel.class);
+	}
 }

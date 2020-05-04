@@ -1,6 +1,7 @@
 package dny.apps.tiaw.web.controller;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,8 +141,9 @@ public class CardController extends BaseController {
 
 	@GetMapping("/shop")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView shop(ModelAndView modelAndView) {
-		return super.view("/card/shop");
+	public ModelAndView shop(ModelAndView modelAndView, Principal principal) {
+		modelAndView.addObject("gold", this.userService.findUserByUsername(principal.getName()).getGameAcc().getGold());
+		return super.view("/card/shop", modelAndView);
 	}
 
 	@GetMapping("/fetch/{rarity}")

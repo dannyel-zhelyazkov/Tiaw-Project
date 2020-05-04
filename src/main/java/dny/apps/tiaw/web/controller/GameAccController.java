@@ -20,18 +20,15 @@ import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
 import dny.apps.tiaw.domain.models.view.GameAccFightViewModel;
 import dny.apps.tiaw.service.DeckService;
 import dny.apps.tiaw.service.GameAccService;
-import dny.apps.tiaw.service.UserService;
 
 @Controller
 public class GameAccController extends BaseController {
 	private final GameAccService gameAccService;
-	private final UserService userService;
 	private final DeckService deckService;
 	private final ModelMapper modelMapper;
 	
-	public GameAccController(GameAccService gameAccService, UserService userService, DeckService deckService, ModelMapper modelMapper) {
+	public GameAccController(GameAccService gameAccService, DeckService deckService, ModelMapper modelMapper) {
 		this.gameAccService = gameAccService;
-		this.userService = userService;
 		this.deckService = deckService;
 		this.modelMapper = modelMapper;
 	}
@@ -106,15 +103,17 @@ public class GameAccController extends BaseController {
 		return decks;
 	}
 	
-	@PostMapping("/won-fight")
+	@PostMapping("/won-fight/{defender}/{ubp}/{ebp}")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView wonFightPost(Principal principal) {
+	public ModelAndView wonFightPost(@PathVariable String defender, @PathVariable String ubp, @PathVariable String ebp, Principal principal) {
+		this.gameAccService.wonFight(defender, principal.getName(), ubp, ebp);
 		return super.redirect("/home");
 	}
 	
-	@PostMapping("/lost-fight")
+	@PostMapping("/lost-fight/{defender}/{ubp}/{ebp}")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView lostFightPost(Principal principal) {
+	public ModelAndView lostFightPost(@PathVariable String defender, @PathVariable String ubp, @PathVariable String ebp, Principal principal) {
+		this.gameAccService.lostFight(defender, principal.getName(), ubp, ebp);
 		return super.redirect("/home");
 	}
 }

@@ -4,6 +4,8 @@
 <head>
     <th:block th:include="~{fragments/head}">
     </th:block>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script> 
+    <script src="http://malsup.github.com/jquery.form.js"></script> 
 </head>
 <body>
 	<header>
@@ -17,9 +19,7 @@
     			<span class="def" th:text="|${name}|"></span>
     			<span th:text="|'s Defense Deck:|"></span>
     			<span class="text-success ml-3" th:text="|${deck.name}"></span>
-    			<button onclick="battle()" type="button" class="btn btn-success ml-3 align-self-center" data-toggle="modal"
-					data-target=".bd-example-modal-sm">Fight</button>
-
+    			<button onclick="battle()" type="button" class="btn btn-success ml-3 align-self-center" data-toggle="modal" data-target=".bd-example-modal-sm">Fight</button>
 				<div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
 					aria-hidden="true">
 					<div class="modal-dialog modal-sm" role="document">
@@ -156,20 +156,33 @@
 			    		}
 		    		}	
 		    		
-		    		
-		    		
+		    		let ubp;
+		    		let ebp;
 		    		if(att_defense > 0) {
-		    			let ubp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
-		    			let ebp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
-			    		btl.innerHTML += `<form class="text-center m-3" action="/won-fight/${data.defender.username}" method="post">
-	    					<button class="btn btn-success" type="submit" >You Won $10 and ${bp}BP</button>
+		    			if(data.defender.battlePoints >= data.attacker.battlePoints) {
+			    			ubp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
+			    			ebp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
+			    		}else {
+			    			ubp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
+			    			ebp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
+			    		}
+			    		btl.innerHTML += `<form id="won" class="text-center m-3" action="/won-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}" method="post">
+	    					<h3 class="text-success">You Won $5 and ${ubp}BP</h3>
 	    				</form>`
+			    		$("#won").ajaxSubmit({url: `/won-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}`, type: 'post'});
 			    	}
 			    	else {
-			    		let bp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
-			    		btl.innerHTML += `<form class="text-center m-3" action="/lost-fight/${data.defender.username}" method="post">
-	    					<button class="btn btn-secondary" type="submit">You lost ${bp}BP</button>
+			    		if(data.defender.battlePoints >= data.attacker.battlePoints) {
+			    			ubp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
+			    			ebp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
+			    		}else {
+			    			ubp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
+			    			ebp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
+			    		}
+			    		btl.innerHTML += `<form id="lost" class="text-center m-3" action="/lost-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}" method="post">
+	    					<h3 class="text-danger">You lost ${ubp}BP</h3>
 	    				</form>`
+			    			$("#lost").ajaxSubmit({url: `/won-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}`, type: 'post'});
 			    	}
 		    	})	    	
 		}

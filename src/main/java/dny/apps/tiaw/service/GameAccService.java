@@ -20,4 +20,8 @@ public interface GameAccService {
 	GameAccServiceModel removeDeck(String deck, String username);
 	
 	GameAccServiceModel fight(String user);
+	
+	GameAccServiceModel wonFight(String defender, String attacker, String ubp, String ebp);
+	
+	GameAccServiceModel lostFight(String defender, String attacker, String ubp, String ebp);
 }
