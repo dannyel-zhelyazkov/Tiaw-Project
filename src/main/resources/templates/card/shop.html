@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<th:block th:include="~{fragments/head}">
+</th:block>
+</head>
+<body>
+	<header>
+		<th:block th:include="~{fragments/nav}">
+		</th:block>
+	</header>
+	<main>
+		<div class="container-fluid d-flex flex-row">
+            <div class="products-navigation col-md-3 m-3">
+                <h2 class="font-weight-bold">Navigation</h2>
+                <form class="d-flex flex-column">
+                    <div class="custom-control custom-radio m-3">
+                        <input type="radio" id="allRadio" name="selection"
+                               class="custom-control-input"
+                               value="all"
+                               checked="checked">
+                        <label class="h4 custom-control-label" for="allRadio">All</label>
+                    </div>
+                    <th:block th:each="rarity : ${T(dny.apps.tiaw.domain.entities.Rarity).values()}">
+                        <div class="custom-control custom-radio mt-3">
+                            <input type="radio" th:id="|*{rarity}Radio|" name="selection"
+                                   class="custom-control-input"
+                                   th:value="*{rarity}">
+                            <label class="h4 custom-control-label ml-3" th:for="|*{rarity}Radio|"
+                                   th:text="*{rarity}"></label>
+                        </div>
+                    </th:block>
+                </form>
+            </div>
+            <div class="col-md-9">       
+                <h1 class="font-weight-bold">Cards</h1>
+                
+                <div class="cards-data">
+                	                     
+                </div>
+            </div>
+    	</div>
+	</main>
+	<footer>
+		<th:block th:include="~{fragments/footer}">
+		</th:block>
+	</footer>
+	<script>
+		function formatCard(card) {
+			let color = ''; 
+			if(card.rarity == 'Common') {
+				color = 'grey';
+			}else if(card.rarity == 'Uncommon') {
+				color = 'green';
+			}else if(card.rarity == 'Rare') {
+				color = 'purple';
+			}else if(card.rarity == 'Epic') {
+				color = 'orange';
+			}else if(card.rarity == 'Legendary') {
+				color = 'red';
+			}else if(card.rarity == 'Mythic') {
+				color = 'black';
+			} 
+			return `<div class="col-md-3">
+				<div class="card border" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: ${color} !important">
+				<img src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+			<div class="card-body">
+				<h5 class="card-title">${card.name}</h5>
+				<hr>
+				<p class="card-text d-flex justify-content-between">
+					<span class="bg-danger rounded p-1">Attack:	${card.power}</span>
+					<span class="bg-success rounded p-1">Defense: ${card.defense}</span></p>
+				<hr>
+				<form action="/buy-card/${card.id}" method="post">
+					<div class="text-center"><button class="btn btn-warning">$${card.price}</button></div>
+				</form>
+			</div>
+		</div>`;   
+	    }
+		
+		function fn () {
+		        fetch('http://localhost:8080/cards/fetch/all')
+		        .then((response) => response.json())
+		        .then((json) => {
+		            $('.cards-data').empty();
+		            if (json.length == 0) {
+		                $('.cards-data').append(`<h1 class="text-center font-weight-bold">There are no cards in the ${rarity} rarity.</h1>`)
+		            } else {
+		            	for (let i = 0; i < json.length; i+=3) {
+		                    $('.cards-data').append('<div class="cards-row row row-cols-1 row-cols-md-3">');
+		                    if(i < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i]));
+		                    if(i + 1 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 1]));
+		                    if(i + 2 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 2]));
+		                }
+		            }
+		        })   
+	    }
+		
+		fn();
+		
+		$('input[type=radio][name=selection]').change(function () {
+			var rarity = $(this).val();
+			fetch('http://localhost:8080/cards/fetch/' + rarity)
+	        .then((response) => response.json())
+	        .then((json) => {
+	            $('.cards-data').empty();
+	            if (json.length == 0) {
+	                $('.cards-data').append(`<h1 class="text-center font-weight-bold">There are no cards in the ${rarity} rarity.</h1>`)
+	            } else {
+	                for (let i = 0; i < json.length; i+=3) {
+	                    $('.cards-data').append('<div class="cards-row row row-cols-1 row-cols-md-3">');
+	                    if(i < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i]));
+	                    if(i + 1 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 1]));
+	                    if(i + 2 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 2]));
+	                }
+	            }
+	        })
+		})
+	</script>
+</body>
+</html>

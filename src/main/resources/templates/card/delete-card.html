@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<th:block th:include="~{fragments/head}">
+</th:block>
+</head>
+<body>
+	<header>
+		<th:block th:include="~{fragments/nav}">
+		</th:block>
+	</header>
+	<main>
+		<div class="container-fluid">
+			<div class="d-flex justify-content-center">
+				<form class="form align-self-center m-3" th:action="@{/cards/delete/{id}(id=${cardId})}"	
+					enctype="multipart/form-data" th:method="post">
+					<input type="hidden" name="_csrf"
+						value="c95ccb2b-1afa-47bd-bf7b-a5b72739470b">
+					<div class="form-group">
+						<label for="name" class="font-weight-bold">Name</label> <input type="text"
+							class="form-control" id="name" name="name" th:value="${card.name}" disabled="disabled">						
+					</div>
+					<div class="form-group">
+						<label for="power" class="font-weight-bold">Power</label> <input type="number"
+							class="form-control" id="power" name="power" th:value="${card.power}" disabled="disabled">
+					</div>
+					<div class="form-group">
+						<label for="defense" class="font-weight-bold">Defense</label> <input type="number"
+							class="form-control" id="defense" name="defense" th:value="${card.defense}" disabled="disabled">
+					</div>
+					<button type="submit" class="btn btn-danger">Delete</button>
+				</form>
+			</div>
+		</div>
+	</main>
+	<footer>
+		<th:block th:include="~{fragments/footer}">
+		</th:block>
+	</footer>
+</body>
+</html>

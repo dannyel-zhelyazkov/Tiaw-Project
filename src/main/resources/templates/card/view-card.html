@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<th:block th:include="~{fragments/head}">
+</th:block>
+</head>
+<body>
+	<header>
+		<th:block th:include="~{fragments/nav}">
+		</th:block>
+	</header>
+	<main>
+		<div class="container-fluid">
+			<div class="card border border-primary m-1 p-3 align-self-center" style="width: fit-content; height:fit-content">
+        		<img th:src="${card.url}" class="card-img-top" alt="...">
+        		<div class="card-body">
+		            <h5 class="card-title" th:text="${card.name}"></h5>
+		            <hr>
+		            <p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+		            <hr>
+	            </div>
+	        </div>
+    	</div>
+	</main>
+	<footer>
+		<th:block th:include="~{fragments/footer}">
+		</th:block>
+	</footer>
+</body>
+</html>

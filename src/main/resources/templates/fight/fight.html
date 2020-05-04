@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:include="~{fragments/head}">
+    </th:block>
+</head>
+<body>
+	<header>
+		<th:block th:include="~{fragments/nav}">
+    	</th:block>
+	</header>
+    <main>
+    	<div class="container-fluid">
+    		<h1>Players</h1>
+    		<hr>
+    		<th:block th:if="${players}">
+    			<th:block th:each="player, iter: ${players}">
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text" th:text="${iter.index} + 1"></span>
+						    <span class="input-group-text" th:text="|CP: ${player.battlePoints}|"></span>
+						</div>
+					 	<input type="text" class="form-control" disabled="disabled" th:value="${player.username}" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
+						<th:block th:if="not ${player.username == current.username}">
+							<div class="input-group-append">
+					    		<a th:href="@{/inspect/{name}(name=${player.username})}">
+						    		<button class="btn btn-secondary" type="button" id="button-addon2">Inspect</button>
+						    	</a>
+							</div>
+				  		</th:block>
+					</div>
+    			</th:block>
+    		</th:block>
+    	</div>
+    </main>
+    <footer>
+    	<th:block th:include="~{fragments/footer}">
+    	</th:block>
+	</footer>
+</body>
+</html>

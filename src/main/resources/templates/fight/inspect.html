@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:include="~{fragments/head}">
+    </th:block>
+</head>
+<body>
+	<header>
+		<th:block th:include="~{fragments/nav}">
+    	</th:block>
+	</header>
+    <main>
+    	<div class="container-fluid">
+    		<p class="h1 d-flex fles-row">
+    			<span class="att" th:text="${att}" hidden></span>
+    			<span class="def" th:text="|${name}|"></span>
+    			<span th:text="|'s Defense Deck:|"></span>
+    			<span class="text-success ml-3" th:text="|${deck.name}"></span>
+    			<button onclick="battle()" type="button" class="btn btn-success ml-3 align-self-center" data-toggle="modal"
+					data-target=".bd-example-modal-sm">Fight</button>
+
+				<div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+					aria-hidden="true">
+					<div class="modal-dialog modal-sm" role="document">
+						<div class="modal-content">
+							<div class="battle m-3">
+			
+							</div>
+						</div>
+					</div>
+				</div>
+    		</p>
+    		<hr>
+    		<div class="card-deck" style="width: fit-content; height: fit-content;">
+			<th:block th:each="card, iter: ${cards}">
+				<th:block th:switch="${card.rarity}">
+		    		<div th:case="Common" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: grey !important">
+		    			<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+						<div class="card-body">
+							<h5 class="card-title" th:text="${card.name}"></h5>
+						    <hr>
+						    <p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+						    <hr>
+					    </div>
+		    		</div>
+		    		<div th:case="Uncommon" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: green !important">
+		    			<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+						<div class="card-body">
+							<h5 class="card-title" th:text="${card.name}"></h5>
+							<hr>
+							<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+							<hr>
+						</div>
+		    		</div>
+		    		<div th:case="Rare" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: purple !important">
+			    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+						<div class="card-body">
+							<h5 class="card-title" th:text="${card.name}"></h5>
+							<hr>
+							<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+							<hr>
+						</div>
+		    		</div>
+		    		<div th:case="Epic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: orange !important">
+			    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+						<div class="card-body">
+							<h5 class="card-title" th:text="${card.name}"></h5>
+							<hr>
+							<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+							<hr>
+						</div>
+		    		</div>
+		    		<div th:case="Legendary" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: red !important">
+			    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+						<div class="card-body">
+							<h5 class="card-title" th:text="${card.name}"></h5>
+							<hr>
+							<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+							<hr>
+						</div>
+		    		</div>
+		    		<div th:case="Mythic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: black !important">
+			    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+						<div class="card-body">
+							<h5 class="card-title" th:text="${card.name}"></h5>
+							<hr>
+							<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+							<hr>
+						</div>
+			        </div>
+		    	</th:block>
+			</th:block>	
+			</div>	
+    	</div>
+    </main>
+    <footer>
+    	<th:block th:include="~{fragments/footer}">
+    	</th:block>
+	</footer>
+	<script>
+	function battle() {
+		let def = document.querySelector('.def').innerText;
+		let att = document.querySelector('.att').innerText;
+		
+		console.log(def);
+		console.log(att);
+		
+		fetch('http://localhost:8080/fight-action/' + att + '/' + def)
+		  .then((response) => {
+		    return response.json();
+		  })
+		  .then((data) => {
+		    		let btl = document.querySelector('.battle');
+		    		btl.innerHTML = "";
+		    		
+		    		let att_cards = data.attacker.attackDeck.cards;
+		    		let def_cards = data.defender.defenseDeck.cards;
+		    		
+		    		let att_defense = data.attacker.attackDeck.cards.map(c => c.defense).reduce((a, b) => a + b, 0);
+		    		let def_defense = data.defender.defenseDeck.cards.map(c => c.defense).reduce((a, b) => a + b, 0);
+		    		
+		    		let att_card_index = 0;
+		    		let def_card_index = 0;
+		    		
+		    		while(att_defense >= 0 && def_defense >= 0 && att_card_index < att_cards.length && def_card_index < def_cards.length) {
+		    			if (att_cards[att_card_index].defense >= 0) {
+			    		    btl.innerHTML += `<h3>${att_cards[att_card_index].name} VS ${def_cards[def_card_index].name}</h3>
+			    		    <div class="info">
+			    		    <img src="${att_cards[att_card_index].url}" width="35px" height="35px" alt="">
+			    		    (<span>${att_cards[att_card_index].power}</span>;<span>${att_cards[att_card_index].defense}</span>)
+			    		    attacked
+			    		    <img src="${def_cards[def_card_index].url}" width="35px" height="35px" alt="">
+			    		    (<span>${def_cards[def_card_index].power}</span>;<span>${def_cards[def_card_index].defense}</span>)
+			    		    </div>`
+			    		    def_cards[def_card_index].defense -= att_cards[att_card_index].power;
+			    		    att_defense -= att_cards[att_card_index].power;
+			    		} else {
+			    		    att_card_index += 1;
+			   				if(att_card_index == att_cards.length) break;
+			    		}
+		    			
+			    		if (def_cards[def_card_index].defense >= 0) {
+			    		    btl.innerHTML += `<div class="info">
+			    		    <img src="${def_cards[def_card_index].url}" width="35px" height="35px" alt="">
+			    		    (<span class="power-p1-c1">${def_cards[def_card_index].power}</span>;<span>${def_cards[def_card_index].defense}</span>)
+			    		    attacked
+			    		    <img src="${att_cards[att_card_index].url}" width="35px" height="35px" alt="">
+			    		    (<span>${att_cards[att_card_index].power}</span>;<span>${att_cards[att_card_index].defense}</span>)
+			    		    </div>`
+			    		    att_cards[att_card_index].defense -= def_cards[def_card_index].power;
+			    		    def_defense -= def_cards[def_card_index].power;
+			    		} else {
+			    		    def_card_index += 1;
+			    		    if(def_card_index == def_cards.length) break;
+			    		}
+		    		}	
+		    		
+		    		
+		    		
+		    		if(att_defense > 0) {
+		    			let ubp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
+		    			let ebp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
+			    		btl.innerHTML += `<form class="text-center m-3" action="/won-fight/${data.defender.username}" method="post">
+	    					<button class="btn btn-success" type="submit" >You Won $10 and ${bp}BP</button>
+	    				</form>`
+			    	}
+			    	else {
+			    		let bp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
+			    		btl.innerHTML += `<form class="text-center m-3" action="/lost-fight/${data.defender.username}" method="post">
+	    					<button class="btn btn-secondary" type="submit">You lost ${bp}BP</button>
+	    				</form>`
+			    	}
+		    	})	    	
+		}
+	</script>
+</body>
+</html>

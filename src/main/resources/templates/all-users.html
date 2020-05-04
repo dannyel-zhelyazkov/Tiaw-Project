@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<th:block th:include="~{fragments/head}">
+</th:block>
+</head>
+<body>
+	<header>
+		<th:block th:include="~{fragments/nav}">
+		</th:block>
+	</header>
+	<main>
+		<div class="container-fluid">
+			<table class="table table-bordered table-dark mt-3">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Username</th>
+						<th scope="col">Email</th>
+						<th scope="col">Role</th>
+						<th scope="col">Action</th>
+					</tr>
+				</thead>
+				<th:block  th:each="user, iter : ${users}">
+				<tbody>
+					<tr>
+						<th scope="row" th:text="${iter.index + 1}"></th>
+						<td th:text="${user.username}"></td>
+						<td th:text="${user.email}"></td>
+						<td th:text="${#strings.listJoin(user.authorities, ', ')}"></td>
+						<td class="m-3">
+							<div class="row">
+		                        <th:block th:if="${#lists.contains(user.authorities, 'ROLE_USER') &&
+		                            !#lists.contains(user.authorities, 'ROLE_MODERATOR') &&
+		                            !#lists.contains(user.authorities, 'ROLE_ADMIN')}">
+		                            <form th:action="@{/users/set-moderator/{id}(id=${user.id})}" th:method="post" class="mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark">MODERATOR</button>
+		                            </form>
+		                            <form th:action="@{/users/set-admin/{id}(id=${user.id})}" th:method="post" class="mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark">ADMIN</button>
+		                            </form>
+		                        </th:block>
+		                        <th:block th:if="${#lists.contains(user.authorities, 'ROLE_USER') &&
+		                            #lists.contains(user.authorities, 'ROLE_MODERATOR') &&
+		                            !#lists.contains(user.authorities, 'ROLE_ADMIN')}">
+		                            <form th:action="@{/users/set-user/{id}(id=${user.id})}" th:method="post" class="mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark">USER</button>
+		                            </form>
+		                            <form th:action="@{/users/set-admin/{id}(id=${user.id})}" th:method="post" class="mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark">ADMIN</button>
+		                            </form>
+		                        </th:block>
+		                        <th:block th:if="${#lists.contains(user.authorities, 'ROLE_USER') &&
+		                            #lists.contains(user.authorities, 'ROLE_MODERATOR') &&
+		                            #lists.contains(user.authorities, 'ROLE_ADMIN') &&
+		                            !#lists.contains(user.authorities, 'ROLE_ROOT')}">
+		                            <form th:action="@{/users/set-user/{id}(id=${user.id})}" th:method="post" class="mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark">USER</button>
+		                            </form>
+		                            <form th:action="@{/users/set-moderator/{id}(id=${user.id})}" th:method="post" class="mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark">MODERATOR</button>
+		                            </form>
+		                        </th:block>
+                        	</div>					
+                    	</td>
+					</tr>
+				</tbody>
+				</th:block>
+			</table>
+		</div>
+	</main>
+	<footer>
+		<th:block th:include="~{fragments/footer}">
+		</th:block>
+	</footer>
+</body>
+</html>
