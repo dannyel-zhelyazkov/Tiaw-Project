@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import dny.apps.tiaw.domain.entities.Card;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
+import dny.apps.tiaw.exception.CardNotFoundException;
 import dny.apps.tiaw.repository.CardRepository;
 
 @Service
@@ -26,7 +27,7 @@ public class CardServiceImpl implements CardService{
 	public CardServiceModel findById(String id) {
 		return this.cardRepository.findById(id)
 				.map(c->this.modelMapper.map(c, CardServiceModel.class))
-				.orElseThrow(IllegalArgumentException::new);
+				.orElseThrow(() -> new CardNotFoundException("Card with given id does not exist!"));
 	}
 	
 	@Override
@@ -47,12 +48,13 @@ public class CardServiceImpl implements CardService{
 	@Override
 	public CardServiceModel createCard(CardServiceModel cardServiceModel) {
 		Card card = this.modelMapper.map(cardServiceModel, Card.class);
+		
 		return this.modelMapper.map(this.cardRepository.saveAndFlush(card), CardServiceModel.class);
 	}
 
 	@Override
 	public CardServiceModel updateCard(String id, CardServiceModel cardServiceModel) {
-		Card card = this.cardRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+		Card card = this.cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException("Card with given id does not exist!"));
 		
 		card.setName(cardServiceModel.getName());
 		card.setPower(cardServiceModel.getPower());
@@ -63,7 +65,7 @@ public class CardServiceImpl implements CardService{
 
 	@Override
 	public CardServiceModel deleteCard(String id) {
-		Card card = this.cardRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+		Card card = this.cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException("Card with given id does not exist!"));
         this.cardRepository.delete(card);
 
         return this.modelMapper.map(card, CardServiceModel.class);

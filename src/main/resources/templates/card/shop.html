@@ -12,8 +12,12 @@
 		</th:block>
 	</header>
 	<main>
-		<div class="container-fluid d-flex flex-row">
-            <div class="products-navigation col-md-3 m-3">
+		<div class="container-fluid d-flex">
+			<div class="align-self-center m-3 bg-info" style="width: fit-content">
+				<p class="h3 p-3 text-white">You have $<span class="gold" th:text="${gold}"></span></p>
+			</div>
+            <div class="d-flex flex-row">
+            	<div class="products-navigation col-md-3 m-3">
                 <h2 class="font-weight-bold">Navigation</h2>
                 <form class="d-flex flex-column">
                     <div class="custom-control custom-radio m-3">
@@ -34,12 +38,13 @@
                     </th:block>
                 </form>
             </div>
-            <div class="col-md-9">       
+            <div class="col-md-9 m-3">       
                 <h1 class="font-weight-bold">Cards</h1>
                 
                 <div class="cards-data">
                 	                     
                 </div>
+            </div>
             </div>
     	</div>
 	</main>
@@ -62,22 +67,45 @@
 				color = 'red';
 			}else if(card.rarity == 'Mythic') {
 				color = 'black';
-			} 
-			return `<div class="col-md-3">
+			}
+			
+			let ugold = parseInt($('.gold').text());
+			
+			if(ugold < card.price) {
+				return `<div class="col-md-3">
+							<div class="card border" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: ${color} !important">
+								<img src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title">${card.name}</h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1">Attack:	${card.power}</span>
+										<span class="bg-success rounded p-1">Defense: ${card.defense}</span></p>
+									<hr>
+									<form class="text-center" action="/buy-card/${card.id}" method="post">
+										<div class="text-center"><button disabled="disabled" class="btn btn-secondary">$${card.price}</button></div>
+										<small id="passwordHelpBlock" class="form-text text-danger">Not enough gold</small>
+									</form>
+							</div>
+						</div>`;
+			}
+			else {
+				return `<div class="col-md-3">
 				<div class="card border" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: ${color} !important">
-				<img src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
-			<div class="card-body">
-				<h5 class="card-title">${card.name}</h5>
-				<hr>
-				<p class="card-text d-flex justify-content-between">
-					<span class="bg-danger rounded p-1">Attack:	${card.power}</span>
-					<span class="bg-success rounded p-1">Defense: ${card.defense}</span></p>
-				<hr>
-				<form action="/buy-card/${card.id}" method="post">
-					<div class="text-center"><button class="btn btn-warning">$${card.price}</button></div>
-				</form>
-			</div>
-		</div>`;   
+					<img src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+					<div class="card-body">
+						<h5 class="card-title">${card.name}</h5>
+						<hr>
+						<p class="card-text d-flex justify-content-between">
+							<span class="bg-danger rounded p-1">Attack:	${card.power}</span>
+							<span class="bg-success rounded p-1">Defense: ${card.defense}</span></p>
+						<hr>
+						<form action="/buy-card/${card.id}" method="post">
+							<div class="text-center"><button class="btn btn-warning">$${card.price}</button></div>
+						</form>
+				</div>
+			</div>`;
+			}
 	    }
 		
 		function fn () {

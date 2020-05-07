@@ -17,6 +17,7 @@ import dny.apps.tiaw.domain.entities.Deck;
 import dny.apps.tiaw.domain.entities.GameAcc;
 import dny.apps.tiaw.domain.entities.User;
 import dny.apps.tiaw.domain.models.service.UserServiceModel;
+import dny.apps.tiaw.exception.UserNotFoundException;
 import dny.apps.tiaw.repository.GameAccRepository;
 import dny.apps.tiaw.repository.UserRepository;
 
@@ -70,13 +71,13 @@ public class UserServiceImpl implements UserService {
     public UserServiceModel findUserByUsername(String username) {
         return this.userRepository.findByUsername(username)
                 .map(u -> this.modelMapper.map(u, UserServiceModel.class))
-                .orElseThrow(() -> new UsernameNotFoundException("Username not found!"));
+                .orElseThrow(() -> new UserNotFoundException("User with given username was not found!"));
     }
 
     @Override
     public UserServiceModel editUserProfile(UserServiceModel userServiceModel, String oldPassword) {
         User user = this.userRepository.findByUsername(userServiceModel.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("Username not found!"));
+        		.orElseThrow(() -> new UserNotFoundException("User with given username was not found!"));
 
         if (!this.bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
             throw new IllegalArgumentException("Incorrect password!");
@@ -101,7 +102,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void setUserRole(String id, String role) {
         User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Incorrect id"));
+        		.orElseThrow(() -> new UserNotFoundException("User with given id was not found!"));
 
         UserServiceModel userServiceModel = this.modelMapper.map(user, UserServiceModel.class);
         userServiceModel.getAuthorities().clear();
@@ -127,6 +128,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return this.userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Username not found!"));
+                .orElseThrow(() -> new UserNotFoundException("User with given username was not found!"));
 	}
 }

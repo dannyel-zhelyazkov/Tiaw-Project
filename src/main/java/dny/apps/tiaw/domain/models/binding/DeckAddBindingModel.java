@@ -8,7 +8,6 @@ public class DeckAddBindingModel {
 	public DeckAddBindingModel() {}
 	
 	@NotNull
-	@NotEmpty(message = "Name must be 3 to 10 characters")
 	@Size(min = 3, max = 10, message = "Name must be 3 to 10 characters")
 	public String getName() {
 		return name;

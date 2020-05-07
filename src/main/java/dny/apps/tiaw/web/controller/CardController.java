@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ import dny.apps.tiaw.domain.models.binding.CardEditBindingModel;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
 import dny.apps.tiaw.domain.models.service.CloudinaryService;
 import dny.apps.tiaw.domain.models.view.CardViewModel;
+import dny.apps.tiaw.exception.CardNotFoundException;
 import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.UserService;
 
@@ -56,7 +58,7 @@ public class CardController extends BaseController {
 
 	@PostMapping("/add")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
-	public ModelAndView addCardPost(@Valid @ModelAttribute("card") CardAddBindingModel model, BindingResult reuslt) throws IOException  {
+	public ModelAndView addCardPost(@Valid @ModelAttribute("card") CardAddBindingModel model, BindingResult reuslt) throws IOException {
 		if(reuslt.hasErrors()) {
 			return super.view("/card/add-card");
 		}
@@ -163,5 +165,14 @@ public class CardController extends BaseController {
 	public List<CardViewModel> fetchByUserGet(@PathVariable String user) {
 		return this.userService.findUserByUsername(user).getGameAcc().getCards().stream()
 				.map(c -> this.modelMapper.map(c, CardViewModel.class)).collect(Collectors.toList());
+	}
+	
+	@ExceptionHandler(CardNotFoundException.class)
+	public ModelAndView cardNotFound(CardNotFoundException ex) {
+		ModelAndView modelAndView = new ModelAndView("/card/not-found");
+		
+		modelAndView.addObject("message", ex.getMessage());
+		
+		return modelAndView;
 	}
 }

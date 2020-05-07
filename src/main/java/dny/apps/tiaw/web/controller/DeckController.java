@@ -55,7 +55,7 @@ public class DeckController extends BaseController {
 		List<DeckViewModel> deckViewModels = this.modelMapper
 				.map(this.deckService.findAllDecksByOwner(principal.getName()), listDeckViewModelType);
 		
-		modelAndView.addObject("deckBind", new DeckAddBindingModel());
+		modelAndView.addObject("bind", new DeckAddBindingModel());
 		modelAndView.addObject("decks", deckViewModels);
 		modelAndView.addObject("username", principal.getName());
 		return super.view("/deck/deck", modelAndView);
@@ -63,14 +63,23 @@ public class DeckController extends BaseController {
 	
 	@PostMapping("/deck")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView addDeckPost(@Valid @ModelAttribute("deckBind") DeckAddBindingModel model, Principal principal, BindingResult result, ModelAndView modelAndView) {
+	public ModelAndView addDeckPost(@Valid @ModelAttribute("bind") DeckAddBindingModel model, BindingResult result, Principal principal, ModelAndView modelAndView) {
 		if(result.hasErrors()) {
-			modelAndView.addObject("deckBind", model);
+			Type listDeckViewModelType = new TypeToken<List<DeckViewModel>>() {}.getType();
+			
+			List<DeckViewModel> deckViewModels = this.modelMapper
+					.map(this.deckService.findAllDecksByOwner(principal.getName()), listDeckViewModelType);
+			
+			modelAndView.addObject("decks", deckViewModels);
+			modelAndView.addObject("username", principal.getName());
+			
 			return super.view("/deck/deck", modelAndView);
 		}
+		
 		DeckServiceModel deckServiceModel = this.deckService.createDeck(this.modelMapper.map(model, DeckServiceModel.class));
 		this.gameAccService.addDeck(deckServiceModel.getId(), principal.getName());
-		return super.redirect("deck");
+		
+		return super.redirect("/deck");
 	}
 	
 	@GetMapping("/deck-cards/{id}")
@@ -118,4 +127,6 @@ public class DeckController extends BaseController {
 	
 		return super.redirect("/decks/deck-cards/" + deck);
 	}
+	
+	
 }

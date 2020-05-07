@@ -16,13 +16,15 @@
             	<h1>Decks</h1>
             	<span hidden class="username" th:text="${username}"></span>
             	<hr>
-				<form th:action="@{/decks/deck}" method="post" th:object="${deckBind}">
+				<form th:action="@{/decks/deck}" method="post" th:object="${bind}">
 					<div class="input-group mb-3">
-					  	<input type="text" name="name" class="form-control" th:field="*{name}" placeholder="Deck Name..." aria-describedby="button-addon2">
-					  	<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
-					 	<div class="input-group-append">
+						<div class="form-gorup">
+							<input type="text" class="form-control" name="name" placeholder="Deck Name..." th:field="*{name}">
+						</div>
+					  	<div class="input-group-append">
 					    	<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
-					  	</div>
+					  	</div>	
+					  	<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
 					</div>
             	</form>     
             	<hr>
