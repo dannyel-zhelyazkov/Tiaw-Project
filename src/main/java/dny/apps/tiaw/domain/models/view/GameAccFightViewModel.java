@@ -5,6 +5,7 @@ public class GameAccFightViewModel {
 	private DeckCardsViewModel defenseDeck;
 	private DeckCardsViewModel attackDeck;
 	private Long battlePoints;
+	private Integer attackTickets;
 	
 	public GameAccFightViewModel() {}
 
@@ -32,5 +33,11 @@ public class GameAccFightViewModel {
 	}
 	public void setBattlePoints(Long battlePoints) {
 		this.battlePoints = battlePoints;
+	}
+	public Integer getAttackTickets() {
+		return attackTickets;
+	}
+	public void setAttackTickets(Integer attackTickets) {
+		this.attackTickets = attackTickets;
 	}
 }

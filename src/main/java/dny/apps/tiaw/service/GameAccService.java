@@ -7,7 +7,9 @@ import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
 public interface GameAccService {
 	GameAccServiceModel findByUser(String username);
 	
-	List<GameAccServiceModel> findAllGameAccs();
+	List<GameAccServiceModel> findAll();
+	
+	List<GameAccServiceModel> findAllFightGameAccs();
 	
 	GameAccServiceModel buyCard(String cardId, String username);
 	
@@ -19,9 +21,9 @@ public interface GameAccService {
 	
 	GameAccServiceModel removeDeck(String deck, String username);
 	
-	GameAccServiceModel fight(String user);
-	
 	GameAccServiceModel wonFight(String defender, String attacker, String ubp, String ebp);
 	
 	GameAccServiceModel lostFight(String defender, String attacker, String ubp, String ebp);
+	
+	void resetAttackTickets();
 }

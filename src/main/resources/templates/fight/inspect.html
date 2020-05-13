@@ -15,11 +15,15 @@
     <main>
     	<div class="container-fluid">
     		<p class="h1 d-flex fles-row">
-    			<span class="att" th:text="${att}" hidden></span>
     			<span class="def" th:text="|${name}|"></span>
     			<span th:text="|'s Defense Deck:|"></span>
     			<span class="text-success ml-3" th:text="|${deck.name}"></span>
-    			<button onclick="battle()" type="button" class="btn btn-success ml-3 align-self-center" data-toggle="modal" data-target=".bd-example-modal-sm">Fight</button>
+    			<th:block th:if="${attackTickets == 0}">			
+					<button type="button" class="btn btn-danger ml-3 align-self-center" disabled="disabled">Fight</button>
+    			</th:block>
+    			<th:block th:if="${attackTickets > 0}">
+    				<button onclick="battle()" type="button" class="btn btn-success ml-3 align-self-center" data-toggle="modal" data-target=".bd-example-modal-sm">Fight</button>
+    			</th:block>
 				<div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
 					aria-hidden="true">
 					<div class="modal-dialog modal-sm" role="document">
@@ -32,6 +36,9 @@
 				</div>
     		</p>
     		<hr>
+    		<th:block th:if="${#lists.isEmpty(cards)}">
+    			<h3>Deck is empty</h3>
+    		</th:block>
     		<div class="card-deck" style="width: fit-content; height: fit-content;">
 			<th:block th:each="card, iter: ${cards}">
 				<th:block th:switch="${card.rarity}">
@@ -98,14 +105,11 @@
     	<th:block th:include="~{fragments/footer}">
     	</th:block>
 	</footer>
-	<script>
+	<script th:inline="javascript">
 	function battle() {
 		let def = document.querySelector('.def').innerText;
-		let att = document.querySelector('.att').innerText;
-		
-		console.log(def);
-		console.log(att);
-		
+		let att = /*[[${att}]]*/ '';
+				
 		fetch('http://localhost:8080/fight-action/' + att + '/' + def)
 		  .then((response) => {
 		    return response.json();
@@ -113,6 +117,22 @@
 		  .then((data) => {
 		    		let btl = document.querySelector('.battle');
 		    		btl.innerHTML = "";
+		    		
+		    		if(data.attacker.attackTickets == 0) {
+		    			btl.innerHTML += `<h3 class="text-danger text-center">You have no tickets left.</h3>`
+		    			return;
+		    		}
+		    		
+		    		ebp1 = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
+	    			ebp2 = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
+		    		
+					console.log(ebp1);
+					console.log(ebp2);
+	    			
+	    			if(ebp1 <= 0 || ebp2 <= 0) {
+	    				btl.innerHTML += `<h3 class="text-danger text-center">The player is too weak for you</h3>`
+	    				return;
+	    			}
 		    		
 		    		let att_cards = data.attacker.attackDeck.cards;
 		    		let def_cards = data.defender.defenseDeck.cards;
@@ -123,7 +143,7 @@
 		    		let att_card_index = 0;
 		    		let def_card_index = 0;
 		    		
-		    		while(att_defense >= 0 && def_defense >= 0 && att_card_index < att_cards.length && def_card_index < def_cards.length) {
+		    		while(att_defense >= 0 && def_defense >= 0) {
 		    			if (att_cards[att_card_index].defense >= 0) {
 			    		    btl.innerHTML += `<h3>${att_cards[att_card_index].name} VS ${def_cards[def_card_index].name}</h3>
 			    		    <div class="info">
@@ -134,7 +154,6 @@
 			    		    (<span>${def_cards[def_card_index].power}</span>;<span>${def_cards[def_card_index].defense}</span>)
 			    		    </div>`
 			    		    def_cards[def_card_index].defense -= att_cards[att_card_index].power;
-			    		    att_defense -= att_cards[att_card_index].power;
 			    		} else {
 			    		    att_card_index += 1;
 			   				if(att_card_index == att_cards.length) break;
@@ -149,7 +168,6 @@
 			    		    (<span>${att_cards[att_card_index].power}</span>;<span>${att_cards[att_card_index].defense}</span>)
 			    		    </div>`
 			    		    att_cards[att_card_index].defense -= def_cards[def_card_index].power;
-			    		    def_defense -= def_cards[def_card_index].power;
 			    		} else {
 			    		    def_card_index += 1;
 			    		    if(def_card_index == def_cards.length) break;
@@ -158,33 +176,36 @@
 		    		
 		    		let ubp;
 		    		let ebp;
+		    		
 		    		if(att_defense > 0) {
-		    			if(data.defender.battlePoints >= data.attacker.battlePoints) {
-			    			ubp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
-			    			ebp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
-			    		}else {
-			    			ubp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
-			    			ebp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
-			    		}
-			    		btl.innerHTML += `<form id="won" class="text-center m-3" action="/won-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}" method="post">
-	    					<h3 class="text-success">You Won $5 and ${ubp}BP</h3>
-	    				</form>`
-			    		$("#won").ajaxSubmit({url: `/won-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}`, type: 'post'});
+		    			ubp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 15);
+		    			ebp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
+		    			
+		    			if(ubp > 0) {
+		    				btl.innerHTML += `<form id="won" class="text-center m-3" action="/won-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}" method="post">
+		    					<h3 class="text-success">You Won $5 and ${ubp}BP</h3>
+		    				</form>`
+				    		$("#won").ajaxSubmit({url: `/won-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}`, type: 'post'});
+		    			} else {
+		    				btl.innerHTML += `<h3 class="text-danger text-center">The player is too weak</h3>`
+		    			}
 			    	}
 			    	else {
-			    		if(data.defender.battlePoints >= data.attacker.battlePoints) {
-			    			ubp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
-			    			ebp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
-			    		}else {
-			    			ubp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
-			    			ebp = parseInt((data.defender.battlePoints*1.0 / data.attacker.battlePoints*1.0) * 10);
-			    		}
-			    		btl.innerHTML += `<form id="lost" class="text-center m-3" action="/lost-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}" method="post">
-	    					<h3 class="text-danger">You lost ${ubp}BP</h3>
-	    				</form>`
-			    			$("#lost").ajaxSubmit({url: `/won-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}`, type: 'post'});
-			    	}
-		    	})	    	
+			    		ubp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 15);
+		    			ebp = parseInt((data.attacker.battlePoints*1.0 / data.defender.battlePoints*1.0) * 10);
+		    			
+			    		if (ubp > 0) {
+			    			btl.innerHTML += `<form id="lost" class="text-center m-3" action="/lost-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}" method="post">
+		    					<h3 class="text-danger">You lost ${ubp}BP</h3>
+		    				</form>`
+				    		$("#lost").ajaxSubmit({url: `/won-fight/${data.defender.username}/${String(ubp)}/${String(ebp)}`, type: 'post'});
+				    	} else {
+					    	btl.innerHTML += `<h3 class="text-danger text-center">The player is too weak</h3>`
+					    }
+				    }
+		    		btl.innerHTML += `<form id="home"></form>`
+					$("#home").ajaxSubmit({url: "/home", type: 'get'});
+		    	})
 		}
 	</script>
 </body>

@@ -32,11 +32,6 @@
 						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('defense')}" th:errors="*{defense}"></small>
 					</div>
 					<div class="form-group">
-						<label for="price" class="font-weight-bold">Price</label>
-						<input type="number" class="form-control" id="price" name="price" th:field="*{price}">
-						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></small>
-					</div>
-					<div class="form-group">
 						<label for="image" class="font-weight-bold">Image</label>
 						<input type="file" class="form-control-file" id="image" name="image" th:field="*{image}">
 						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></small>

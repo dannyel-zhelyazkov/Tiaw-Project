@@ -49,6 +49,20 @@ public class CardServiceImpl implements CardService{
 	public CardServiceModel createCard(CardServiceModel cardServiceModel) {
 		Card card = this.modelMapper.map(cardServiceModel, Card.class);
 		
+		if(card.getRarity().toString().equals("Common")) {
+			card.setPrice(10);
+		} else if(card.getRarity().toString().equals("Uncommon")) {
+			card.setPrice(30);
+		} else if(card.getRarity().toString().equals("Rare")) {
+			card.setPrice(70);
+		} else if(card.getRarity().toString().equals("Epic")) {
+			card.setPrice(120);
+		} else if(card.getRarity().toString().equals("Legendary")) {
+			card.setPrice(180);
+		} else if(card.getRarity().toString().equals("Mythic")) {
+			card.setPrice(340);
+		}
+		
 		return this.modelMapper.map(this.cardRepository.saveAndFlush(card), CardServiceModel.class);
 	}
 

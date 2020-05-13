@@ -1,4 +1,4 @@
-package dny.apps.tiaw.web.controller;
+package dny.apps.tiaw.web.controllers;
 
 import org.springframework.web.servlet.ModelAndView;
 

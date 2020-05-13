@@ -16,7 +16,7 @@
             	<h1>Decks</h1>
             	<span hidden class="username" th:text="${username}"></span>
             	<hr>
-				<form th:action="@{/decks/deck}" method="post" th:object="${bind}">
+				<form th:action="@{/decks/add-deck}" method="post" th:object="${bind}">
 					<div class="input-group mb-3">
 						<div class="form-gorup">
 							<input type="text" class="form-control" name="name" placeholder="Deck Name..." th:field="*{name}">
@@ -31,7 +31,7 @@
             	<th:block th:each="deck, iter: ${decks}">
 	            	<form th:action="@{/decks/deck-cards/{id}(id=${deck.id})}">
 						<div class="input-group mb-3">
-						  <input type="text" class="form-control" th:placeholder="${deck.name}" disabled="disabled" aria-describedby="button-addon2">
+						  <input type="text" class="form-control" th:placeholder="|${deck.name}" disabled="disabled" aria-describedby="button-addon2">
 						  <div class="input-group-append">
 						    <button class="btn btn-warning" type="submit" id="button-addon2">VIEW</button>
 						  </div>
@@ -41,6 +41,7 @@
             </div>
             <div class="mt-3 col-md-9">
             	<h1>Cards</h1>
+				
             	<hr/>
             	<div class="cards-data">
             	</div>	            	
@@ -51,7 +52,9 @@
     	<th:block th:include="~{fragments/footer}">
     	</th:block>
 	</footer>
-	<script>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+			
 		function formatCard(card) {
 			let color = ''; 
 			if(card.rarity == 'Common') {
@@ -67,23 +70,29 @@
 			}else if(card.rarity == 'Mythic') {
 				color = 'black';
 			} 
-			return `<div class="col-md-3"><div class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: ${color} !important">
-			<img src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
-			<div class="card-body">
-				<h5 class="card-title">${card.name}</h5>
-				<hr>
-				<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1">Attack:
-						${card.power}</span><span class="bg-success rounded p-1">Defense: ${card.defense}</span></p>
-				<hr>
-				<form action="/decks/add-to-deck/${card.id}" method="post"><div class="input-group mb-3">
-					<input type="text" name="name" class="form-control" placeholder="Deck Name..." aria-describedby="button-addon2">
-					<div class="input-group-append">
-						<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
-					</div>
-					</div>
-				</form>
-			</div>
-		</div></div>`;   
+			
+			/*[+
+			
+			var htmlResult = `<div class="col-md-3"><div class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: ${color} !important">
+				<img src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+				<div class="card-body">
+					<h5 class="card-title">${card.name}</h5>
+					<hr>
+					<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1">Attack:
+							${card.power}</span><span class="bg-success rounded p-1">Defense: ${card.defense}</span></p>
+					<hr>
+					<form action="/decks/add-to-deck/${card.id}" method="post"><div class="input-group mb-3">
+						<input type="text" name="name" class="form-control" placeholder="Deck Name..." aria-describedby="button-addon2">
+						<div class="input-group-append">
+							<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
+						</div>
+					</form>
+				</div>
+			</div></div>`;
+			
+			+]*/
+			
+			return htmlResult;
 	    }
 	    function showCards () {
 	    	let username = $('.username').text();
@@ -92,19 +101,20 @@
 	            .then((json) => {
 	                $('.cards-data').empty();
 	                if (json.length == 0) {
-	                    $('.cards-data').append(`<h1 class="text-center font-weight-bold">You dont have cards yet.</h1>`)
+	                    $('.cards-data').append(`<h1 class="text-center font-weight-bold">You dont have cards yet. You can buy from the <a href="/cards/shop">SHOP<a></h1>`)
 	                } else {
 	                	for (let i = 0; i < json.length; i+=4) {
 	                        $('.cards-data').append('<div class="cards-row row row-cols-1 row-cols-md-4">');
 	                        if(i < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i]));
 	                        if(i + 1 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 1]));
 	                        if(i + 2 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 2]));
-	                        if(i + 2 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 3]));
+	                        if(i + 3 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 3]));
 	                    }
 	                }
 	            })
 	    };
 	    showCards();
+	    /*]]>*/
 	</script>
 </body>
 </html>

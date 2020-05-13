@@ -1,17 +1,17 @@
 package dny.apps.tiaw.domain.models.service;
 
-import java.util.List;
+import java.util.Set;
 
 public class DeckServiceModel extends BaseServiceModel {
-	private List<CardServiceModel> cards;
+	private Set<CardServiceModel> cards;
 	private String name;
 	
 	public DeckServiceModel() {}
 	
-	public List<CardServiceModel> getCards() {
+	public Set<CardServiceModel> getCards() {
 		return cards;
 	}
-	public void setCards(List<CardServiceModel> cards) {
+	public void setCards(Set<CardServiceModel> cards) {
 		this.cards = cards;
 	}
 	public String getName() {

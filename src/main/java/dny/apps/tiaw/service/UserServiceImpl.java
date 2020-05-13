@@ -5,6 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,6 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserServiceModel registerUser(UserServiceModel userServiceModel) {
         this.roleService.seedRolesInDb();
 
@@ -56,9 +59,9 @@ public class UserServiceImpl implements UserService {
 		
 		gameAcc.setDecks(new HashSet<Deck>());
 		gameAcc.setCards(new HashSet<Card>());
-		gameAcc.setGold(0L);
-		gameAcc.setDiamonds(0L);
+		gameAcc.setGold(50L);
 		gameAcc.setBattlePoints(100L);
+		gameAcc.setAttackTickets(3);
 		
 		this.gameAccRepository.saveAndFlush(gameAcc);
 		

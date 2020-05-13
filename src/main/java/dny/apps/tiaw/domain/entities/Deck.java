@@ -12,7 +12,7 @@ public class Deck extends BaseEntity {
 	
 	public Deck() {}
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
 	public List<Card> getCards() {
 		return cards;
 	}

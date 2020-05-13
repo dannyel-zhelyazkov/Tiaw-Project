@@ -1,4 +1,4 @@
-package dny.apps.tiaw.web.controller;
+package dny.apps.tiaw.web.controllers;
 
 import java.lang.reflect.Type;
 import java.security.Principal;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,9 @@ import dny.apps.tiaw.domain.models.binding.DeckAddBindingModel;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
 import dny.apps.tiaw.domain.models.service.DeckServiceModel;
 import dny.apps.tiaw.domain.models.view.DeckViewModel;
+import dny.apps.tiaw.exception.DeckContainsCardException;
+import dny.apps.tiaw.exception.DeckNotFoundException;
+import dny.apps.tiaw.exception.DeckSizeException;
 import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
 import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.DeckService;
@@ -61,7 +65,7 @@ public class DeckController extends BaseController {
 		return super.view("/deck/deck", modelAndView);
 	}
 	
-	@PostMapping("/deck")
+	@PostMapping("/add-deck")
 	@PreAuthorize("isAuthenticated()")
 	public ModelAndView addDeckPost(@Valid @ModelAttribute("bind") DeckAddBindingModel model, BindingResult result, Principal principal, ModelAndView modelAndView) {
 		if(result.hasErrors()) {
@@ -79,7 +83,7 @@ public class DeckController extends BaseController {
 		DeckServiceModel deckServiceModel = this.deckService.createDeck(this.modelMapper.map(model, DeckServiceModel.class));
 		this.gameAccService.addDeck(deckServiceModel.getId(), principal.getName());
 		
-		return super.redirect("/deck");
+		return super.redirect("/decks/deck");
 	}
 	
 	@GetMapping("/deck-cards/{id}")
@@ -111,7 +115,8 @@ public class DeckController extends BaseController {
 	
 	@PostMapping("/add-to-deck/{cardId}")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView addToDeckPost(@PathVariable String cardId, @ModelAttribute DeckAddBindingModel model, Principal principal) {
+	public ModelAndView addToDeckPost(@PathVariable String cardId, @ModelAttribute("addBind") DeckAddBindingModel model, BindingResult result, Principal principal) {
+		
 		this.deckService.addCard(model.getName(), cardId, principal.getName());				
 		return super.redirect("/decks/deck");
 	}
@@ -128,5 +133,30 @@ public class DeckController extends BaseController {
 		return super.redirect("/decks/deck-cards/" + deck);
 	}
 	
+	@ExceptionHandler(DeckNotFoundException.class)
+	public ModelAndView deckNotFound(DeckNotFoundException ex) {
+		ModelAndView modelAndView = new ModelAndView("/deck/deck-error");
+		
+		modelAndView.addObject("message", ex.getMessage());
+		
+		return modelAndView;
+	}
 	
+	@ExceptionHandler(DeckContainsCardException.class)
+	public ModelAndView deckContainsCard(DeckContainsCardException ex) {
+		ModelAndView modelAndView = new ModelAndView("/deck/deck-error");
+		
+		modelAndView.addObject("message", ex.getMessage());
+		
+		return modelAndView;
+	}
+	
+	@ExceptionHandler(DeckSizeException.class)
+	public ModelAndView fullDeck(DeckSizeException ex) {
+		ModelAndView modelAndView = new ModelAndView("/deck/deck-error");
+		
+		modelAndView.addObject("message", ex.getMessage());
+		
+		return modelAndView;
+	}
 }

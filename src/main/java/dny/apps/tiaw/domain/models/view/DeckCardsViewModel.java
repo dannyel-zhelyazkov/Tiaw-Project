@@ -1,10 +1,10 @@
 package dny.apps.tiaw.domain.models.view;
 
-import java.util.List;
+import java.util.Set;
 
 public class DeckCardsViewModel {
 	private String id;
-	private List<CardViewModel> cards;
+	private Set<CardViewModel> cards;
 	private String name;
 	
 	public DeckCardsViewModel() {}
@@ -17,11 +17,11 @@ public class DeckCardsViewModel {
 		this.id = id;
 	}
 	
-	public List<CardViewModel> getCards() {
+	public Set<CardViewModel> getCards() {
 		return cards;
 	}
 
-	public void setCards(List<CardViewModel> cards) {
+	public void setCards(Set<CardViewModel> cards) {
 		this.cards = cards;
 	}
 

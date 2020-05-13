@@ -12,8 +12,9 @@
 	</header>
     <main>
     	<div class="container-fluid">
-    		<p>Hello, <span sec:authentication="name"></span> you have $<span th:text="${gold}"></span></p>
-        </div>
+    		<p class="h3">Hello, <span sec:authentication="name"></span> you have $<span th:text="${gold}"></span></p>
+    		
+    	</div>
     </main>
     <footer>
     	<th:block th:include="~{fragments/footer}">

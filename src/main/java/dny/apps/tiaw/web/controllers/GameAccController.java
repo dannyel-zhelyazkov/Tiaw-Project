@@ -1,4 +1,4 @@
-package dny.apps.tiaw.web.controller;
+package dny.apps.tiaw.web.controllers;
 
 import java.lang.reflect.Type;
 import java.security.Principal;
@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
 import dny.apps.tiaw.domain.models.view.GameAccFightViewModel;
+import dny.apps.tiaw.exception.BuyCardGetException;
+import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.DeckService;
 import dny.apps.tiaw.service.GameAccService;
 
@@ -27,7 +30,7 @@ public class GameAccController extends BaseController {
 	private final DeckService deckService;
 	private final ModelMapper modelMapper;
 	
-	public GameAccController(GameAccService gameAccService, DeckService deckService, ModelMapper modelMapper) {
+	public GameAccController(GameAccService gameAccService, DeckService deckService, CardService cardService, ModelMapper modelMapper) {
 		this.gameAccService = gameAccService;
 		this.deckService = deckService;
 		this.modelMapper = modelMapper;
@@ -35,7 +38,7 @@ public class GameAccController extends BaseController {
 	
 	@PostMapping("/buy-card/{id}")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView buyCardPost(@PathVariable String id, Principal principal) {
+	public ModelAndView buyCardPost(@PathVariable String id, Principal principal, ModelAndView modelAndView) {
 		this.gameAccService.buyCard(id, principal.getName());
 		return super.redirect("/decks/deck");
 	}
@@ -57,7 +60,7 @@ public class GameAccController extends BaseController {
 		
 		Type listGameAccFightViewModel = new TypeToken<List<GameAccFightViewModel>>(){}.getType(); 
 		List<GameAccFightViewModel> gameAccFightViewModel = this.modelMapper
-				.map(this.gameAccService.findAllGameAccs(), listGameAccFightViewModel);
+				.map(this.gameAccService.findAllFightGameAccs(), listGameAccFightViewModel);
 		
 		modelAndView.addObject("players", gameAccFightViewModel);
 		return super.view("/fight/fight", modelAndView); 
@@ -68,6 +71,7 @@ public class GameAccController extends BaseController {
 	public ModelAndView inspect(@PathVariable String name, ModelAndView modelAndView, Principal principal) {
 		
 		modelAndView.addObject("att", principal.getName());
+		modelAndView.addObject("attackTickets", this.gameAccService.findByUser(principal.getName()).getAttackTickets());
 		
 		DeckCardsViewModel deckCardsViewModel = this.modelMapper.map(this.deckService.findDefenseDeckByOwner(name),
 				DeckCardsViewModel.class);
@@ -115,6 +119,15 @@ public class GameAccController extends BaseController {
 	public ModelAndView lostFightPost(@PathVariable String defender, @PathVariable String ubp, @PathVariable String ebp, Principal principal) {
 		this.gameAccService.lostFight(defender, principal.getName(), ubp, ebp);
 		return super.redirect("/home");
+	}
+	
+	@ExceptionHandler(BuyCardGetException.class)
+	public ModelAndView fullDeck(BuyCardGetException ex) {
+		ModelAndView modelAndView = new ModelAndView("error");
+		
+		modelAndView.addObject("message", ex.getMessage());
+		
+		return modelAndView;
 	}
 }
 	

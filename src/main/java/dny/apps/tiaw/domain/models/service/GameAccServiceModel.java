@@ -1,17 +1,16 @@
 package dny.apps.tiaw.domain.models.service;
 
-import java.util.List;
 import java.util.Set;
 
 public class GameAccServiceModel {
 	private String username;
 	private Set<DeckServiceModel> decks;
-	private List<CardServiceModel> cards;
+	private Set<CardServiceModel> cards;
 	private DeckServiceModel defenseDeck;
 	private DeckServiceModel attackDeck;
 	private Long gold;
-	private Long diamonds;
 	private Long battlePoints;
+	private Integer attackTickets;
 	
 	public GameAccServiceModel() {}
 
@@ -31,11 +30,11 @@ public class GameAccServiceModel {
 		this.decks = decks;
 	}
 
-	public List<CardServiceModel> getCards() {
+	public Set<CardServiceModel> getCards() {
 		return cards;
 	}
 
-	public void setCards(List<CardServiceModel> cards) {
+	public void setCards(Set<CardServiceModel> cards) {
 		this.cards = cards;
 	}
 	
@@ -55,14 +54,6 @@ public class GameAccServiceModel {
 		this.gold = gold;
 	}
 
-	public Long getDiamonds() {
-		return diamonds;
-	}
-
-	public void setDiamonds(Long diamonds) {
-		this.diamonds = diamonds;
-	}
-
 	public Long getBattlePoints() {
 		return battlePoints;
 	}
@@ -77,5 +68,13 @@ public class GameAccServiceModel {
 
 	public void setAttackDeck(DeckServiceModel attackDeck) {
 		this.attackDeck = attackDeck;
+	}
+
+	public Integer getAttackTickets() {
+		return attackTickets;
+	}
+
+	public void setAttackTickets(Integer attackTickets) {
+		this.attackTickets = attackTickets;
 	}
 }

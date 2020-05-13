@@ -1,7 +1,8 @@
-package dny.apps.tiaw.web.controller;
+package dny.apps.tiaw.web.controllers;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import dny.apps.tiaw.domain.models.binding.CardDeleteBindingModel;
 import dny.apps.tiaw.domain.models.binding.CardEditBindingModel;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
 import dny.apps.tiaw.domain.models.service.CloudinaryService;
+import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
 import dny.apps.tiaw.domain.models.view.CardViewModel;
 import dny.apps.tiaw.exception.CardNotFoundException;
 import dny.apps.tiaw.service.CardService;
@@ -68,14 +70,15 @@ public class CardController extends BaseController {
 		
 		this.cardService.createCard(cardServiceModel);
 
-		return super.redirect("/home");
+		return super.redirect("/cards/all");
 	}
 
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
 	public ModelAndView allCardsGet(ModelAndView model) {
 		model.addObject("cards", this.cardService.findAll().stream()
-				.map(c -> this.modelMapper.map(c, CardViewModel.class)).collect(Collectors.toList()));
+				.map(c -> this.modelMapper.map(c, CardViewModel.class))
+				.collect(Collectors.toList()));
 
 		return super.view("/card/all-cards", model);
 	}
@@ -150,21 +153,37 @@ public class CardController extends BaseController {
 
 	@GetMapping("/fetch/{rarity}")
 	@ResponseBody
-	public List<CardViewModel> fetchByRarityGet(@PathVariable String rarity) {
+	public List<CardViewModel> fetchByRarityGet(@PathVariable String rarity, Principal principal) {
+		GameAccServiceModel gameAccServiceModel = this.modelMapper
+				.map(this.userService.findUserByUsername(principal.getName()).getGameAcc(), GameAccServiceModel.class);
+		
 		if (rarity.equals("all")) {
-			return this.cardService.findAll().stream().map(card -> this.modelMapper.map(card, CardViewModel.class))
+			return this.cardService.findAll().stream()
+					.filter(card -> {
+						Iterator<CardServiceModel> cards = gameAccServiceModel.getCards().iterator();
+						while(cards.hasNext()) {
+							if(cards.next().getName().equals(card.getName())) {
+								return false;
+							}
+						}
+						
+						return true;
+					})
+					.map(card -> this.modelMapper.map(card, CardViewModel.class))
 					.collect(Collectors.toList());
 		}
 
 		return this.cardService.findAllByRarity(rarity).stream()
-				.map(card -> this.modelMapper.map(card, CardViewModel.class)).collect(Collectors.toList());
+				.map(card -> this.modelMapper.map(card, CardViewModel.class))
+				.collect(Collectors.toList());
 	}
 
 	@GetMapping("/user-cards/{user}")
 	@ResponseBody
 	public List<CardViewModel> fetchByUserGet(@PathVariable String user) {
 		return this.userService.findUserByUsername(user).getGameAcc().getCards().stream()
-				.map(c -> this.modelMapper.map(c, CardViewModel.class)).collect(Collectors.toList());
+				.map(c -> this.modelMapper.map(c, CardViewModel.class))
+				.collect(Collectors.toList());
 	}
 	
 	@ExceptionHandler(CardNotFoundException.class)

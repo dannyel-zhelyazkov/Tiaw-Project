@@ -12,7 +12,6 @@ public class CardAddBindingModel {
 	private Integer defense;
 	private Rarity rarity;
 	private MultipartFile image = null;
-	private Integer price;
 	private boolean valid;
 
 	public CardAddBindingModel() {
@@ -55,14 +54,6 @@ public class CardAddBindingModel {
 	}
 	public void setImage(MultipartFile image) {
 		this.image = image;
-	}
-	@Positive(message = "Defense must be 0 or positive.")
-	@NotNull(message = "Defense must be not empty")
-	public Integer getPrice() {
-		return price;
-	}
-	public void setPrice(Integer price) {
-		this.price = price;
 	}
 	@AssertTrue(message = "Image is required field")
 	public boolean getValid() {

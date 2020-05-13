@@ -12,19 +12,19 @@ public class GameAcc extends BaseEntity {
 	private Deck defenseDeck;
 	private Deck attackDeck;
 	private Long gold;
-	private Long diamonds;
 	private Long battlePoints;
+	private Integer attackTickets;
 	
 	public GameAcc() {}
 	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.ALL)
     public Set<Deck> getDecks() {
 		return decks;
 	}   
     public void setDecks(Set<Deck> decks) {
 		this.decks = decks;
 	}  
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     public Set<Card> getCards() {
 		return cards;
 	}   
@@ -52,18 +52,18 @@ public class GameAcc extends BaseEntity {
     public void setGold(Long gold) {
 		this.gold = gold;
 	}
-    @Column(name = "diamonds", unique=false, updatable=true, nullable=false)
-    public Long getDiamonds() {
-		return diamonds;
-	}
-    public void setDiamonds(Long diamonds) {
-		this.diamonds = diamonds;
-	}
     @Column(name = "battle_points", unique=false, updatable=true, nullable=false)
 	public Long getBattlePoints() {
 		return battlePoints;
 	}
 	public void setBattlePoints(Long battlePoints) {
 		this.battlePoints = battlePoints;
+	}
+	@Column(name = "attack_tickets", unique=false, updatable=true, nullable=false)
+	public Integer getAttackTickets() {
+		return attackTickets;
+	}
+	public void setAttackTickets(Integer attackTickets) {
+		this.attackTickets = attackTickets;
 	}
 }

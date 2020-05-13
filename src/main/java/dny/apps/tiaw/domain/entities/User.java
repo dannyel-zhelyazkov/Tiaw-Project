@@ -42,8 +42,7 @@ public class User extends BaseEntity implements UserDetails {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "game_acc_id")
+	@OneToOne
 	public GameAcc getGameAcc() {
 		return gameAcc;
 	}
@@ -51,8 +50,7 @@ public class User extends BaseEntity implements UserDetails {
 		this.gameAcc = gameAcc;
 	}
 	@Override
-	@ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
-	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	@ManyToMany(fetch = FetchType.EAGER)
 	public Set<Role> getAuthorities() {
 		return authorities;
 	}
