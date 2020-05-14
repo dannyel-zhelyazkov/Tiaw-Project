@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import dny.apps.tiaw.service.UserService;
+import dny.apps.tiaw.web.annotations.PageTitle;
 
 @Controller
 public class HomeController extends BaseController {
@@ -21,12 +22,14 @@ public class HomeController extends BaseController {
 	
 	@GetMapping("/")
 	@PreAuthorize("isAnonymous()")
+	@PageTitle("Index")
 	public ModelAndView index() {
 		return super.view("index");
 	}
 	
 	@GetMapping("/home")
 	@PreAuthorize("isAuthenticated()")
+	@PageTitle("Home")
 	public ModelAndView home(Principal principal, ModelAndView modelAndView) {
 		modelAndView.addObject("gold", this.userService.findUserByUsername(principal.getName()).getGameAcc().getGold());
 		return super.view("home", modelAndView);

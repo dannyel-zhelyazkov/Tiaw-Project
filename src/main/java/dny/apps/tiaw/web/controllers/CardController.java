@@ -32,6 +32,7 @@ import dny.apps.tiaw.domain.models.view.CardViewModel;
 import dny.apps.tiaw.exception.CardNotFoundException;
 import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.UserService;
+import dny.apps.tiaw.web.annotations.PageTitle;
 
 @Controller
 @RequestMapping("/cards")
@@ -53,6 +54,7 @@ public class CardController extends BaseController {
 
 	@GetMapping("/add")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
+	@PageTitle("Add Card")
 	public ModelAndView addCardGet(ModelAndView modelAndView) {
 		modelAndView.addObject("card", new CardAddBindingModel());
 		return super.view("/card/add-card", modelAndView);
@@ -75,6 +77,7 @@ public class CardController extends BaseController {
 
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
+	@PageTitle("Cards")
 	public ModelAndView allCardsGet(ModelAndView model) {
 		model.addObject("cards", this.cardService.findAll().stream()
 				.map(c -> this.modelMapper.map(c, CardViewModel.class))
@@ -85,6 +88,7 @@ public class CardController extends BaseController {
 
 	@GetMapping("/edit/{id}")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
+	@PageTitle("Edit Card")
 	public ModelAndView editCardGet(@PathVariable String id, ModelAndView model) {
 		CardServiceModel cardServiceModel = this.cardService.findById(id);
 
@@ -113,6 +117,7 @@ public class CardController extends BaseController {
 
 	@GetMapping("/delete/{id}")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
+	@PageTitle("Delete Card")
 	public ModelAndView deleteCardGet(@PathVariable String id, ModelAndView modelAndView) {
 		CardServiceModel cardServiceModel = this.cardService.findById(id);
 
@@ -134,6 +139,7 @@ public class CardController extends BaseController {
 
 	@GetMapping("/view/{id}")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
+	@PageTitle("View Card")
 	public ModelAndView viewCardGet(@PathVariable String id, ModelAndView model) {
 		CardServiceModel cardServiceModel = this.cardService.findById(id);
 
@@ -146,6 +152,7 @@ public class CardController extends BaseController {
 
 	@GetMapping("/shop")
 	@PreAuthorize("isAuthenticated()")
+	@PageTitle("Shop")
 	public ModelAndView shop(ModelAndView modelAndView, Principal principal) {
 		modelAndView.addObject("gold", this.userService.findUserByUsername(principal.getName()).getGameAcc().getGold());
 		return super.view("/card/shop", modelAndView);

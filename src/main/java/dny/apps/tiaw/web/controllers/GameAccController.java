@@ -23,6 +23,7 @@ import dny.apps.tiaw.exception.BuyCardGetException;
 import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.DeckService;
 import dny.apps.tiaw.service.GameAccService;
+import dny.apps.tiaw.web.annotations.PageTitle;
 
 @Controller
 public class GameAccController extends BaseController {
@@ -53,6 +54,7 @@ public class GameAccController extends BaseController {
 	
 	@GetMapping("/fight")
 	@PreAuthorize("isAuthenticated()")
+	@PageTitle("Fight")
 	public ModelAndView fightGet(ModelAndView modelAndView, Principal principal) {
 		modelAndView.addObject("current", 
 				this.modelMapper.map(this.gameAccService.findByUser(principal.getName()),
@@ -68,6 +70,7 @@ public class GameAccController extends BaseController {
 	
 	@GetMapping("/inspect/{name}")
 	@PreAuthorize("isAuthenticated()")
+	@PageTitle("Inspect")
 	public ModelAndView inspect(@PathVariable String name, ModelAndView modelAndView, Principal principal) {
 		
 		modelAndView.addObject("att", principal.getName());

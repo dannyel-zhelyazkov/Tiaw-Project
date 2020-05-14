@@ -32,6 +32,7 @@ import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.DeckService;
 import dny.apps.tiaw.service.GameAccService;
 import dny.apps.tiaw.service.UserService;
+import dny.apps.tiaw.web.annotations.PageTitle;
 
 @Controller
 @RequestMapping("/decks")
@@ -53,6 +54,7 @@ public class DeckController extends BaseController {
 	
 	@GetMapping("/deck")
 	@PreAuthorize("isAuthenticated()")
+	@PageTitle("Deck")
 	public ModelAndView deck(ModelAndView modelAndView, Principal principal) {
 		Type listDeckViewModelType = new TypeToken<List<DeckViewModel>>() {}.getType();
 		
@@ -88,6 +90,7 @@ public class DeckController extends BaseController {
 	
 	@GetMapping("/deck-cards/{id}")
 	@PreAuthorize("isAuthenticated()")
+	@PageTitle("Deck-Cards")
 	public ModelAndView viewDeckGet(@PathVariable String id, ModelAndView modelAndView, Principal principal) {
 		DeckCardsViewModel deckCardsViewModel = this.modelMapper
 				.map(this.deckService.findById(id), DeckCardsViewModel.class);

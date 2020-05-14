@@ -25,6 +25,7 @@ import dny.apps.tiaw.domain.models.service.UserServiceModel;
 import dny.apps.tiaw.domain.models.view.UserProfileViewModel;
 import dny.apps.tiaw.domain.models.view.UserViewModel;
 import dny.apps.tiaw.service.UserService;
+import dny.apps.tiaw.web.annotations.PageTitle;
 
 @Controller
 @RequestMapping("/users")
@@ -41,6 +42,7 @@ public class UserController extends BaseController{
 	
 	@GetMapping("/register")
 	@PreAuthorize("isAnonymous()")
+	@PageTitle("Register")
 	public ModelAndView register(ModelAndView modelAndView) {
 		modelAndView.addObject("bind", new UserRegisterBindingModel());
 		return super.view("register", modelAndView);
@@ -65,12 +67,14 @@ public class UserController extends BaseController{
 	
 	@GetMapping("/login")
     @PreAuthorize("isAnonymous()")
+	@PageTitle("Login")
     public ModelAndView login() {
         return super.view("login");
     }
 	
 	@GetMapping("/profile")
 	@PreAuthorize("isAuthenticated()")
+	@PageTitle("Profile")
 	public ModelAndView profile(Principal principal, ModelAndView model) {
 		model.addObject("model", 
 				this.modelMapper.map(this.userService.findUserByUsername(principal.getName()), 
@@ -80,6 +84,7 @@ public class UserController extends BaseController{
 	
 	@GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PageTitle("Users")
     public ModelAndView allUsers(ModelAndView modelAndView) {
         List<UserViewModel> users = this.userService.findAllUsers().stream()
                 .map(u -> {
