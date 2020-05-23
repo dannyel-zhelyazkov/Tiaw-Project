@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import dny.apps.tiaw.domain.entities.Role;
 import dny.apps.tiaw.domain.models.service.RoleServiceModel;
+import dny.apps.tiaw.error.role.RoleNotFoundException;
 import dny.apps.tiaw.repository.RoleRepository;
 
 import java.util.Set;
@@ -42,7 +43,10 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleServiceModel findByAuthority(String authority) {
-        return this.modelMapper.map(this.roleRepository.findByAuthority(authority), RoleServiceModel.class);
+    	Role role = this.roleRepository.findByAuthority(authority)
+    			.orElseThrow(() -> new RoleNotFoundException("Role with given name was not foud!"));
+    	
+        return this.modelMapper.map(role, RoleServiceModel.class);
     }
 
 }

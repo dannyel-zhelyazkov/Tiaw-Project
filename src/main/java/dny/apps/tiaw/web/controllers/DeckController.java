@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import dny.apps.tiaw.domain.models.binding.DeckAddBindingModel;
-import dny.apps.tiaw.domain.models.service.CardServiceModel;
 import dny.apps.tiaw.domain.models.service.DeckServiceModel;
 import dny.apps.tiaw.domain.models.view.DeckViewModel;
 import dny.apps.tiaw.error.deck.DeckContainsCardException;
@@ -29,7 +28,6 @@ import dny.apps.tiaw.error.deck.DeckNotFoundException;
 import dny.apps.tiaw.error.deck.DeckSizeException;
 import dny.apps.tiaw.error.deck.InvalidDeckCreateException;
 import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
-import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.DeckService;
 import dny.apps.tiaw.service.GameAccService;
 import dny.apps.tiaw.service.UserService;
@@ -41,15 +39,13 @@ public class DeckController extends BaseController {
 	private final UserService userService;
 	private final DeckService deckService;
 	private final GameAccService gameAccService;
-	private final CardService cardService;
 	private final ModelMapper modelMapper;
 
 	@Autowired
-	public DeckController(UserService userService, DeckService deckService, GameAccService gameAccService, CardService cardService, ModelMapper modelMapper) {
+	public DeckController(UserService userService, DeckService deckService, GameAccService gameAccService, ModelMapper modelMapper) {
 		this.userService = userService;
 		this.deckService = deckService;
 		this.gameAccService = gameAccService;
-		this.cardService = cardService;
 		this.modelMapper = modelMapper;
 	}
 	
@@ -127,12 +123,8 @@ public class DeckController extends BaseController {
 	
 	@PostMapping("/remove-from-deck/{card}/{deck}")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView removeCardFromDeck(@PathVariable String card, @PathVariable String deck) {
-		DeckServiceModel deckServiceModel = this.modelMapper.map(this.deckService
-				.findById(deck), DeckServiceModel.class);
-				
-		this.deckService.removeCard(deckServiceModel, 
-				this.modelMapper.map(this.cardService.findById(card), CardServiceModel.class));
+	public ModelAndView removeCardFromDeck(@PathVariable String card, @PathVariable String deck) {				
+		this.deckService.removeCard(deck, card);
 	
 		return super.redirect("/decks/deck-cards/" + deck);
 	}

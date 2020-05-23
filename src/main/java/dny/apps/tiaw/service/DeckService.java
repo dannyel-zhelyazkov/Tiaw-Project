@@ -2,7 +2,6 @@ package dny.apps.tiaw.service;
 
 import java.util.Set;
 
-import dny.apps.tiaw.domain.models.service.CardServiceModel;
 import dny.apps.tiaw.domain.models.service.DeckServiceModel;
 
 public interface DeckService {
@@ -20,5 +19,5 @@ public interface DeckService {
 	
 	DeckServiceModel addCard(String deckName, String cardId, String username);
 	
-	DeckServiceModel removeCard(DeckServiceModel deckServiceModel, CardServiceModel cardServiceModel);
+	DeckServiceModel removeCard(String deckId, String cardName);
 }

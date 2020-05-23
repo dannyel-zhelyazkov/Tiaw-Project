@@ -47,7 +47,8 @@ public class GameAccServiceImpl implements GameAccService {
 	@Override
 	public GameAccServiceModel findByUser(String username) {
 		GameAcc gameAcc = this.userRepository.findByUsername(username)
-				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!")).getGameAcc();
+				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"))
+				.getGameAcc();
 
 		GameAccServiceModel gameAccServiceModel = this.modelMapper.map(gameAcc, GameAccServiceModel.class);
 
@@ -59,7 +60,8 @@ public class GameAccServiceImpl implements GameAccService {
 	@Override
 	public List<GameAccServiceModel> findAll() {
 		return this.userRepository.findAll().stream().map(u -> {
-			GameAccServiceModel gameAccServiceModel = this.modelMapper.map(u.getGameAcc(), GameAccServiceModel.class);
+			GameAccServiceModel gameAccServiceModel = 
+					this.modelMapper.map(u.getGameAcc(), GameAccServiceModel.class);
 			gameAccServiceModel.setUsername(u.getUsername());
 
 			return gameAccServiceModel;
@@ -68,7 +70,8 @@ public class GameAccServiceImpl implements GameAccService {
 
 	@Override
 	public List<GameAccServiceModel> findAllFightGameAccs() {
-		return this.userRepository.findAll().stream().filter(u -> u.getGameAcc().getDefenseDeck() != null)
+		return this.userRepository.findAll().stream()
+				.filter(u -> u.getGameAcc().getDefenseDeck() != null)
 				.sorted((u, u1) -> u1.getGameAcc().getBattlePoints().compareTo(u.getGameAcc().getBattlePoints()))
 				.map(u -> {
 					GameAccServiceModel gameAccServiceModel = this.modelMapper.map(u.getGameAcc(),
@@ -152,6 +155,9 @@ public class GameAccServiceImpl implements GameAccService {
 		User user = this.userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));
 
+		Deck deck = this.deckRepository.findById(id)
+				.orElseThrow(() -> new DeckNotFoundException("Deck with given id does not exist!"));
+		
 		GameAcc gameAcc = user.getGameAcc();
 
 		if (gameAcc.getDefenseDeck() != null && gameAcc.getDefenseDeck().getId().equals(id)) {
@@ -162,7 +168,7 @@ public class GameAccServiceImpl implements GameAccService {
 			gameAcc.setAttackDeck(null);
 		}
 
-		gameAcc.getDecks().removeIf(d -> d.getId().equals(id));
+		gameAcc.getDecks().removeIf(d -> d.getId().equals(deck.getId()));
 
 		return this.modelMapper.map(this.gameAccRepository.saveAndFlush(gameAcc), GameAccServiceModel.class);
 	}
@@ -227,7 +233,8 @@ public class GameAccServiceImpl implements GameAccService {
 	}
 
 	public void resetAttackTickets() {
-		this.gameAccRepository.saveAll(this.gameAccRepository.findAll().stream()
+		this.gameAccRepository.saveAll(
+				this.gameAccRepository.findAll().stream()
 				.map(ga -> {
 					ga.setAttackTickets(3);
 					return ga;

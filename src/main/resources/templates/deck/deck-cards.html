@@ -48,7 +48,7 @@
 								        <hr>
 								        <p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
 								        <hr>
-								  		<form th:action="@{/decks/remove-from-deck/{card}/{deck}(card=${card.id}, deck=${deckId})}" method="post">
+								  		<form th:action="@{/decks/remove-from-deck/{card}/{deck}(card=${card.name}, deck=${deckId})}" method="post">
 								  			<div class="text-center"><button class="btn bg-warning">REMOVE</button></div>
 								  		</form>
 							        </div>

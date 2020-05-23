@@ -1,6 +1,6 @@
 package dny.apps.tiaw.service;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,14 +44,9 @@ public class DeckServiceImpl implements DeckService {
 	
 	@Override
 	public DeckServiceModel findById(String id) {
-		Deck deck = this.deckRepository.findById(id).orElseThrow(() -> new DeckNotFoundException("Deck with given id does not exist!"));
-		DeckServiceModel deckServiceModel = this.modelMapper.map(deck, DeckServiceModel.class);
-		
-		deckServiceModel.setCards(deck.getCards().stream()
-				.map(c->this.modelMapper.map(c, CardServiceModel.class))
-				.collect(Collectors.toSet()));
-		
-		return deckServiceModel;
+		return this.modelMapper.map(this.deckRepository.findById(id)
+				.orElseThrow(() -> new DeckNotFoundException("Deck with given id does not exist!")), 
+					DeckServiceModel.class);
 	}
 
 	@Override
@@ -59,8 +54,9 @@ public class DeckServiceImpl implements DeckService {
 		User user = this.userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));
 		
-		Deck deck = user.getGameAcc().getDecks().stream().filter(d -> d.getName().equals(deckName)).findFirst()
-				.orElseThrow(() -> new DeckNotFoundException("Deck with given name does not exist! Please check the deck name before you add the card into the deck!"));
+		Deck deck = user.getGameAcc().getDecks().stream()
+				.filter(d -> d.getName().equals(deckName)).findFirst()
+				.orElseThrow(() -> new DeckNotFoundException("Deck with given name does not exist!"));
 
 		return this.modelMapper.map(deck, DeckServiceModel.class); 
 	}
@@ -88,10 +84,11 @@ public class DeckServiceImpl implements DeckService {
 			throw new InvalidDeckCreateException("Invalid deck");
 		}
 		
-		Deck deck = this.modelMapper.map(deckServiceModel, Deck.class);
-		deck.setCards(new ArrayList<Card>());
+		deckServiceModel.setCards(new LinkedHashSet<CardServiceModel>());
 		
-		return this.modelMapper.map(this.deckRepository.saveAndFlush(deck), DeckServiceModel.class);
+		this.deckRepository.saveAndFlush(this.modelMapper.map(deckServiceModel, Deck.class));
+		
+		return deckServiceModel;
 	}
 	
 	@Override
@@ -106,10 +103,16 @@ public class DeckServiceImpl implements DeckService {
 	
 	@Override
 	public DeckServiceModel addCard(String deckName, String cardId, String username) {
-		Deck deck = this.modelMapper.map(findByOwner(username, deckName), Deck.class);
+		Deck deck = this.userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"))
+				.getGameAcc().getDecks().stream()
+				.filter(d -> d.getName().equals(deckName))
+				.findFirst()
+				.orElseThrow(() -> new DeckNotFoundException("Deck with given id doest not exist!"));
+		
 		
 		if(deck.getCards().size() == 5) {
-			throw new DeckSizeException("Deck is full");
+			throw new DeckSizeException("Deck is full!");
 		}
 		
 		Card card = this.cardRepository.findById(cardId)
@@ -127,9 +130,11 @@ public class DeckServiceImpl implements DeckService {
 	}
 	
 	@Override
-	public DeckServiceModel removeCard(DeckServiceModel deckServiceModel, CardServiceModel cardServiceModel) {
-		Deck deck = this.modelMapper.map(deckServiceModel, Deck.class);
-		deck.getCards().removeIf(c -> c.getName().equals(cardServiceModel.getName()));
+	public DeckServiceModel removeCard(String deckId, String cardName) {
+		Deck deck = this.deckRepository.findById(deckId)
+				.orElseThrow(() -> new DeckNotFoundException("Deck with given id doest not exist!"));
+		
+		deck.getCards().removeIf(c -> c.getName().equals(cardName));
 		
 		return this.modelMapper.map(this.deckRepository.saveAndFlush(deck), DeckServiceModel.class);
 	}
