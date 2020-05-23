@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import dny.apps.tiaw.domain.entities.Rarity;
 
-public class CardAddBindingModel {
+public class CardCreateBindingModel {
 	private String name;
 	private Integer power;
 	private Integer defense;
@@ -14,7 +14,7 @@ public class CardAddBindingModel {
 	private MultipartFile image = null;
 	private boolean valid;
 
-	public CardAddBindingModel() {
+	public CardCreateBindingModel() {
 	}
 
 	@NotNull

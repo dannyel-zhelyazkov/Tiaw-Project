@@ -2,6 +2,7 @@ package dny.apps.tiaw.service;
 
 import java.util.List;
 
+import dny.apps.tiaw.domain.entities.Card;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
 
 public interface CardService {
@@ -16,4 +17,6 @@ public interface CardService {
 	CardServiceModel updateCard(String id, CardServiceModel cardServiceModel);
 
 	CardServiceModel deleteCard(String id);
+
+	void setPrice(Card card);
 }

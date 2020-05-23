@@ -11,30 +11,28 @@
     	</th:block>
 	</header>
     <main>
-    <div class="container-fluid d-flex">
+    <div class="container-fluid">
             <div class="mt-3 col-md-3">
-            	<h1>Deck: <span th:text="${deck.name}"></span></h1>  	
-            </div>
-            <div class="col-md-3 d-flex flex-row justify-content-between">
-            <th:block th:if="${not defense}">
-            	<form id="set-defense" th:action="@{/set-defense/{id}(id=${deckId})}" method="post">
-		            <button form="set-defense" class="btn btn-success" type="submit" id="button-addon2">DEFENSE</button>
-		        </form>
-		    </th:block>
-		    <th:block th:if="${not attack}">
-	            <form id="set-attack" th:action="@{/set-attack/{id}(id=${deckId})}" method="post">
-		           	<button form="set-attack" class="btn btn-warning" type="submit" id="button-addon2">ATTACK</button>
-		        </form>
-		    </th:block>
-	            <form th:action="@{/delete-deck/{id}(id=${deckId})}" method="post">
-					<button class="btn btn-danger" type="submit" id="button-addon2">REMOVE</button>
-	            </form>
-            </div>
-            <div class="col-md-3">
+            	<h1>Deck: <span th:text="${deck.name}"></span></h1>
             	<hr>
+            	<div class="d-flex justify-content-between">
+            		<th:block th:if="${not defense}">
+	            	<form id="set-defense" th:action="@{/set-defense/{id}(id=${deckId})}" method="post">
+			            <button form="set-defense" class="btn btn-success" type="submit" id="button-addon2">DEFENSE</button>
+			        </form>
+				    </th:block>
+				    <th:block th:if="${not attack}">
+			            <form id="set-attack" th:action="@{/set-attack/{id}(id=${deckId})}" method="post">
+				           	<button form="set-attack" class="btn btn-warning" type="submit" id="button-addon2">ATTACK</button>
+				        </form>
+				    </th:block>
+		            <form th:action="@{/delete-deck/{id}(id=${deckId})}" method="post">
+						<button class="btn btn-danger" type="submit" id="button-addon2">REMOVE</button>
+		            </form>
+            	</div>
+	            <hr>
             </div>
-            <div class="mt-3">
-				<div class="cards-data">
+			<div class="cards-data">
 					<div class="cards-row d-flex justify-content-center">
 					<th:block th:if="${#lists.isEmpty(cards)}">
 	    					<h1 th:text="|No cards in ${deck.name}|"></h1>
@@ -120,8 +118,7 @@
 			        	</div>
 	    			</th:block>
     				</div>
-				</div>            	
-            </div>
+				</div> 
         </div>
     </main>
     <footer>

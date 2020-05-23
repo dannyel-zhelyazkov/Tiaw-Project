@@ -1,26 +1,34 @@
 package dny.apps.tiaw.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.validation.Validator;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import dny.apps.tiaw.domain.entities.Card;
+import dny.apps.tiaw.domain.entities.Rarity;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
-import dny.apps.tiaw.exception.CardNotFoundException;
+import dny.apps.tiaw.error.card.CardNotFoundException;
+import dny.apps.tiaw.error.card.InvalidCardCreateEditException;
+import dny.apps.tiaw.error.rarity.InvalidRarityException;
 import dny.apps.tiaw.repository.CardRepository;
 
 @Service
 public class CardServiceImpl implements CardService{
 	private final CardRepository cardRepository;
 	private final ModelMapper modelMapper;
+	private final Validator validator;
 
 	@Autowired
-	public CardServiceImpl(CardRepository cardRepository, ModelMapper modelMapper) {
+	public CardServiceImpl(CardRepository cardRepository, ModelMapper modelMapper, Validator validator) {
 		this.cardRepository = cardRepository;
 		this.modelMapper = modelMapper;
+		this.validator = validator;
 	}
 
 	@Override
@@ -31,7 +39,14 @@ public class CardServiceImpl implements CardService{
 	}
 	
 	@Override
-	public List<CardServiceModel> findAllByRarity(String rarity) {
+	public List<CardServiceModel> findAllByRarity(String rarity) {		
+		if(!Arrays.asList(Rarity.values()).stream()
+				.map(r -> r.toString())
+				.collect(Collectors.toList())
+				.contains(rarity)) {
+			throw new InvalidRarityException("Invalid rarity!");
+		}
+		
 		return this.cardRepository.findAll().stream()
 				.filter(c-> c.getRarity().toString().equals(rarity))
 				.map(c->this.modelMapper.map(c, CardServiceModel.class))
@@ -46,9 +61,7 @@ public class CardServiceImpl implements CardService{
 	}
 	
 	@Override
-	public CardServiceModel createCard(CardServiceModel cardServiceModel) {
-		Card card = this.modelMapper.map(cardServiceModel, Card.class);
-		
+	public void setPrice(Card card) {
 		if(card.getRarity().toString().equals("Common")) {
 			card.setPrice(10);
 		} else if(card.getRarity().toString().equals("Uncommon")) {
@@ -62,13 +75,31 @@ public class CardServiceImpl implements CardService{
 		} else if(card.getRarity().toString().equals("Mythic")) {
 			card.setPrice(340);
 		}
+	}
+	
+	@Override
+	public CardServiceModel createCard(CardServiceModel cardServiceModel) {
+		
+		if(!this.validator.validate(cardServiceModel).isEmpty()) {
+			throw new InvalidCardCreateEditException("Invalid card");
+		}
+		
+		Card card = this.modelMapper.map(cardServiceModel, Card.class);
+		
+		setPrice(card);
 		
 		return this.modelMapper.map(this.cardRepository.saveAndFlush(card), CardServiceModel.class);
 	}
 
 	@Override
 	public CardServiceModel updateCard(String id, CardServiceModel cardServiceModel) {
-		Card card = this.cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException("Card with given id does not exist!"));
+		
+		if(!this.validator.validate(cardServiceModel).isEmpty()) {
+			throw new InvalidCardCreateEditException("Invalid card");
+		}
+		
+		Card card = this.cardRepository.findById(id)
+				.orElseThrow(() -> new CardNotFoundException("Card with given id does not exist!"));
 		
 		card.setName(cardServiceModel.getName());
 		card.setPower(cardServiceModel.getPower());
@@ -79,7 +110,9 @@ public class CardServiceImpl implements CardService{
 
 	@Override
 	public CardServiceModel deleteCard(String id) {
-		Card card = this.cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException("Card with given id does not exist!"));
+		Card card = this.cardRepository.findById(id)
+				.orElseThrow(() -> new CardNotFoundException("Card with given id does not exist!"));
+		
         this.cardRepository.delete(card);
 
         return this.modelMapper.map(card, CardServiceModel.class);

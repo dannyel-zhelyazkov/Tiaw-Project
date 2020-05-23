@@ -3,15 +3,17 @@
     margin: 0;
 }
 
-boby {
-	width: fit-content;
-    height: fit-content;
+html, body {
+	width: 100%;
+	height: 100%;
+	min-height: 100%;
 }
 
 .container-fluid {
     background-color: burlywood;
     display: flex;
     flex-direction: column;
+    height: 861px;
 }
 
 .cards {
@@ -79,19 +81,11 @@ boby {
     font-size: 2em;
 }
 
-.profile-view {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-}
-
-.profile-picture img {
-    width: 20em;
-    height: 20em;
-}
-
-.prifile-username {
-    text-align: center;
+footer {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	left: 0;
 }
 
 footer div p {
@@ -102,6 +96,3 @@ footer div p {
 .logout button {
 	border: none;
 }
-
-
-

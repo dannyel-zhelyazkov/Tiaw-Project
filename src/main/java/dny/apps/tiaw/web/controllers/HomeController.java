@@ -8,16 +8,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import dny.apps.tiaw.service.UserService;
+import dny.apps.tiaw.service.GameAccService;
 import dny.apps.tiaw.web.annotations.PageTitle;
 
 @Controller
 public class HomeController extends BaseController {
-	private final UserService userService;
+	private final GameAccService gameAccService;
 	
 	@Autowired
-	public HomeController(UserService userService) {
-		this.userService = userService;
+	public HomeController(GameAccService gameAccService) {
+		this.gameAccService = gameAccService;
 	}
 	
 	@GetMapping("/")
@@ -31,7 +31,7 @@ public class HomeController extends BaseController {
 	@PreAuthorize("isAuthenticated()")
 	@PageTitle("Home")
 	public ModelAndView home(Principal principal, ModelAndView modelAndView) {
-		modelAndView.addObject("gold", this.userService.findUserByUsername(principal.getName()).getGameAcc().getGold());
+		modelAndView.addObject("acc", this.gameAccService.findByUser(principal.getName()));
 		return super.view("home", modelAndView);
 	}
 }

@@ -12,15 +12,15 @@
 	</header>
     <main>
     	<div class="container-fluid">
-    		<div class="profile-view">
+    		<div class="profile-view mx-auto m-3">
     			<div class="image">
-    				
+    				<img alt="" src="https://www.w3schools.com/w3css/img_avatar3.png">
     			</div>
-    			<div class="row">
-    				<span th:text="${model.username}"></span>
+    			<div class="text-center">
+    				<span class="h3" th:text="${model.username}"></span>
     			</div>
-    			<div class="row">
-    				<span th:text="${model.email}"></span>
+    			<div class="text-center">
+    				<span class="h3" th:text="${model.email}"></span>
     			</div>
     		</div>  		
     	</div>

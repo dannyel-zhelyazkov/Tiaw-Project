@@ -24,9 +24,10 @@ import dny.apps.tiaw.domain.models.binding.DeckAddBindingModel;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
 import dny.apps.tiaw.domain.models.service.DeckServiceModel;
 import dny.apps.tiaw.domain.models.view.DeckViewModel;
-import dny.apps.tiaw.exception.DeckContainsCardException;
-import dny.apps.tiaw.exception.DeckNotFoundException;
-import dny.apps.tiaw.exception.DeckSizeException;
+import dny.apps.tiaw.error.deck.DeckContainsCardException;
+import dny.apps.tiaw.error.deck.DeckNotFoundException;
+import dny.apps.tiaw.error.deck.DeckSizeException;
+import dny.apps.tiaw.error.deck.InvalidDeckCreateException;
 import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
 import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.DeckService;
@@ -126,7 +127,7 @@ public class DeckController extends BaseController {
 	
 	@PostMapping("/remove-from-deck/{card}/{deck}")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView removeCardFromDeck(@PathVariable("card") String card, @PathVariable("deck") String deck) {
+	public ModelAndView removeCardFromDeck(@PathVariable String card, @PathVariable String deck) {
 		DeckServiceModel deckServiceModel = this.modelMapper.map(this.deckService
 				.findById(deck), DeckServiceModel.class);
 				
@@ -145,17 +146,8 @@ public class DeckController extends BaseController {
 		return modelAndView;
 	}
 	
-	@ExceptionHandler(DeckContainsCardException.class)
-	public ModelAndView deckContainsCard(DeckContainsCardException ex) {
-		ModelAndView modelAndView = new ModelAndView("/deck/deck-error");
-		
-		modelAndView.addObject("message", ex.getMessage());
-		
-		return modelAndView;
-	}
-	
-	@ExceptionHandler(DeckSizeException.class)
-	public ModelAndView fullDeck(DeckSizeException ex) {
+	@ExceptionHandler({DeckSizeException.class, DeckContainsCardException.class, InvalidDeckCreateException.class, DeckSizeException.class})
+	public ModelAndView fullDeck(Throwable ex) {
 		ModelAndView modelAndView = new ModelAndView("/deck/deck-error");
 		
 		modelAndView.addObject("message", ex.getMessage());

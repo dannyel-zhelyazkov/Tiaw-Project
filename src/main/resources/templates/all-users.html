@@ -23,7 +23,7 @@
 						<th scope="col">Action</th>
 					</tr>
 				</thead>
-				<th:block  th:each="user, iter : ${users}">
+				<th:block th:each="user, iter : ${users}">
 				<tbody>
 					<tr>
 						<th scope="row" th:text="${iter.index + 1}"></th>

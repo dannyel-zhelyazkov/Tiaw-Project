@@ -1,4 +1,4 @@
-package dny.apps.tiaw.exception;
+package dny.apps.tiaw.error.deck;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

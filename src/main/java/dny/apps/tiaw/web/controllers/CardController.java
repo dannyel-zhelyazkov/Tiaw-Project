@@ -22,14 +22,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import dny.apps.tiaw.domain.models.binding.CardAddBindingModel;
+import dny.apps.tiaw.domain.models.binding.CardCreateBindingModel;
 import dny.apps.tiaw.domain.models.binding.CardDeleteBindingModel;
 import dny.apps.tiaw.domain.models.binding.CardEditBindingModel;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
 import dny.apps.tiaw.domain.models.service.CloudinaryService;
 import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
 import dny.apps.tiaw.domain.models.view.CardViewModel;
-import dny.apps.tiaw.exception.CardNotFoundException;
+import dny.apps.tiaw.error.card.CardNotFoundException;
+import dny.apps.tiaw.error.card.InvalidCardCreateEditException;
+import dny.apps.tiaw.error.rarity.InvalidRarityException;
 import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.UserService;
 import dny.apps.tiaw.web.annotations.PageTitle;
@@ -56,13 +58,13 @@ public class CardController extends BaseController {
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
 	@PageTitle("Add Card")
 	public ModelAndView addCardGet(ModelAndView modelAndView) {
-		modelAndView.addObject("card", new CardAddBindingModel());
+		modelAndView.addObject("card", new CardCreateBindingModel());
 		return super.view("/card/add-card", modelAndView);
 	}
 
 	@PostMapping("/add")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
-	public ModelAndView addCardPost(@Valid @ModelAttribute("card") CardAddBindingModel model, BindingResult reuslt) throws IOException {
+	public ModelAndView addCardPost(@Valid @ModelAttribute("card") CardCreateBindingModel model, BindingResult reuslt) throws IOException {
 		if(reuslt.hasErrors()) {
 			return super.view("/card/add-card");
 		}
@@ -181,6 +183,16 @@ public class CardController extends BaseController {
 		}
 
 		return this.cardService.findAllByRarity(rarity).stream()
+				.filter(card -> {
+					Iterator<CardServiceModel> cards = gameAccServiceModel.getCards().iterator();
+					while(cards.hasNext()) {
+						if(cards.next().getName().equals(card.getName())) {
+							return false;
+						}
+					}
+					
+					return true;
+				})
 				.map(card -> this.modelMapper.map(card, CardViewModel.class))
 				.collect(Collectors.toList());
 	}
@@ -193,9 +205,9 @@ public class CardController extends BaseController {
 				.collect(Collectors.toList());
 	}
 	
-	@ExceptionHandler(CardNotFoundException.class)
-	public ModelAndView cardNotFound(CardNotFoundException ex) {
-		ModelAndView modelAndView = new ModelAndView("/card/not-found");
+	@ExceptionHandler({CardNotFoundException.class, InvalidCardCreateEditException.class, InvalidRarityException.class})
+	public ModelAndView cardNotFound(Throwable ex) {
+		ModelAndView modelAndView = new ModelAndView("/card/card-error");
 		
 		modelAndView.addObject("message", ex.getMessage());
 		

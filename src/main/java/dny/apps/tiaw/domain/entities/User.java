@@ -6,7 +6,6 @@ import javax.persistence.*;
 
 import java.util.Set;
 
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity implements UserDetails {

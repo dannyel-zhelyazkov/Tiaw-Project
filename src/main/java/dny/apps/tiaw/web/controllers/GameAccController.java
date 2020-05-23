@@ -19,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
 import dny.apps.tiaw.domain.models.view.GameAccFightViewModel;
-import dny.apps.tiaw.exception.BuyCardGetException;
+import dny.apps.tiaw.error.card.BuyCardGetException;
 import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.DeckService;
 import dny.apps.tiaw.service.GameAccService;

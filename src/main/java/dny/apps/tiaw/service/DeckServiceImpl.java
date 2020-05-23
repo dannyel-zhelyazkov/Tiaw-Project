@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.Validator;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,11 +15,12 @@ import dny.apps.tiaw.domain.entities.Deck;
 import dny.apps.tiaw.domain.entities.User;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
 import dny.apps.tiaw.domain.models.service.DeckServiceModel;
-import dny.apps.tiaw.exception.CardNotFoundException;
-import dny.apps.tiaw.exception.DeckContainsCardException;
-import dny.apps.tiaw.exception.DeckNotFoundException;
-import dny.apps.tiaw.exception.DeckSizeException;
-import dny.apps.tiaw.exception.UserNotFoundException;
+import dny.apps.tiaw.error.card.CardNotFoundException;
+import dny.apps.tiaw.error.deck.DeckContainsCardException;
+import dny.apps.tiaw.error.deck.DeckNotFoundException;
+import dny.apps.tiaw.error.deck.DeckSizeException;
+import dny.apps.tiaw.error.deck.InvalidDeckCreateException;
+import dny.apps.tiaw.error.user.UserNotFoundException;
 import dny.apps.tiaw.repository.CardRepository;
 import dny.apps.tiaw.repository.DeckRepository;
 import dny.apps.tiaw.repository.UserRepository;
@@ -28,13 +31,15 @@ public class DeckServiceImpl implements DeckService {
 	private final CardRepository cardRepository;
 	private final UserRepository userRepository;
 	private final ModelMapper modelMapper;
+	private final Validator validator;
 	
 	@Autowired
-	public DeckServiceImpl(DeckRepository deckRepository, CardRepository cardRepository, UserRepository userRepository, ModelMapper modelMapper) {
+	public DeckServiceImpl(DeckRepository deckRepository, CardRepository cardRepository, UserRepository userRepository, ModelMapper modelMapper,  Validator validator) {
 		this.deckRepository = deckRepository;
 		this.cardRepository = cardRepository;
 		this.userRepository = userRepository;
 		this.modelMapper = modelMapper;
+		this.validator = validator;
 	}
 	
 	@Override
@@ -78,6 +83,11 @@ public class DeckServiceImpl implements DeckService {
 	
 	@Override
 	public DeckServiceModel createDeck(DeckServiceModel deckServiceModel) {
+		
+		if(!this.validator.validate(deckServiceModel).isEmpty()) {
+			throw new InvalidDeckCreateException("Invalid deck");
+		}
+		
 		Deck deck = this.modelMapper.map(deckServiceModel, Deck.class);
 		deck.setCards(new ArrayList<Card>());
 		

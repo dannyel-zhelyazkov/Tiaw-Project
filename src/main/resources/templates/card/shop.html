@@ -82,10 +82,10 @@
 										<span class="bg-danger rounded p-1">Attack:	${card.power}</span>
 										<span class="bg-success rounded p-1">Defense: ${card.defense}</span></p>
 									<hr>
-									<form class="text-center" action="/buy-card/${card.id}" method="post">
-										<div class="text-center"><button disabled="disabled" class="btn btn-secondary">$${card.price}</button></div>
+									<div class="text-center">
+										<button disabled="disabled" class="btn btn-secondary">$${card.price}</button>
 										<small id="passwordHelpBlock" class="form-text text-danger">Not enough gold</small>
-									</form>
+									</div>
 							</div>
 						</div>`;
 			}
