@@ -178,7 +178,7 @@ class CardServiceTest extends BaseServiceTest {
 			.thenReturn(Optional.empty());
 		
 		assertThrows(CardNotFoundException.class, () -> 
-		this.service.updateCard("CARD_ID", cardEditServiceModel)
+			this.service.updateCard("WRONG_ID", cardEditServiceModel)
 		);
 	}
 	
