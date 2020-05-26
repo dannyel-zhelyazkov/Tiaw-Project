@@ -4,8 +4,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.Validator;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +11,7 @@ import org.springframework.stereotype.Service;
 import dny.apps.tiaw.domain.entities.Card;
 import dny.apps.tiaw.domain.entities.Deck;
 import dny.apps.tiaw.domain.entities.User;
-import dny.apps.tiaw.domain.models.service.CardServiceModel;
+import dny.apps.tiaw.domain.models.service.DeckCreateServiceModel;
 import dny.apps.tiaw.domain.models.service.DeckServiceModel;
 import dny.apps.tiaw.error.card.CardNotFoundException;
 import dny.apps.tiaw.error.deck.DeckContainsCardException;
@@ -23,23 +21,28 @@ import dny.apps.tiaw.error.deck.InvalidDeckCreateException;
 import dny.apps.tiaw.error.user.UserNotFoundException;
 import dny.apps.tiaw.repository.CardRepository;
 import dny.apps.tiaw.repository.DeckRepository;
+import dny.apps.tiaw.repository.GameAccRepository;
 import dny.apps.tiaw.repository.UserRepository;
+import dny.apps.tiaw.validation.deck.DeckValidationService;
 
 @Service
 public class DeckServiceImpl implements DeckService {
 	private final DeckRepository deckRepository;
 	private final CardRepository cardRepository;
 	private final UserRepository userRepository;
+	private final GameAccRepository gameAccRepository;
 	private final ModelMapper modelMapper;
-	private final Validator validator;
+	private final DeckValidationService dekcValidationService;
 	
 	@Autowired
-	public DeckServiceImpl(DeckRepository deckRepository, CardRepository cardRepository, UserRepository userRepository, ModelMapper modelMapper,  Validator validator) {
+	public DeckServiceImpl(DeckRepository deckRepository, CardRepository cardRepository, UserRepository userRepository, 
+			GameAccRepository gameAccRepository, ModelMapper modelMapper,  DeckValidationService dekcValidationService) {
 		this.deckRepository = deckRepository;
 		this.cardRepository = cardRepository;
 		this.userRepository = userRepository;
+		this.gameAccRepository = gameAccRepository;
 		this.modelMapper = modelMapper;
-		this.validator = validator;
+		this.dekcValidationService = dekcValidationService;
 	}
 	
 	@Override
@@ -78,26 +81,54 @@ public class DeckServiceImpl implements DeckService {
 	}
 	
 	@Override
-	public DeckServiceModel createDeck(DeckServiceModel deckServiceModel) {
+	public DeckServiceModel createDeck(DeckCreateServiceModel deckCreateServiceModel, String username) {
 		
-		if(!this.validator.validate(deckServiceModel).isEmpty()) {
-			throw new InvalidDeckCreateException("Invalid deck");
+		if(!this.dekcValidationService.isValid(deckCreateServiceModel)) {
+			throw new InvalidDeckCreateException("Invalid deck!");
 		}
 		
-		deckServiceModel.setCards(new LinkedHashSet<CardServiceModel>());
+		User user = this.userRepository.findByUsername(username)
+			.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));
 		
-		this.deckRepository.saveAndFlush(this.modelMapper.map(deckServiceModel, Deck.class));
+		Deck deck = this.modelMapper.map(deckCreateServiceModel, Deck.class);
+		deck.setCards(new LinkedHashSet<>());
 		
-		return deckServiceModel;
+		user.getGameAcc().getDecks().add(deck);
+		
+		this.gameAccRepository.saveAndFlush(user.getGameAcc());
+		
+		return this.modelMapper.map(deck, DeckServiceModel.class);
 	}
 	
 	@Override
-	public DeckServiceModel deleteDeck(String id) {
+	public DeckServiceModel deleteDeck(String id, String username) {
+		User user = this.userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));
+
 		Deck deck = this.deckRepository.findById(id)
 				.orElseThrow(() -> new DeckNotFoundException("Deck with given id does not exist!"));
 		
-		this.deckRepository.delete(deck);
+		user.getGameAcc().getDecks().removeIf(d -> {
+			if(d.getId().equals(deck.getId())) {
+				d.getCards().clear();
+				return true;
+			}
+			
+			return false;
+		});
 		
+		if(user.getGameAcc().getDefenseDeck() != null && user.getGameAcc().getDefenseDeck().getId().equals(deck.getId())) {
+			user.getGameAcc().setDefenseDeck(null);
+		}
+		
+		if(user.getGameAcc().getAttackDeck() != null && user.getGameAcc().getAttackDeck().getId().equals(deck.getId())) {
+			user.getGameAcc().setAttackDeck(null);
+		}
+		
+		this.gameAccRepository.saveAndFlush(user.getGameAcc());
+		
+		this.deckRepository.delete(deck);
+
 		return this.modelMapper.map(deck, DeckServiceModel.class);
 	}
 	
@@ -108,7 +139,7 @@ public class DeckServiceImpl implements DeckService {
 				.getGameAcc().getDecks().stream()
 				.filter(d -> d.getName().equals(deckName))
 				.findFirst()
-				.orElseThrow(() -> new DeckNotFoundException("Deck with given id doest not exist!"));
+				.orElseThrow(() -> new DeckNotFoundException("Deck with given name doest not exist!"));
 		
 		
 		if(deck.getCards().size() == 5) {

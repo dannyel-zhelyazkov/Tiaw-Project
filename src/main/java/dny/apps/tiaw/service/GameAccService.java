@@ -13,13 +13,9 @@ public interface GameAccService {
 	
 	GameAccServiceModel buyCard(String cardId, String username);
 	
-	GameAccServiceModel addDeck(String deckId, String username);
+	GameAccServiceModel setDefenseDeck(String deckId, String username);
 	
-	GameAccServiceModel setDefense(String deckId, String username);
-	
-	GameAccServiceModel setAttack(String deckId, String username);
-	
-	GameAccServiceModel removeDeck(String deck, String username);
+	GameAccServiceModel setAttackDeck(String deckId, String username);
 	
 	GameAccServiceModel wonFight(String defender, String attacker, String ubp, String ebp);
 	

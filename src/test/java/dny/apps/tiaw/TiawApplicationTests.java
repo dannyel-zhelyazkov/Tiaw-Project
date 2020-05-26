@@ -9,5 +9,4 @@ class TiawApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

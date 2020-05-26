@@ -2,6 +2,7 @@ package dny.apps.tiaw.service;
 
 import java.util.Set;
 
+import dny.apps.tiaw.domain.models.service.DeckCreateServiceModel;
 import dny.apps.tiaw.domain.models.service.DeckServiceModel;
 
 public interface DeckService {
@@ -13,9 +14,9 @@ public interface DeckService {
 
 	Set<DeckServiceModel> findAllDecksByOwner(String owner);
 	
-	DeckServiceModel createDeck(DeckServiceModel deckServiceModel);
+	DeckServiceModel createDeck(DeckCreateServiceModel deckCreateServiceModel, String username);
 	
-	DeckServiceModel deleteDeck(String id);
+	DeckServiceModel deleteDeck(String id, String username);
 	
 	DeckServiceModel addCard(String deckName, String cardId, String username);
 	

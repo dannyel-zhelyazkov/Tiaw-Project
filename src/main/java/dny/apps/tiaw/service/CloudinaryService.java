@@ -1,4 +1,4 @@
-package dny.apps.tiaw.domain.models.service;
+package dny.apps.tiaw.service;
 
 import java.io.IOException;
 

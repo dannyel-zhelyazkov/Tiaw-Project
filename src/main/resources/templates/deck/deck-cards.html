@@ -26,7 +26,7 @@
 				           	<button form="set-attack" class="btn btn-warning" type="submit" id="button-addon2">ATTACK</button>
 				        </form>
 				    </th:block>
-		            <form th:action="@{/delete-deck/{id}(id=${deckId})}" method="post">
+		            <form th:action="@{/decks/remove-deck/{id}(id=${deckId})}" method="post">
 						<button class="btn btn-danger" type="submit" id="button-addon2">REMOVE</button>
 		            </form>
             	</div>

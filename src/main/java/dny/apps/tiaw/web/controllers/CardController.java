@@ -25,14 +25,16 @@ import org.springframework.web.servlet.ModelAndView;
 import dny.apps.tiaw.domain.models.binding.CardCreateBindingModel;
 import dny.apps.tiaw.domain.models.binding.CardDeleteBindingModel;
 import dny.apps.tiaw.domain.models.binding.CardEditBindingModel;
+import dny.apps.tiaw.domain.models.service.CardCreateServiceModel;
+import dny.apps.tiaw.domain.models.service.CardEditServiceModel;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
-import dny.apps.tiaw.domain.models.service.CloudinaryService;
 import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
 import dny.apps.tiaw.domain.models.view.CardViewModel;
 import dny.apps.tiaw.error.card.CardNotFoundException;
 import dny.apps.tiaw.error.card.InvalidCardCreateEditException;
-import dny.apps.tiaw.error.rarity.InvalidRarityException;
+import dny.apps.tiaw.error.rarity.RarityNotFoundException;
 import dny.apps.tiaw.service.CardService;
+import dny.apps.tiaw.service.CloudinaryService;
 import dny.apps.tiaw.service.UserService;
 import dny.apps.tiaw.web.annotations.PageTitle;
 
@@ -69,10 +71,10 @@ public class CardController extends BaseController {
 			return super.view("/card/add-card");
 		}
 		
-		CardServiceModel cardServiceModel = this.modelMapper.map(model, CardServiceModel.class);
-		cardServiceModel.setUrl(this.cloudinaryService.uploadImage(model.getImage()));
+		CardCreateServiceModel cardCreateServiceModel = this.modelMapper.map(model, CardCreateServiceModel.class);
+		cardCreateServiceModel.setUrl(this.cloudinaryService.uploadImage(model.getImage()));
 		
-		this.cardService.createCard(cardServiceModel);
+		this.cardService.createCard(cardCreateServiceModel);
 
 		return super.redirect("/cards/all");
 	}
@@ -112,7 +114,7 @@ public class CardController extends BaseController {
 			return super.view("/card/edit-card", modelAndView);
 		}
 		
-		this.cardService.updateCard(id, this.modelMapper.map(model, CardServiceModel.class));
+		this.cardService.updateCard(id, this.modelMapper.map(model, CardEditServiceModel.class));
 
 		return super.redirect("/cards/all");
 	}
@@ -156,7 +158,7 @@ public class CardController extends BaseController {
 	@PreAuthorize("isAuthenticated()")
 	@PageTitle("Shop")
 	public ModelAndView shop(ModelAndView modelAndView, Principal principal) {
-		modelAndView.addObject("gold", this.userService.findUserByUsername(principal.getName()).getGameAcc().getGold());
+		modelAndView.addObject("gold", this.userService.findByUsername(principal.getName()).getGameAcc().getGold());
 		return super.view("/card/shop", modelAndView);
 	}
 
@@ -164,7 +166,7 @@ public class CardController extends BaseController {
 	@ResponseBody
 	public List<CardViewModel> fetchByRarityGet(@PathVariable String rarity, Principal principal) {
 		GameAccServiceModel gameAccServiceModel = this.modelMapper
-				.map(this.userService.findUserByUsername(principal.getName()).getGameAcc(), GameAccServiceModel.class);
+				.map(this.userService.findByUsername(principal.getName()).getGameAcc(), GameAccServiceModel.class);
 		
 		if (rarity.equals("all")) {
 			return this.cardService.findAll().stream()
@@ -200,12 +202,12 @@ public class CardController extends BaseController {
 	@GetMapping("/user-cards/{user}")
 	@ResponseBody
 	public List<CardViewModel> fetchByUserGet(@PathVariable String user) {
-		return this.userService.findUserByUsername(user).getGameAcc().getCards().stream()
+		return this.userService.findByUsername(user).getGameAcc().getCards().stream()
 				.map(c -> this.modelMapper.map(c, CardViewModel.class))
 				.collect(Collectors.toList());
 	}
 	
-	@ExceptionHandler({CardNotFoundException.class, InvalidCardCreateEditException.class, InvalidRarityException.class})
+	@ExceptionHandler({CardNotFoundException.class, InvalidCardCreateEditException.class, RarityNotFoundException.class})
 	public ModelAndView cardNotFound(Throwable ex) {
 		ModelAndView modelAndView = new ModelAndView("/card/card-error");
 		

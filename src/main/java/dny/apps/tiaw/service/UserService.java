@@ -1,15 +1,16 @@
 package dny.apps.tiaw.service;
 
-import dny.apps.tiaw.domain.models.service.UserServiceModel;
-
 import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserService extends UserDetailsService {
-    UserServiceModel registerUser(UserServiceModel userServiceModel);
+import dny.apps.tiaw.domain.models.service.UserRegisterServiceModel;
+import dny.apps.tiaw.domain.models.service.UserServiceModel;
 
-    UserServiceModel findUserByUsername(String username);
+public interface UserService extends UserDetailsService {
+    UserServiceModel registerUser(UserRegisterServiceModel userRegisterServiceModel);
+
+    UserServiceModel findByUsername(String username);
 
     UserServiceModel editUserProfile(UserServiceModel userServiceModel, String oldPassword);
 

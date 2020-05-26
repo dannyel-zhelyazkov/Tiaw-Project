@@ -9,17 +9,15 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import dny.apps.tiaw.domain.entities.Card;
 import dny.apps.tiaw.domain.entities.Deck;
 import dny.apps.tiaw.domain.entities.GameAcc;
 import dny.apps.tiaw.domain.entities.User;
+import dny.apps.tiaw.domain.models.service.DeckCreateServiceModel;
 import dny.apps.tiaw.domain.models.service.DeckServiceModel;
 import dny.apps.tiaw.error.deck.DeckNotFoundException;
 import dny.apps.tiaw.error.user.UserNotFoundException;
@@ -27,9 +25,7 @@ import dny.apps.tiaw.repository.CardRepository;
 import dny.apps.tiaw.repository.DeckRepository;
 import dny.apps.tiaw.repository.UserRepository;
 
-@SpringBootTest
-@RunWith(SpringRunner.class)
-class DeckServiceImplTest {
+class DeckServiceTest extends BaseServiceTest {
 	@Autowired
 	private DeckService service;
 	
@@ -170,47 +166,92 @@ class DeckServiceImplTest {
 
 	@Test
 	void testCreateDeck() {		
-		DeckServiceModel deckServiceModel = new DeckServiceModel() {{
-			setName("Deck");
-		}};
-						
-		DeckServiceModel actual = this.service.createDeck(deckServiceModel);
-		
-		Mockito.verify(this.deckRepository, Mockito.times(1))
-			.saveAndFlush(any(Deck.class));
-		
-		assertNotNull(deckServiceModel.getCards());
-		assertNotNull(actual.getCards());
-		assertEquals(deckServiceModel.getName(), actual.getName());
-	}
-
-	@Test
-	void testDeleteDeck() {
-		Optional<Deck> deck = Optional.of(new Deck() {{
-			setId("DECK_ID");
-			setName("DECK_NAME");
-			setCards(new HashSet<Card>() {{
-				add(new Card() {{
-					setName("CARD_NAME");
+		Optional<User> user = Optional.of(new User() {{
+			setUsername("USER");
+			setGameAcc(new GameAcc() {{
+				setDecks(new LinkedHashSet<>() {{
+					add(new Deck() {{
+						setName("DECK_NAME");
+					}});
+					add(new Deck() {{
+						setName("DECK_NAME2");
+					}});
+					add(new Deck() {{
+						setName("DECK_NAME3");
+					}});
 				}});
 			}});
 		}});
 		
-		Mockito.when(this.deckRepository.findById("DECK_ID"))
+		DeckCreateServiceModel deckCreateServiceModel = new DeckCreateServiceModel() {{
+			setName("Deck");
+		}};
+						
+		Mockito.when(this.userRepository.findByUsername("USER"))
+			.thenReturn(user);
+		
+		DeckServiceModel actual = this.service.createDeck(deckCreateServiceModel, "USER");
+		
+		Mockito.verify(this.deckRepository, Mockito.times(1))
+			.saveAndFlush(any(Deck.class));
+		
+		assertNotNull(actual.getCards());
+		assertEquals(deckCreateServiceModel.getName(), actual.getName());
+		
+		Exception userNotFoundException = assertThrows(UserNotFoundException.class, () ->
+			this.service.createDeck(deckCreateServiceModel, "WRONG_USER")
+		);
+		
+		assertEquals(userNotFoundException.getMessage(), "User with given name does not exist!");
+	}
+
+	@Test
+	void testDeleteDeck() {
+		Optional<User> user = Optional.of(new User() {{
+			setUsername("USER");
+			setGameAcc(new GameAcc() {{
+				setDecks(new LinkedHashSet<>() {{
+					add(new Deck() {{
+						setId("DECK_ID2");
+						setName("DECK_NAME2");
+						setCards(new LinkedHashSet<>() {{
+							add(new Card());
+						}});
+					}});
+				}});
+				setDefenseDeck(this.getDecks().iterator().next());
+			}});
+		}});
+		
+		Optional<Deck> deck = Optional.of(new Deck() {{
+			setId("DECK_ID2");
+			setName("DECK_NAME2");
+		}});
+		
+		Mockito.when(this.userRepository.findByUsername("USER"))
+			.thenReturn(user);
+		
+		Mockito.when(this.deckRepository.findById("DECK_ID2"))
 			.thenReturn(deck);
 		
-		DeckServiceModel deckServiceModel = this.service.deleteDeck("DECK_ID");
+		this.service.deleteDeck("DECK_ID2", "USER");
 		
-		assertEquals(deck.get().getName(), deckServiceModel.getName());
+		assertEquals(user.get().getGameAcc().getDecks().iterator().next().getCards().size(), 0);
+		assertNull(user.get().getGameAcc().getDefenseDeck());
 		
 		Mockito.verify(this.deckRepository, Mockito.times(1))
 			.delete(deck.get());
 		
-		Exception exception = assertThrows(DeckNotFoundException.class, () ->
-			this.service.deleteDeck("WRONG_ID")
+		Exception deckNotFoundException = assertThrows(DeckNotFoundException.class, () ->
+			this.service.deleteDeck("WRONG_ID", "USER")
 		);
 		
-		assertEquals(exception.getMessage(), "Deck with given id does not exist!");
+		Exception userNotFoundException = assertThrows(UserNotFoundException.class, () ->
+			this.service.deleteDeck("ID", "WRONG_USER")
+	    );
+		
+		assertEquals(deckNotFoundException.getMessage(), "Deck with given id does not exist!");
+		assertEquals(userNotFoundException.getMessage(), "User with given name does not exist!");
 	}
 
 	@Test

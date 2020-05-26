@@ -2,15 +2,13 @@ package dny.apps.tiaw.domain.models.service;
 
 import java.util.Set;
 
-public class UserServiceModel extends BaseServiceModel {
+public class UserRegisterServiceModel {
 	private String username;
 	private String password;
+	private String confirmPasswrod;
 	private String email;
-	private GameAccServiceModel gameAcc;
 	
-	private Set<RoleServiceModel> authorities;
-	
-	public UserServiceModel() {}
+	public UserRegisterServiceModel() {}
 	
 	public String getUsername() {
 		return username;
@@ -30,16 +28,15 @@ public class UserServiceModel extends BaseServiceModel {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public GameAccServiceModel getGameAcc() {
-		return gameAcc;
+	public String getConfirmPasswrod() {
+		return confirmPasswrod;
 	}
-	public void setGameAcc(GameAccServiceModel gameAcc) {
-		this.gameAcc = gameAcc;
+	public void setConfirmPasswrod(String confirmPasswrod) {
+		this.confirmPasswrod = confirmPasswrod;
 	}
-	public Set<RoleServiceModel> getAuthorities() {
-		return authorities;
-	}
-	public void setAuthorities(Set<RoleServiceModel> authorities) {
-		this.authorities = authorities;
+
+	public void setAuthorities(Set<RoleServiceModel> findAllRoles) {
+		// TODO Auto-generated method stub
+		
 	}
 }

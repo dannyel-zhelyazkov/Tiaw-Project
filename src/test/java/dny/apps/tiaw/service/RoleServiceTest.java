@@ -8,21 +8,16 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import dny.apps.tiaw.domain.entities.Role;
 import dny.apps.tiaw.domain.models.service.RoleServiceModel;
 import dny.apps.tiaw.error.role.RoleNotFoundException;
 import dny.apps.tiaw.repository.RoleRepository;
 
-@SpringBootTest
-@RunWith(SpringRunner.class)
-class RoleServiceImplTest {
+class RoleServiceTest extends BaseServiceTest {
 	@Autowired
 	private RoleService service;
 	

@@ -81,7 +81,7 @@ public class GameAccServiceImpl implements GameAccService {
 					return gameAccServiceModel;
 				}).collect(Collectors.toList());
 	}
-
+	
 	@Override
 	public GameAccServiceModel buyCard(String cardId, String username) {
 		User user = this.userRepository.findByUsername(username)
@@ -99,18 +99,7 @@ public class GameAccServiceImpl implements GameAccService {
 	}
 
 	@Override
-	public GameAccServiceModel addDeck(String deckId, String username) {
-		User user = this.userRepository.findByUsername(username)
-				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));
-		GameAcc gameAcc = user.getGameAcc();
-		gameAcc.getDecks().add(this.deckRepository.findById(deckId)
-				.orElseThrow(() -> new DeckNotFoundException("Deck with given id does not exist!")));
-
-		return this.modelMapper.map(this.gameAccRepository.saveAndFlush(gameAcc), GameAccServiceModel.class);
-	}
-
-	@Override
-	public GameAccServiceModel setDefense(String deckId, String username) {
+	public GameAccServiceModel setDefenseDeck(String deckId, String username) {
 		User user = this.userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));
 
@@ -130,7 +119,7 @@ public class GameAccServiceImpl implements GameAccService {
 	}
 
 	@Override
-	public GameAccServiceModel setAttack(String deckId, String username) {
+	public GameAccServiceModel setAttackDeck(String deckId, String username) {
 		User user = this.userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));
 
@@ -146,29 +135,6 @@ public class GameAccServiceImpl implements GameAccService {
 		gameAcc.setAttackDeck(deck);
 
 		this.deckRepository.saveAndFlush(deck);
-
-		return this.modelMapper.map(this.gameAccRepository.saveAndFlush(gameAcc), GameAccServiceModel.class);
-	}
-
-	@Override
-	public GameAccServiceModel removeDeck(String id, String username) {
-		User user = this.userRepository.findByUsername(username)
-				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));
-
-		Deck deck = this.deckRepository.findById(id)
-				.orElseThrow(() -> new DeckNotFoundException("Deck with given id does not exist!"));
-		
-		GameAcc gameAcc = user.getGameAcc();
-
-		if (gameAcc.getDefenseDeck() != null && gameAcc.getDefenseDeck().getId().equals(id)) {
-			gameAcc.setDefenseDeck(null);
-		}
-
-		if (gameAcc.getAttackDeck() != null && gameAcc.getAttackDeck().getId().equals(id)) {
-			gameAcc.setAttackDeck(null);
-		}
-
-		gameAcc.getDecks().removeIf(d -> d.getId().equals(deck.getId()));
 
 		return this.modelMapper.map(this.gameAccRepository.saveAndFlush(gameAcc), GameAccServiceModel.class);
 	}

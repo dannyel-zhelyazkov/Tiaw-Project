@@ -1,12 +1,10 @@
 package dny.apps.tiaw.service;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
-import javax.validation.Validator;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +18,14 @@ import dny.apps.tiaw.domain.entities.Deck;
 import dny.apps.tiaw.domain.entities.GameAcc;
 import dny.apps.tiaw.domain.entities.Role;
 import dny.apps.tiaw.domain.entities.User;
+import dny.apps.tiaw.domain.models.service.UserRegisterServiceModel;
 import dny.apps.tiaw.domain.models.service.UserServiceModel;
 import dny.apps.tiaw.error.user.InvalidUserRegisterException;
 import dny.apps.tiaw.error.user.UserNotFoundException;
 import dny.apps.tiaw.repository.GameAccRepository;
 import dny.apps.tiaw.repository.RoleRepository;
 import dny.apps.tiaw.repository.UserRepository;
+import dny.apps.tiaw.validation.user.UserValidationService;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,18 +35,18 @@ public class UserServiceImpl implements UserService {
     private final RoleService roleService;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final Validator validator;
+    private final UserValidationService userValidationService;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, GameAccRepository gameAccRepository, RoleService roleService, 
-    		ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder, Validator validator) {
+    		ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder, UserValidationService userValidationService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.gameAccRepository = gameAccRepository;
         this.roleService = roleService;
         this.modelMapper = modelMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.validator = validator;
+        this.userValidationService = userValidationService;
     }
 
     @Override
@@ -56,12 +56,7 @@ public class UserServiceImpl implements UserService {
 	}
     
     @Override
-    public UserServiceModel findUserByUsername(String username) {
-    	
-    	if(username.equals(null)) {
-    		throw new UserNotFoundException("User with given username was not found!");
-    	}
-    	
+    public UserServiceModel findByUsername(String username) {	
         return this.userRepository.findByUsername(username)
                 .map(u -> this.modelMapper.map(u, UserServiceModel.class))
                 .orElseThrow(() -> new UserNotFoundException("User with given username was not found!"));
@@ -76,27 +71,30 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public UserServiceModel registerUser(UserServiceModel userServiceModel) {
-        this.roleService.seedRolesInDb();
+    public UserServiceModel registerUser(UserRegisterServiceModel userRegisterServiceModel) {
+    	this.roleService.seedRolesInDb();
 
-        if(!this.validator.validate(userServiceModel).isEmpty()) {
+        if(!this.userValidationService.isValid(userRegisterServiceModel)) {
         	throw new InvalidUserRegisterException("Ivalid user!");
         }
         
+        userRegisterServiceModel.setPassword(this.bCryptPasswordEncoder
+        		.encode(userRegisterServiceModel.getPassword()));
+        
+        User user = this.modelMapper.map(userRegisterServiceModel, User.class);
+        
         if (this.userRepository.count() == 0) {
-            userServiceModel.setAuthorities(this.roleService.findAllRoles());
+        	user.setAuthorities(this.roleRepository.findAll().stream()
+        			.collect(Collectors.toSet()));
         } else {
-            userServiceModel.setAuthorities(new LinkedHashSet<>());
-            userServiceModel.getAuthorities().add(this.roleService.findByAuthority("ROLE_USER"));
+        	user.setAuthorities(new LinkedHashSet<>());
+        	user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_USER").get());
         }
-
-        User user = this.modelMapper.map(userServiceModel, User.class);
-        user.setPassword(this.bCryptPasswordEncoder.encode(userServiceModel.getPassword()));
 
         GameAcc gameAcc = new GameAcc();
 		
-		gameAcc.setDecks(new HashSet<Deck>());
-		gameAcc.setCards(new HashSet<Card>());
+		gameAcc.setDecks(new LinkedHashSet<Deck>());
+		gameAcc.setCards(new LinkedHashSet<Card>());
 		gameAcc.setGold(50L);
 		gameAcc.setBattlePoints(100L);
 		gameAcc.setAttackTickets(3);

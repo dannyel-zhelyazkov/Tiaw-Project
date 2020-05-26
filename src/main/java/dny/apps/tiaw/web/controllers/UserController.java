@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import dny.apps.tiaw.domain.models.binding.UserRegisterBindingModel;
 import dny.apps.tiaw.domain.models.service.RoleServiceModel;
-import dny.apps.tiaw.domain.models.service.UserServiceModel;
+import dny.apps.tiaw.domain.models.service.UserRegisterServiceModel;
 import dny.apps.tiaw.domain.models.view.UserProfileViewModel;
 import dny.apps.tiaw.domain.models.view.UserViewModel;
 import dny.apps.tiaw.service.UserService;
@@ -56,11 +56,7 @@ public class UserController extends BaseController{
 			return super.view("register");
 		}
 		
-		if(!model.getConfirmPassword().equals(model.getPassword())) {
-			return super.view("register");
-		}
-		
-		this.userService.registerUser(this.modelMapper.map(model, UserServiceModel.class));						
+		this.userService.registerUser(this.modelMapper.map(model, UserRegisterServiceModel.class));						
 		
 		return super.view("/login");
 	}
@@ -77,7 +73,7 @@ public class UserController extends BaseController{
 	@PageTitle("Profile")
 	public ModelAndView profile(Principal principal, ModelAndView model) {
 		model.addObject("model", 
-				this.modelMapper.map(this.userService.findUserByUsername(principal.getName()), 
+				this.modelMapper.map(this.userService.findByUsername(principal.getName()), 
 					UserProfileViewModel.class));
 		return super.view("profile", model);
 	}

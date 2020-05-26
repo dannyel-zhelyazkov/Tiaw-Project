@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import dny.apps.tiaw.domain.models.binding.DeckAddBindingModel;
-import dny.apps.tiaw.domain.models.service.DeckServiceModel;
+import dny.apps.tiaw.domain.models.service.DeckCreateServiceModel;
+import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
 import dny.apps.tiaw.domain.models.view.DeckViewModel;
 import dny.apps.tiaw.error.deck.DeckContainsCardException;
 import dny.apps.tiaw.error.deck.DeckNotFoundException;
@@ -29,7 +30,6 @@ import dny.apps.tiaw.error.deck.DeckSizeException;
 import dny.apps.tiaw.error.deck.InvalidDeckCreateException;
 import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
 import dny.apps.tiaw.service.DeckService;
-import dny.apps.tiaw.service.GameAccService;
 import dny.apps.tiaw.service.UserService;
 import dny.apps.tiaw.web.annotations.PageTitle;
 
@@ -38,14 +38,12 @@ import dny.apps.tiaw.web.annotations.PageTitle;
 public class DeckController extends BaseController {
 	private final UserService userService;
 	private final DeckService deckService;
-	private final GameAccService gameAccService;
 	private final ModelMapper modelMapper;
 
 	@Autowired
-	public DeckController(UserService userService, DeckService deckService, GameAccService gameAccService, ModelMapper modelMapper) {
+	public DeckController(UserService userService, DeckService deckService, ModelMapper modelMapper) {
 		this.userService = userService;
 		this.deckService = deckService;
-		this.gameAccService = gameAccService;
 		this.modelMapper = modelMapper;
 	}
 	
@@ -66,7 +64,7 @@ public class DeckController extends BaseController {
 	
 	@PostMapping("/add-deck")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView addDeckPost(@Valid @ModelAttribute("bind") DeckAddBindingModel model, BindingResult result, Principal principal, ModelAndView modelAndView) {
+	public ModelAndView createDeck(@Valid @ModelAttribute("bind") DeckAddBindingModel model, BindingResult result, Principal principal, ModelAndView modelAndView) {
 		if(result.hasErrors()) {
 			Type listDeckViewModelType = new TypeToken<List<DeckViewModel>>() {}.getType();
 			
@@ -79,28 +77,38 @@ public class DeckController extends BaseController {
 			return super.view("/deck/deck", modelAndView);
 		}
 		
-		DeckServiceModel deckServiceModel = this.deckService.createDeck(this.modelMapper.map(model, DeckServiceModel.class));
-		this.gameAccService.addDeck(deckServiceModel.getId(), principal.getName());
+		DeckCreateServiceModel deckCreateServiceModel = this.modelMapper.map(model, DeckCreateServiceModel.class);
+		this.deckService.createDeck(deckCreateServiceModel, principal.getName());
 		
+		return super.redirect("/decks/deck");
+	}
+	
+	@PostMapping("/remove-deck/{id}")
+	@PreAuthorize("isAuthenticated()")
+	public ModelAndView deleteDeck(@PathVariable String id, Principal principal) {
+		this.deckService.deleteDeck(id, principal.getName());
 		return super.redirect("/decks/deck");
 	}
 	
 	@GetMapping("/deck-cards/{id}")
 	@PreAuthorize("isAuthenticated()")
 	@PageTitle("Deck-Cards")
-	public ModelAndView viewDeckGet(@PathVariable String id, ModelAndView modelAndView, Principal principal) {
+	public ModelAndView viewDeck(@PathVariable String id, ModelAndView modelAndView, Principal principal) {
 		DeckCardsViewModel deckCardsViewModel = this.modelMapper
 				.map(this.deckService.findById(id), DeckCardsViewModel.class);
 		
-		if(this.userService.findUserByUsername(principal.getName()).getGameAcc().getDefenseDeck() != null && 
-				this.userService.findUserByUsername(principal.getName()).getGameAcc().getDefenseDeck().getId().equals(deckCardsViewModel.getId())) {
+		GameAccServiceModel gameAccServiceModel = this.modelMapper
+				.map(this.userService.findByUsername(principal.getName()).getGameAcc(), GameAccServiceModel.class);
+		
+		if(gameAccServiceModel.getDefenseDeck() != null && 
+				gameAccServiceModel.getDefenseDeck().getId().equals(deckCardsViewModel.getId())) {
 			modelAndView.addObject("defense", true);
 		}else {
 			modelAndView.addObject("defense", false);
 		}
 		
-		if(this.userService.findUserByUsername(principal.getName()).getGameAcc().getAttackDeck() != null && 
-				this.userService.findUserByUsername(principal.getName()).getGameAcc().getAttackDeck().getId().equals(deckCardsViewModel.getId())) {
+		if(gameAccServiceModel.getAttackDeck() != null && 
+				gameAccServiceModel.getAttackDeck().getId().equals(deckCardsViewModel.getId())) {
 			modelAndView.addObject("attack", true);
 		}else {
 			modelAndView.addObject("attack", false);
@@ -115,7 +123,7 @@ public class DeckController extends BaseController {
 	
 	@PostMapping("/add-to-deck/{cardId}")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView addToDeckPost(@PathVariable String cardId, @ModelAttribute("addBind") DeckAddBindingModel model, BindingResult result, Principal principal) {
+	public ModelAndView addCard(@PathVariable String cardId, @ModelAttribute("addBind") DeckAddBindingModel model, BindingResult result, Principal principal) {
 		
 		this.deckService.addCard(model.getName(), cardId, principal.getName());				
 		return super.redirect("/decks/deck");
@@ -123,7 +131,7 @@ public class DeckController extends BaseController {
 	
 	@PostMapping("/remove-from-deck/{card}/{deck}")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView removeCardFromDeck(@PathVariable String card, @PathVariable String deck) {				
+	public ModelAndView removeCard(@PathVariable String card, @PathVariable String deck) {				
 		this.deckService.removeCard(deck, card);
 	
 		return super.redirect("/decks/deck-cards/" + deck);

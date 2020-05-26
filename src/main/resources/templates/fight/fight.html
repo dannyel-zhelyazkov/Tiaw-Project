@@ -46,7 +46,7 @@
 							    		<button class="btn btn-danger" type="button" disabled="disabled" id="button-addon2">Inspect</button>
 								    </th:block>
 								    <th:block th:if="${current.attackDeck != null}">
-								    	<a th:href="@{/inspect/{name}(name=${player.username})}">
+								    	<a th:href="@{/fights/inspect/{name}(name=${player.username})}">
 								    		<button class="btn btn-secondary" type="button" id="button-addon2">Inspect</button>
 								    	</a>
 								    </th:block>

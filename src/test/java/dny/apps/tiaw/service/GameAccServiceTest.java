@@ -9,12 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import dny.apps.tiaw.domain.entities.Card;
 import dny.apps.tiaw.domain.entities.Deck;
@@ -31,9 +28,7 @@ import dny.apps.tiaw.repository.FightRepository;
 import dny.apps.tiaw.repository.GameAccRepository;
 import dny.apps.tiaw.repository.UserRepository;
 
-@SpringBootTest
-@RunWith(SpringRunner.class)
-class GameAccServiceImplTest {
+class GameAccServiceTest extends BaseServiceTest {
 
 	@Autowired
 	private GameAccService service;
@@ -199,57 +194,6 @@ class GameAccServiceImplTest {
 	}
 
 	@Test
-	void testAddDeck() {
-		Optional<User> user = Optional.of(new User() {{
-			setUsername("USER");
-			setGameAcc(new GameAcc() {{
-				setDefenseDeck(new Deck());
-				setGold(300L);
-				setDecks(new LinkedHashSet<>() {{
-					add(new Deck() {{
-						setName("DECK");
-					}});
-					add(new Deck() {{
-						setName("DECK2");
-					}});
-					add(new Deck() {{
-						setName("DECK3");
-					}});
-				}});
-			}});
-		}});
-		
-		Optional<Deck> deck = Optional.of(new Deck() {{
-			setId("DECK_ID");
-			setName("DECK4");
-		}});
-		
-		Mockito.when(this.gameAccRepository.saveAndFlush(any()))
-			.thenReturn(user.get().getGameAcc());
-	
-		Mockito.when(this.userRepository.findByUsername("USER"))
-			.thenReturn(user);
-		
-		Mockito.when(this.deckRepository.findById("DECK_ID"))
-			.thenReturn(deck);
-		
-		this.service.addDeck("DECK_ID", "USER");
-		
-		assertEquals(user.get().getGameAcc().getDecks().size(), 4);
-		
-		Exception exceptionUser = assertThrows(UserNotFoundException.class, () ->
-			this.service.addDeck("CARD_ID", "WRONG_USER")
-		);
-		
-		Exception exceptionDeck = assertThrows(DeckNotFoundException.class, () ->
-			this.service.addDeck("WRONG_DECK_ID", "USER")
-		);
-		
-		assertEquals(exceptionUser.getMessage(), "User with given username does not exist!");
-		assertEquals(exceptionDeck.getMessage(), "Deck with given id does not exist!");
-	}
-
-	@Test
 	void testSetDefense() {
 		Optional<User> user = Optional.of(new User() {{
 			setUsername("USER");
@@ -273,16 +217,16 @@ class GameAccServiceImplTest {
 		Mockito.when(this.deckRepository.findById("DECK_ID"))
 			.thenReturn(deck);
 		
-		this.service.setDefense("DECK_ID", "USER");
+		this.service.setDefenseDeck("DECK_ID", "USER");
 		
 		assertEquals(user.get().getGameAcc().getDefenseDeck().getName(), "DECK4");
 		
 		Exception exceptionUser = assertThrows(UserNotFoundException.class, () ->
-			this.service.setDefense("CARD_ID", "WRONG_USER")
+			this.service.setDefenseDeck("CARD_ID", "WRONG_USER")
 		);
 		
 		Exception exceptionDeck = assertThrows(DeckNotFoundException.class, () ->
-			this.service.setDefense("WRONG_DECK_ID", "USER")
+			this.service.setDefenseDeck("WRONG_DECK_ID", "USER")
 		);
 		
 		assertEquals(exceptionUser.getMessage(), "User with given username does not exist!");
@@ -313,70 +257,18 @@ class GameAccServiceImplTest {
 		Mockito.when(this.deckRepository.findById("DECK_ID"))
 			.thenReturn(deck);
 		
-		this.service.setAttack("DECK_ID", "USER");
+		this.service.setAttackDeck("DECK_ID", "USER");
 		
 		assertEquals(user.get().getGameAcc().getAttackDeck().getName(), "DECK4");
 		
 		Exception exceptionUser = assertThrows(UserNotFoundException.class, () ->
-			this.service.setAttack("CARD_ID", "WRONG_USER")
+			this.service.setAttackDeck("CARD_ID", "WRONG_USER")
 		);
 		
 		Exception exceptionDeck = assertThrows(DeckNotFoundException.class, () ->
-			this.service.setAttack("WRONG_DECK_ID", "USER")
+			this.service.setAttackDeck("WRONG_DECK_ID", "USER")
 		);
 		
-		assertEquals(exceptionUser.getMessage(), "User with given username does not exist!");
-		assertEquals(exceptionDeck.getMessage(), "Deck with given id does not exist!");
-	}
-
-	@Test
-	void testRemoveDeck() {
-		Optional<User> user = Optional.of(new User() {{
-			setUsername("USER");
-			setGameAcc(new GameAcc() {{
-				setDecks(new LinkedHashSet<>() {{
-					add(new Deck() {{
-						setId("DECK_ID");
-						setName("DECK");
-					}});
-					add(new Deck() {{
-						setId("DECK_ID2");
-						setName("DECK2");
-					}});
-					add(new Deck() {{
-						setId("DECK_ID3");
-						setName("DECK3");
-					}});
-				}});
-			}});
-		}});
-		
-		Optional<Deck> deck = Optional.of(new Deck() {{
-			setId("DECK_ID3");
-			setName("DECK3");
-		}});
-		
-		Mockito.when(this.gameAccRepository.saveAndFlush(any()))
-			.thenReturn(user.get().getGameAcc());
-	
-		Mockito.when(this.userRepository.findByUsername("USER"))
-			.thenReturn(user);
-		
-		Mockito.when(this.deckRepository.findById("DECK_ID3"))
-			.thenReturn(deck);
-		
-		this.service.removeDeck("DECK_ID3", "USER");
-		
-		assertEquals(user.get().getGameAcc().getDecks().size(), 2);
-		
-		Exception exceptionUser = assertThrows(UserNotFoundException.class, () ->
-			this.service.setAttack("CARD_ID3", "WRONG_USER")
-		);
-	
-		Exception exceptionDeck = assertThrows(DeckNotFoundException.class, () ->
-			this.service.setAttack("WRONG_DECK_ID", "USER")
-		);
-	
 		assertEquals(exceptionUser.getMessage(), "User with given username does not exist!");
 		assertEquals(exceptionDeck.getMessage(), "Deck with given id does not exist!");
 	}
