@@ -3,6 +3,7 @@ package dny.apps.tiaw.validation.card;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import dny.apps.tiaw.domain.entities.Rarity;
 import dny.apps.tiaw.domain.models.service.CardCreateServiceModel;
 import dny.apps.tiaw.domain.models.service.CardEditServiceModel;
 import dny.apps.tiaw.repository.CardRepository;
@@ -19,21 +20,43 @@ public class CardValidationServiceImpl implements CardValidationService {
 	
 	@Override
 	public boolean isValid(CardCreateServiceModel cardCreateServiceModel) {
-		return !this.cardRepository.findByName(cardCreateServiceModel.getName()).isPresent() &&
-				cardCreateServiceModel.getName().length() >= 3 && 
-				cardCreateServiceModel.getName().length() <= 20 &&
-				cardCreateServiceModel.getPower() >= 0 && 
-				cardCreateServiceModel.getDefense() >= 0 && 
-				cardCreateServiceModel.getUrl() != null &&
-				cardCreateServiceModel.getRarity() != null;
+		return 	isNamePresented(cardCreateServiceModel.getName()) &&
+				nameLength(cardCreateServiceModel.getName()) &&
+				powerZeroPositive(cardCreateServiceModel.getPower()) && 
+				defenseZeroPositive(cardCreateServiceModel.getDefense()) && 
+				urlNotNull(cardCreateServiceModel.getUrl()) &&
+				rarityNotNull(cardCreateServiceModel.getRarity());
 	}
 
 	@Override
 	public boolean isValid(CardEditServiceModel cardEditServiceModel) {
-		return !this.cardRepository.findByName(cardEditServiceModel.getName()).isPresent() &&
-			cardEditServiceModel.getName().length() >= 3 && 
-			cardEditServiceModel.getName().length() <= 20 &&
-			cardEditServiceModel.getPower() >= 0 && 
-			cardEditServiceModel.getDefense() >= 0;
+		return  isNamePresented(cardEditServiceModel.getName()) &&
+				nameLength(cardEditServiceModel.getName()) &&
+				powerZeroPositive(cardEditServiceModel.getPower()) && 
+				defenseZeroPositive(cardEditServiceModel.getDefense());
+	}
+	
+	private boolean nameLength(String name) {
+		return name.length() >= 3 && name.length() <= 20;
+	}
+	
+	private boolean isNamePresented(String name) {
+		return !this.cardRepository.findByName(name).isPresent();
+	}
+	
+	private boolean powerZeroPositive(Integer power) {
+		return power >= 0;
+	}
+	
+	private boolean defenseZeroPositive(Integer defense) {
+		return defense >= 0;
+	}
+	
+	private boolean urlNotNull(String url) {
+		return url != null;
+	}
+	
+	private boolean rarityNotNull(Rarity rarity) {
+		return rarity != null;
 	}
 }
