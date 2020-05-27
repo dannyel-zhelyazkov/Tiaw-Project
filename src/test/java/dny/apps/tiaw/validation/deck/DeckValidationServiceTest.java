@@ -28,7 +28,7 @@ class DeckValidationServiceTest extends BaseServiceTest {
 	private UserRepository userRepository;
 	
 	@BeforeEach
-	public void setUp() {
+	private void setUp() {
 		Mockito.when(this.userRepository.findByUsername("USER"))
 		.thenReturn(Optional.of(new User() {{
 			setGameAcc(new GameAcc() {{

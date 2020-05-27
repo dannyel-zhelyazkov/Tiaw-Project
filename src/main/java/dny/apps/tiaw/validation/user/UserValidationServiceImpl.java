@@ -18,15 +18,25 @@ public class UserValidationServiceImpl implements UserValidationService {
 	
 	@Override
 	public boolean isValid(UserRegisterServiceModel userRegisterServiceModel) {
-		if(this.userRepository.findByUsername(userRegisterServiceModel.getUsername()).isPresent() ||
-				userRegisterServiceModel.getUsername().length() < 3 || 
-				userRegisterServiceModel.getUsername().length() > 18 || 
-				!userRegisterServiceModel.getPassword().equals(userRegisterServiceModel.getConfirmPasswrod()) || 
-				this.userRepository.findByEmail(userRegisterServiceModel.getEmail()).isPresent()) {
-			return false;
-		}
-				
-		return true;
+		return  isUsernamePresented(userRegisterServiceModel.getUsername()) &&
+				usernameLength(userRegisterServiceModel.getUsername()) &&
+				passwordsMatch(userRegisterServiceModel.getPassword(), userRegisterServiceModel.getConfirmPasswrod()) &&
+				isEmailPresented(userRegisterServiceModel.getEmail());
+	}	
+	
+	private boolean isUsernamePresented(String username) {
+		return !this.userRepository.findByUsername(username).isPresent();
 	}
-
+	
+	private boolean usernameLength(String username) {
+		return username.length() >=3 && username.length() <= 18;
+	}
+	
+	private boolean passwordsMatch(String password, String confirmPassword) {
+		return password.equals(confirmPassword);
+	}
+	
+	private boolean isEmailPresented(String email) {
+		return !this.userRepository.findByEmail(email).isPresent();
+	}
 }

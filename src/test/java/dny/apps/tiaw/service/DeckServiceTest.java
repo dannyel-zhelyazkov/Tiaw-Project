@@ -200,10 +200,14 @@ class DeckServiceTest extends BaseServiceTest {
 	@Test
 	void createDeck_whenDeckIsNotValid_shoudlThrowInvalidDeckCreateException() {
 		Mockito.when(this.userRepository.findByUsername("USER"))
-			.thenReturn(Optional.of(new User()));
+			.thenReturn(Optional.of(new User() {{
+				setGameAcc(new GameAcc() {{
+					setDecks(new LinkedHashSet<>());
+				}});
+			}}));
 	
 		assertThrows(InvalidDeckCreateException.class, () ->
-			this.service.createDeck(notValidDeckCreateServiceModel())
+			this.service.createDeck(notValidDeckCreateServiceModel(), "USER")
 		);
 	}
 	
@@ -211,7 +215,14 @@ class DeckServiceTest extends BaseServiceTest {
 	void createDeck_whenDeckIsValid_shouldCreateDeck() {	
 		DeckCreateServiceModel deckCreateServiceModel = validDeckCreateServiceModel();
 		
-		this.service.createDeck(deckCreateServiceModel);
+		Mockito.when(this.userRepository.findByUsername("USER"))
+			.thenReturn(Optional.of(new User() {{
+				setGameAcc(new GameAcc() {{
+					setDecks(new LinkedHashSet<>());
+				}});
+			}}));
+		
+		this.service.createDeck(deckCreateServiceModel, "USER");
 		
 		ArgumentCaptor<Deck> argument = ArgumentCaptor.forClass(Deck.class);
 		Mockito.verify(this.deckRepository).saveAndFlush(argument.capture());
