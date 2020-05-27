@@ -338,7 +338,7 @@ class GameAccServiceTest extends BaseServiceTest {
 	
 	@Test
 	void lostFight() {
-		User user =new User() {{
+		User user = new User() {{
 			setGameAcc(new GameAcc() {{
 				setAttackTickets(3);
 				setBattlePoints(30L);
@@ -368,7 +368,7 @@ class GameAccServiceTest extends BaseServiceTest {
 		Mockito.when(this.userRepository.findByUsername("USER2"))
 			.thenReturn(Optional.of(user2));
 		
-		this.service.wonFight("USER2", "USER", "10", "4");
+		this.service.lostFight("USER2", "USER", "4", "10");
 		
 		assertEquals(user.getGameAcc().getAttackTickets(), 2);
 		assertEquals(user.getGameAcc().getBattlePoints(), 26);
