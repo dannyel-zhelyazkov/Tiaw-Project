@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import dny.apps.tiaw.domain.entities.User;
-import dny.apps.tiaw.domain.models.service.BaseServiceModel;
 import dny.apps.tiaw.domain.models.service.UserRegisterServiceModel;
 import dny.apps.tiaw.repository.UserRepository;
 import dny.apps.tiaw.service.BaseServiceTest;
@@ -71,7 +70,7 @@ class UserValidationServiceTest extends BaseServiceTest {
 		userRegisterServiceModel.setUsername("USER");
 		userRegisterServiceModel.setEmail("EMAIL@EMAIL.COM");
 		userRegisterServiceModel.setPassword("PASS");
-		userRegisterServiceModel.setConfirmPasswrod("PASSS");
+		userRegisterServiceModel.setConfirmPassword("PASSS");
 		
 		assertFalse(this.userValidationService.isValid(userRegisterServiceModel));
 	}
@@ -82,7 +81,7 @@ class UserValidationServiceTest extends BaseServiceTest {
 		userRegisterServiceModel.setUsername("USER");
 		userRegisterServiceModel.setEmail("EMAIL@EMAIL.COM");
 		userRegisterServiceModel.setPassword("PASS");
-		userRegisterServiceModel.setConfirmPasswrod("PASS");
+		userRegisterServiceModel.setConfirmPassword("PASS");
 		
 		assertFalse(this.userValidationService.isValid(userRegisterServiceModel));
 	}

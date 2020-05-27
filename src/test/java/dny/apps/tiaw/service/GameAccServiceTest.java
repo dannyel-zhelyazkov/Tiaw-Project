@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -154,7 +153,7 @@ class GameAccServiceTest extends BaseServiceTest {
 		User user = new User() {{
 			setGameAcc(new GameAcc() {{
 				setGold(300L);
-				setCards(new LinkedHashSet<>() {{
+				setCards(new ArrayList<>() {{
 					add(new Card() {{
 						setName("Card01");
 					}});

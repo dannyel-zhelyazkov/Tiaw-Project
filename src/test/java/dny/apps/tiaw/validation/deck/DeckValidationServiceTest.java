@@ -2,7 +2,7 @@ package dny.apps.tiaw.validation.deck;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ class DeckValidationServiceTest extends BaseServiceTest {
 		Mockito.when(this.userRepository.findByUsername("USER"))
 		.thenReturn(Optional.of(new User() {{
 			setGameAcc(new GameAcc() {{
-				setDecks(new LinkedHashSet<>());
+				setDecks(new ArrayList<>());
 			}});
 		}}));
 	}
@@ -58,7 +58,7 @@ class DeckValidationServiceTest extends BaseServiceTest {
 		Mockito.when(this.userRepository.findByUsername("USER"))
 			.thenReturn(Optional.of(new User() {{
 				setGameAcc(new GameAcc() {{
-					setDecks(new LinkedHashSet<>() {{
+					setDecks(new ArrayList<>() {{
 						add(new Deck() {{
 							setName("DECK");
 						}});

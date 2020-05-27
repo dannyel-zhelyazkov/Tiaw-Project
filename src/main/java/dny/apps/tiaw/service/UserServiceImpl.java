@@ -1,6 +1,7 @@
 package dny.apps.tiaw.service;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,8 +14,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import dny.apps.tiaw.domain.entities.Card;
-import dny.apps.tiaw.domain.entities.Deck;
 import dny.apps.tiaw.domain.entities.GameAcc;
 import dny.apps.tiaw.domain.entities.Role;
 import dny.apps.tiaw.domain.entities.User;
@@ -73,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserServiceModel registerUser(UserRegisterServiceModel userRegisterServiceModel) {
     	this.roleService.seedRolesInDb();
-
+  
         if(!this.userValidationService.isValid(userRegisterServiceModel)) {
         	throw new InvalidUserRegisterException("Ivalid user!");
         }
@@ -87,14 +86,14 @@ public class UserServiceImpl implements UserService {
         	user.setAuthorities(this.roleRepository.findAll().stream()
         			.collect(Collectors.toSet()));
         } else {
-        	user.setAuthorities(new LinkedHashSet<>());
+        	user.setAuthorities(new HashSet<>());
         	user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_USER").get());
         }
 
         GameAcc gameAcc = new GameAcc();
 		
-		gameAcc.setDecks(new LinkedHashSet<Deck>());
-		gameAcc.setCards(new LinkedHashSet<Card>());
+		gameAcc.setDecks(new ArrayList<>());
+		gameAcc.setCards(new ArrayList<>());
 		gameAcc.setGold(50L);
 		gameAcc.setBattlePoints(100L);
 		gameAcc.setAttackTickets(3);

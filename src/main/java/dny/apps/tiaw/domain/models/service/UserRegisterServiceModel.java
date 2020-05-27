@@ -1,11 +1,9 @@
 package dny.apps.tiaw.domain.models.service;
 
-import java.util.Set;
-
 public class UserRegisterServiceModel {
 	private String username;
 	private String password;
-	private String confirmPasswrod;
+	private String confirmPassword;
 	private String email;
 	
 	public UserRegisterServiceModel() {}
@@ -28,15 +26,10 @@ public class UserRegisterServiceModel {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getConfirmPasswrod() {
-		return confirmPasswrod;
+	public String getConfirmPassword() {
+		return confirmPassword;
 	}
-	public void setConfirmPasswrod(String confirmPasswrod) {
-		this.confirmPasswrod = confirmPasswrod;
-	}
-
-	public void setAuthorities(Set<RoleServiceModel> findAllRoles) {
-		// TODO Auto-generated method stub
-		
+	public void setConfirmPassword(String confirmPasswrod) {
+		this.confirmPassword = confirmPasswrod;
 	}
 }

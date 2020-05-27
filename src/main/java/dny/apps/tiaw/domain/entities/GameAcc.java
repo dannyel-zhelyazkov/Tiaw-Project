@@ -1,14 +1,14 @@
 package dny.apps.tiaw.domain.entities;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name="game_accs")
 public class GameAcc extends BaseEntity {
-	private Set<Deck> decks;
-	private Set<Card> cards;
+	private List<Deck> decks;
+	private List<Card> cards;
 	private Deck defenseDeck;
 	private Deck attackDeck;
 	private Long gold;
@@ -18,17 +18,17 @@ public class GameAcc extends BaseEntity {
 	public GameAcc() {}
 	
 	@ManyToMany(cascade = CascadeType.ALL)
-    public Set<Deck> getDecks() {
+    public List<Deck> getDecks() {
 		return decks;
 	}   
-    public void setDecks(Set<Deck> decks) {
+    public void setDecks(List<Deck> decks) {
 		this.decks = decks;
 	}  
     @ManyToMany(cascade = CascadeType.ALL)
-    public Set<Card> getCards() {
+    public List<Card> getCards() {
 		return cards;
 	}   
-    public void setCards(Set<Card> cards) {
+    public void setCards(List<Card> cards) {
 		this.cards = cards;
 	}    
     @OneToOne

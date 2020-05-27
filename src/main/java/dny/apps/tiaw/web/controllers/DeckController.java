@@ -86,7 +86,7 @@ public class DeckController extends BaseController {
 	@PostMapping("/remove-deck/{id}")
 	@PreAuthorize("isAuthenticated()")
 	public ModelAndView deleteDeck(@PathVariable String id, Principal principal) {
-		this.deckService.deleteDeck(id);
+		this.deckService.deleteDeck(id, principal.getName());
 		return super.redirect("/decks/deck");
 	}
 	
@@ -103,14 +103,14 @@ public class DeckController extends BaseController {
 		if(gameAccServiceModel.getDefenseDeck() != null && 
 				gameAccServiceModel.getDefenseDeck().getId().equals(deckCardsViewModel.getId())) {
 			modelAndView.addObject("defense", true);
-		}else {
+		} else {
 			modelAndView.addObject("defense", false);
 		}
 		
 		if(gameAccServiceModel.getAttackDeck() != null && 
 				gameAccServiceModel.getAttackDeck().getId().equals(deckCardsViewModel.getId())) {
 			modelAndView.addObject("attack", true);
-		}else {
+		} else {
 			modelAndView.addObject("attack", false);
 		}
 		

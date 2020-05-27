@@ -1,6 +1,6 @@
 package dny.apps.tiaw.service;
 
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -144,8 +144,8 @@ public class GameAccServiceImpl implements GameAccService {
 		Fight fight = new Fight();
 
 		fight.setP1(attacker);
-		fight.setP2(defender);
-		fight.setDatetime(Calendar.getInstance().getTime());
+		fight.setP2(defender);	
+		fight.setDatetime(new Date());
 
 		return this.fightRepository.saveAndFlush(fight);
 	}

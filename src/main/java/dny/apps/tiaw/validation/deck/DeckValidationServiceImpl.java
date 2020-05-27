@@ -21,8 +21,11 @@ public class DeckValidationServiceImpl implements DeckValidationService {
 	
 	@Override
 	public boolean isValid(DeckCreateServiceModel deckCreateServiceModel, String username) {
-		return 	isNamePresented(deckCreateServiceModel.getName(), username) &&
-				nameLength(deckCreateServiceModel.getName());
+		if(isNamePresented(deckCreateServiceModel.getName(), username) || isNameLengthInvalid(deckCreateServiceModel.getName())) {
+			return false;
+		}
+		
+		return true;
 	}
 
 	private boolean isNamePresented(String name, String username) {
@@ -31,14 +34,14 @@ public class DeckValidationServiceImpl implements DeckValidationService {
 				
 		for(Deck deck : user.getGameAcc().getDecks()) {
 			if(deck.getName().equals(name)) {
-				return false;
+				return true;
 			}
 		}
 		
-		return true;
+		return false;
 	}
 	
-	private boolean nameLength(String name) {
-		return name.length() >= 3 && name.length() <= 10;
+	private boolean isNameLengthInvalid(String name) {
+		return name.length() < 3 || name.length() > 10;
 	}
 }

@@ -98,7 +98,7 @@ class UserServiceTest extends BaseServiceTest {
 			setUsername("USERNAME");
 			setEmail("EMAIL@EMAIL.EMAIL");
 			setPassword("PASSWORD");
-			setConfirmPasswrod("PASSWORD");
+			setConfirmPassword("PASSWORD");
 		}};
 	}
 	

@@ -3,10 +3,9 @@ package dny.apps.tiaw.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -28,6 +27,7 @@ import dny.apps.tiaw.error.deck.InvalidDeckCreateException;
 import dny.apps.tiaw.error.user.UserNotFoundException;
 import dny.apps.tiaw.repository.CardRepository;
 import dny.apps.tiaw.repository.DeckRepository;
+import dny.apps.tiaw.repository.GameAccRepository;
 import dny.apps.tiaw.repository.UserRepository;
 
 class DeckServiceTest extends BaseServiceTest {
@@ -40,6 +40,8 @@ class DeckServiceTest extends BaseServiceTest {
 	private UserRepository userRepository;
 	@MockBean
 	private CardRepository cardRepository;
+	@MockBean
+	private GameAccRepository gameAccRepository;
 	
 	@Test
 	void findById_whenDeckDoesNotExist_shouldThrowDeckNotFoundException() {
@@ -78,7 +80,7 @@ class DeckServiceTest extends BaseServiceTest {
 	void findByOwner_whenDeckDoesNotExist_shouldThrowDeckNotFoundException() {
 		User user = new User() {{
 			setGameAcc(new GameAcc() {{
-				setDecks(new HashSet<>() {{
+				setDecks(new ArrayList<>() {{
 					add(new Deck() {{
 						setName("DECK_NAME");
 					}});
@@ -101,7 +103,7 @@ class DeckServiceTest extends BaseServiceTest {
 	void findByOwner_whenDeckAndOwnerExist_shouldReturnDeck() {
 		User user = new User() {{
 			setGameAcc(new GameAcc() {{
-				setDecks(new HashSet<>() {{
+				setDecks(new ArrayList<>() {{
 					add(new Deck() {{
 						setName("DECK_NAME");
 					}});
@@ -169,7 +171,7 @@ class DeckServiceTest extends BaseServiceTest {
 	void findAllByOwner_whenOwnerExist_shoudlReturnAllDecks() {
 		User user = new User() {{
 			setGameAcc(new GameAcc() {{
-				setDecks(new LinkedHashSet<>() {{
+				setDecks(new ArrayList<>() {{
 					add(new Deck());
 					add(new Deck());
 					add(new Deck());
@@ -180,7 +182,7 @@ class DeckServiceTest extends BaseServiceTest {
 		Mockito.when(this.userRepository.findByUsername("USER"))
 			.thenReturn(Optional.of(user));
 		
-		Set<DeckServiceModel> deckServiceModels = this.service.findAllDecksByOwner("USER");
+		List<DeckServiceModel> deckServiceModels = this.service.findAllDecksByOwner("USER");
 		
 		assertEquals(user.getGameAcc().getDecks().size(), deckServiceModels.size());
 	}
@@ -202,7 +204,7 @@ class DeckServiceTest extends BaseServiceTest {
 		Mockito.when(this.userRepository.findByUsername("USER"))
 			.thenReturn(Optional.of(new User() {{
 				setGameAcc(new GameAcc() {{
-					setDecks(new LinkedHashSet<>());
+					setDecks(new ArrayList<>());
 				}});
 			}}));
 	
@@ -212,15 +214,33 @@ class DeckServiceTest extends BaseServiceTest {
 	}
 	
 	@Test
+	void createDeck_whenUserDoesNotExist_shoudlThrowUserNotFoundException() {
+		Mockito.when(this.userRepository.findByUsername("USER"))
+			.thenReturn(Optional.empty());
+	
+		assertThrows(UserNotFoundException.class, () ->
+			this.service.createDeck(notValidDeckCreateServiceModel(), "USER")
+		);
+	}
+	
+	@Test
 	void createDeck_whenDeckIsValid_shouldCreateDeck() {	
 		DeckCreateServiceModel deckCreateServiceModel = validDeckCreateServiceModel();
 		
+		User user = new User() {{
+			setGameAcc(new GameAcc() {{
+				setDecks(new ArrayList<>());
+			}});
+		}};
+		
 		Mockito.when(this.userRepository.findByUsername("USER"))
-			.thenReturn(Optional.of(new User() {{
-				setGameAcc(new GameAcc() {{
-					setDecks(new LinkedHashSet<>());
-				}});
-			}}));
+			.thenReturn(Optional.of(user));
+		
+		Mockito.when(this.gameAccRepository.saveAndFlush(any()))
+			.thenReturn(user.getGameAcc());
+		
+		Mockito.when(this.deckRepository.findByName(deckCreateServiceModel.getName()))
+			.thenReturn(Optional.of(new Deck()));
 		
 		this.service.createDeck(deckCreateServiceModel, "USER");
 		
@@ -237,7 +257,22 @@ class DeckServiceTest extends BaseServiceTest {
 	@Test
 	void deleteDeck_whenDeckDoesNotExist_shouldThrowDeckNotFoundException() {		
 		assertThrows(DeckNotFoundException.class, () ->
-			this.service.deleteDeck("WRONG_ID")
+			this.service.deleteDeck("WRONG_ID", "USER")
+		);
+	}
+	
+	@Test
+	void deleteDeck_whenUserDoesNotExist_shouldThrowUserNotFoundException() {
+		Mockito.when(this.deckRepository.findById("DECK_ID"))
+			.thenReturn(Optional.of(new Deck() {{
+				setCards(new ArrayList<>());
+			}}));
+		
+		Mockito.when(this.userRepository.findById("WRONG_USER"))
+			.thenReturn(Optional.empty());
+		
+		assertThrows(UserNotFoundException.class, () ->
+			this.service.deleteDeck("DECK_ID", "WRONG_USER")
 		);
 	}
 	
@@ -245,12 +280,21 @@ class DeckServiceTest extends BaseServiceTest {
 	void deleteDeck_whenDeckExist_shouldDeleteDeck() {
 		Deck deck = new Deck() {{
 			setName("DECK_NAME2");
+			setCards(new ArrayList<>());
 		}};
+		
+		User user = new User();
+		user.setGameAcc(new GameAcc() {{
+			setDecks(new ArrayList<>());
+		}});
 		
 		Mockito.when(this.deckRepository.findById("DECK_ID2"))
 			.thenReturn(Optional.of(deck));
 		
-		this.service.deleteDeck("DECK_ID2");
+		Mockito.when(this.userRepository.findByUsername("USER"))
+			.thenReturn(Optional.of(user));
+		
+		this.service.deleteDeck("DECK_ID2", "USER");
 		
 		Mockito.verify(this.deckRepository).delete(deck);
 	}
@@ -270,7 +314,7 @@ class DeckServiceTest extends BaseServiceTest {
 		Mockito.when(this.userRepository.findByUsername("USER"))
 			.thenReturn(Optional.of(new User() {{
 				setGameAcc(new GameAcc() {{
-					setDecks(new LinkedHashSet<>());
+					setDecks(new ArrayList<>());
 				}});
 			}}));
 		
@@ -287,10 +331,10 @@ class DeckServiceTest extends BaseServiceTest {
 		Mockito.when(this.userRepository.findByUsername("USER"))
 		.thenReturn(Optional.of(new User() {{
 			setGameAcc(new GameAcc() {{
-				setDecks(new LinkedHashSet<>() {{
+				setDecks(new ArrayList<>() {{
 					add(new Deck() {{
 						setName("DECK_NAME");
-						setCards(new LinkedHashSet<>() {{
+						setCards(new ArrayList<>() {{
 							add(new Card());
 							add(new Card());
 							add(new Card());
@@ -312,10 +356,10 @@ class DeckServiceTest extends BaseServiceTest {
 		Mockito.when(this.userRepository.findByUsername("USER"))
 		.thenReturn(Optional.of(new User() {{
 			setGameAcc(new GameAcc() {{
-				setDecks(new LinkedHashSet<>() {{
+				setDecks(new ArrayList<>() {{
 					add(new Deck() {{
 						setName("DECK_NAME");
-						setCards(new LinkedHashSet<>() {{
+						setCards(new ArrayList<>() {{
 							add(new Card());
 							add(new Card());
 							add(new Card());
@@ -340,10 +384,10 @@ class DeckServiceTest extends BaseServiceTest {
 		Mockito.when(this.userRepository.findByUsername("USER"))
 		.thenReturn(Optional.of(new User() {{
 			setGameAcc(new GameAcc() {{
-				setDecks(new LinkedHashSet<>() {{
+				setDecks(new ArrayList<>() {{
 					add(new Deck() {{
 						setName("DECK_NAME");
-						setCards(new LinkedHashSet<>() {{
+						setCards(new ArrayList<>() {{
 							add(new Card() {{
 								setId("CARD_ID");
 							}});
@@ -367,10 +411,10 @@ class DeckServiceTest extends BaseServiceTest {
 	void addCard() {
 		User user = new User() {{
 			setGameAcc(new GameAcc() {{
-				setDecks(new LinkedHashSet<>() {{
+				setDecks(new ArrayList<>() {{
 					add(new Deck() {{
 						setName("DECK_NAME");
-						setCards(new HashSet<>() {{
+						setCards(new ArrayList<>() {{
 							add(new Card() {{
 								setId("ID1");
 							}});
@@ -425,7 +469,7 @@ class DeckServiceTest extends BaseServiceTest {
 	@Test
 	void testRemoveCard() {
 		Deck deck = new Deck() {{
-			setCards(new LinkedHashSet<>() {{
+			setCards(new ArrayList<>() {{
 				add(new Card() {{
 					setId("CARD_ID2");
 					setName("CARD_NAME2");

@@ -18,25 +18,29 @@ public class UserValidationServiceImpl implements UserValidationService {
 	
 	@Override
 	public boolean isValid(UserRegisterServiceModel userRegisterServiceModel) {
-		return  isUsernamePresented(userRegisterServiceModel.getUsername()) &&
-				usernameLength(userRegisterServiceModel.getUsername()) &&
-				passwordsMatch(userRegisterServiceModel.getPassword(), userRegisterServiceModel.getConfirmPasswrod()) &&
-				isEmailPresented(userRegisterServiceModel.getEmail());
+		if(isUsernamePresented(userRegisterServiceModel.getUsername()) ||
+				isUsernameLengthIvalid(userRegisterServiceModel.getUsername()) ||
+				doPasswordsMatch(userRegisterServiceModel.getPassword(), userRegisterServiceModel.getConfirmPassword()) ||
+				isEmailPresented(userRegisterServiceModel.getEmail())) {
+			return false;
+		}
+		
+		return true;
 	}	
 	
 	private boolean isUsernamePresented(String username) {
-		return !this.userRepository.findByUsername(username).isPresent();
+		return this.userRepository.findByUsername(username).isPresent();
 	}
 	
-	private boolean usernameLength(String username) {
-		return username.length() >=3 && username.length() <= 18;
+	private boolean isUsernameLengthIvalid(String username) {
+		return username.length() < 3 || username.length() > 18;
 	}
 	
-	private boolean passwordsMatch(String password, String confirmPassword) {
-		return password.equals(confirmPassword);
+	private boolean doPasswordsMatch(String password, String confirmPassword) {
+		return !password.equals(confirmPassword);
 	}
 	
 	private boolean isEmailPresented(String email) {
-		return !this.userRepository.findByEmail(email).isPresent();
+		return this.userRepository.findByEmail(email).isPresent();
 	}
 }

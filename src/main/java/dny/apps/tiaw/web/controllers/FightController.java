@@ -2,7 +2,9 @@ package dny.apps.tiaw.web.controllers;
 
 import java.lang.reflect.Type;
 import java.security.Principal;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -13,8 +15,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
 import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
 import dny.apps.tiaw.domain.models.view.GameAccFightViewModel;
 import dny.apps.tiaw.service.CardService;
@@ -81,5 +85,17 @@ public class FightController extends BaseController {
 	public ModelAndView lostFightPost(@PathVariable String defender, @PathVariable String ubp, @PathVariable String ebp, Principal principal) {
 		this.gameAccService.lostFight(defender, principal.getName(), ubp, ebp);
 		return super.redirect("/home");
+	}
+	
+	@GetMapping("/fight-action/{att}/{def}")
+	@PreAuthorize("isAuthenticated()")
+	@ResponseBody
+	public Map<String, GameAccServiceModel> fightAction(@PathVariable String att, @PathVariable String def) {
+		Map<String, GameAccServiceModel> map = new LinkedHashMap<>();
+		
+		map.put("attacker", this.gameAccService.findByUser(att));
+		map.put("defender", this.gameAccService.findByUser(def));
+		
+		return map;
 	}
 }
