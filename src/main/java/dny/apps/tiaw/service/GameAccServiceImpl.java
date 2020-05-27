@@ -111,6 +111,7 @@ public class GameAccServiceImpl implements GameAccService {
 
 		Deck deck = this.deckRepository.findById(deckId)
 				.orElseThrow(() -> new DeckNotFoundException("Deck with given id does not exist!"));
+		
 		gameAcc.setDefenseDeck(deck);
 
 		this.deckRepository.saveAndFlush(deck);

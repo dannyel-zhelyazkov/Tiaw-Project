@@ -45,55 +45,51 @@ class GameAccServiceTest extends BaseServiceTest {
 	private FightRepository fightRepository;
 	
 	@Test
-	void testFindByUser() {
-		Optional<User> user = Optional.of(new User() {{
-			setUsername("USER");
-			setGameAcc(new GameAcc() {{
-				setBattlePoints(3040L);
-			}});
-		}});
+	void findByUser_whenUserDoesNotExist_shouldThrowUserNotFoudnException() {
+		Mockito.when(this.userRepository.findByUsername("WRONG_USER"))
+			.thenReturn(Optional.empty());
 		
-		Mockito.when(this.userRepository.findByUsername("USER"))
-			.thenReturn(user);
-		
-		GameAccServiceModel gameAccServiceModel = this.service.findByUser("USER");
-		
-		assertEquals(user.get().getUsername(), gameAccServiceModel.getUsername());
-		assertEquals(gameAccServiceModel.getBattlePoints(), 3040L);
-		assertEquals(gameAccServiceModel.getUsername(), "USER");
-		
-		Exception exception = assertThrows(UserNotFoundException.class, () ->
+		assertThrows(UserNotFoundException.class, () -> 
 			this.service.findByUser("WRONG_USER")
 		);
+	}
+	
+	@Test
+	void findByUser_whenUserExists_shouldReturnGameAcc() {
+		User user = new User();
+		user.setUsername("USER");
+		user.setGameAcc(new GameAcc());
 		
-		assertEquals(exception.getMessage(), "User with given username does not exist!");
+		Mockito.when(this.userRepository.findByUsername("USER"))
+			.thenReturn(Optional.of(user));
+		
+		GameAccServiceModel gameAccServiceModel  = this.service.findByUser("USER");
+		
+		assertEquals(user.getUsername(), gameAccServiceModel.getUsername());
 	}
 
 	@Test
-	void testFindAll() {
-		Optional<User> user1 = Optional.of(new User() {{
-			setUsername("USER");
+	void findAll() {
+		User user1 = new User() {{
 			setGameAcc(new GameAcc() {{
 				setBattlePoints(3040L);
 			}});
-		}});
-		Optional<User> user2 = Optional.of(new User() {{
-			setUsername("USER2");
+		}};
+		User user2 = new User() {{
+			setGameAcc(new GameAcc() {{
+				setBattlePoints(3050L);
+			}});
+		}};
+		User user3 = new User() {{
 			setGameAcc(new GameAcc() {{
 				setBattlePoints(3060L);
 			}});
-		}});
-		Optional<User> user3 = Optional.of(new User() {{
-			setUsername("USER3");
-			setGameAcc(new GameAcc() {{
-				setBattlePoints(3080L);
-			}});
-		}});
+		}};
 		
 		List<User> users = new ArrayList<>();
-		users.add(user1.get());
-		users.add(user2.get());
-		users.add(user3.get());
+		users.add(user1);
+		users.add(user2);
+		users.add(user3);
 		
 		Mockito.when(this.userRepository.findAll())
 			.thenReturn(users);
@@ -101,297 +97,301 @@ class GameAccServiceTest extends BaseServiceTest {
 		List<GameAccServiceModel> gameAccServiceModels = this.service.findAll();
 		
 		assertEquals(users.size(), gameAccServiceModels.size());
-		assertEquals(users.get(0).getGameAcc().getBattlePoints(), gameAccServiceModels.get(0).getBattlePoints());
-		assertEquals(users.get(0).getUsername(), gameAccServiceModels.get(0).getUsername());
 	}
 
 	@Test
-	void testFindAllFightGameAccs() {
-		Optional<User> user1 = Optional.of(new User() {{
-			setUsername("USER");
+	void findAllFightGameAccs_whenOneGameAccDoNotHaveDefenseDeck_shouldReturnOneFightGameAcc() {
+		User user1 = new User() {{
+			setGameAcc(new GameAcc() {{
+				setBattlePoints(3040L);
+			}});
+		}};
+		User user2 = new User() {{
 			setGameAcc(new GameAcc() {{
 				setDefenseDeck(new Deck());
 				setBattlePoints(3040L);
 			}});
-		}});
-		Optional<User> user2 = Optional.of(new User() {{
-			setUsername("USER2");
-			setGameAcc(new GameAcc() {{
-				setDefenseDeck(new Deck());
-				setBattlePoints(3060L);
-			}});
-		}});
-		Optional<User> user3 = Optional.of(new User() {{
-			setUsername("USER3");
-			setGameAcc(new GameAcc() {{
-				setBattlePoints(3080L);
-			}});
-		}});
+		}};
 		
 		List<User> users = new ArrayList<>();
-		users.add(user1.get());
-		users.add(user2.get());
-		users.add(user3.get());
+		users.add(user1);
+		users.add(user2);
 		
 		Mockito.when(this.userRepository.findAll())
 			.thenReturn(users);
 	
 		List<GameAccServiceModel> gameAccServiceModels = this.service.findAllFightGameAccs();
 		
-		assertNotEquals(users.size(), gameAccServiceModels.size());
-		assertEquals(gameAccServiceModels.size(), 2);
-		assertEquals(users.get(0).getGameAcc().getBattlePoints(), gameAccServiceModels.get(0).getBattlePoints());
-		assertEquals(users.get(0).getUsername(), gameAccServiceModels.get(0).getUsername());
+		assertEquals(gameAccServiceModels.size(), 1);
 	}
 
 	@Test
-	void testBuyCard() {
-		Optional<User> user = Optional.of(new User() {{
-			setUsername("USER");
+	void buyCard_whenUserDoesNotExist_shouldThrowUserNotFoundException() {
+		Mockito.when(this.userRepository.findByUsername("WRONG_USER"))
+			.thenReturn(Optional.empty());
+		
+		assertThrows(UserNotFoundException.class, () ->
+			this.service.buyCard("CARD_ID", "WRONG_USER")
+		);
+	}
+	@Test
+	void buyCard_whenCardDoesNotExist_shouldThrowCardNotFoundException() {
+		Mockito.when(this.userRepository.findByUsername("USER"))
+			.thenReturn(Optional.of(new User() {{
+				setGameAcc(new GameAcc());
+			}}));
+		
+		Mockito.when(this.cardRepository.findById("WRONG_CARD_ID"))
+			.thenReturn(Optional.empty());
+		
+		assertThrows(CardNotFoundException.class, () ->
+			this.service.buyCard("WRONG_CARD_ID", "USER")
+		);
+	}
+	
+	@Test
+	void buyCard() {
+		User user = new User() {{
 			setGameAcc(new GameAcc() {{
-				setDefenseDeck(new Deck());
 				setGold(300L);
 				setCards(new LinkedHashSet<>() {{
 					add(new Card() {{
 						setName("Card01");
 					}});
-					add(new Card() {{
-						setName("Card02");
-					}});
 				}});
 			}});
-		}});
-		
-		Optional<Card> card = Optional.of(new Card() {{
-			setId("CARD_ID");
-			setName("Card03");
-			setPrice(10);
-		}});
+		}};
 		
 		Mockito.when(this.gameAccRepository.saveAndFlush(any()))
-			.thenReturn(user.get().getGameAcc());
+			.thenReturn(user.getGameAcc());
 		
 		Mockito.when(this.userRepository.findByUsername("USER"))
-			.thenReturn(user);
+			.thenReturn(Optional.of(user));
 		
 		Mockito.when(this.cardRepository.findById("CARD_ID"))
-			.thenReturn(card);
+			.thenReturn(Optional.of(new Card() {{
+				setPrice(10);
+			}}));
 		
 		this.service.buyCard("CARD_ID", "USER");
 		
-		assertEquals(user.get().getGameAcc().getCards().size(), 3);
+		assertEquals(user.getGameAcc().getCards().size(), 2);
+	}
+	
+	@Test
+	void setDefenseDeck_whenUserDoesNotExist_shouldThrowUserNotFoundException() {
+		Mockito.when(this.userRepository.findByUsername("WRONG_USER"))
+			.thenReturn(Optional.empty());
 		
-		Exception exceptionUser = assertThrows(UserNotFoundException.class, () ->
-			this.service.buyCard("CARD_ID", "WRONG_USER")
+		assertThrows(UserNotFoundException.class, () ->
+			this.service.setDefenseDeck("DECK_ID", "WRONG_USER")
 		);
+	}
+	
+	@Test
+	void setDefenseDeck_whenUserDeckDoesNotExist_shouldThrowDeckNotFoundException() {
+		Mockito.when(this.userRepository.findByUsername("USER"))
+			.thenReturn(Optional.of(new User() {{
+				setGameAcc(new GameAcc());
+			}}));
 		
-		Exception exceptionCard = assertThrows(CardNotFoundException.class, () ->
-			this.service.buyCard("WRONG_CARD_ID", "USER")
+		Mockito.when(this.deckRepository.findById("WRONG_ID"))
+		.thenReturn(Optional.empty());
+		
+		assertThrows(DeckNotFoundException.class, () ->
+			this.service.setDefenseDeck("WRONG_ID", "USER")
 		);
-		
-		assertEquals(exceptionUser.getMessage(), "User with given username does not exist!");
-		assertEquals(exceptionCard.getMessage(), "Card with given id does not exist!");
 	}
 
 	@Test
-	void testSetDefense() {
-		Optional<User> user = Optional.of(new User() {{
-			setUsername("USER");
-			setGameAcc(new GameAcc());
-		}});
-		
-		Optional<Deck> deck = Optional.of(new Deck() {{
-			setId("DECK_ID");
-			setName("DECK4");
-		}});
+	void setDefenseDeck() {
+		User user = new User();
+		user.setGameAcc(new GameAcc());
 		
 		Mockito.when(this.gameAccRepository.saveAndFlush(any()))
-			.thenReturn(user.get().getGameAcc());
+			.thenReturn(user.getGameAcc());
 		
 		Mockito.when(this.deckRepository.saveAndFlush(any()))
-			.thenReturn(deck.get());
+			.thenReturn(new Deck());
 
 		Mockito.when(this.userRepository.findByUsername("USER"))
-			.thenReturn(user);
+			.thenReturn(Optional.of(user));
 		
 		Mockito.when(this.deckRepository.findById("DECK_ID"))
-			.thenReturn(deck);
+			.thenReturn(Optional.of(new Deck()));
 		
 		this.service.setDefenseDeck("DECK_ID", "USER");
 		
-		assertEquals(user.get().getGameAcc().getDefenseDeck().getName(), "DECK4");
-		
-		Exception exceptionUser = assertThrows(UserNotFoundException.class, () ->
-			this.service.setDefenseDeck("CARD_ID", "WRONG_USER")
-		);
-		
-		Exception exceptionDeck = assertThrows(DeckNotFoundException.class, () ->
-			this.service.setDefenseDeck("WRONG_DECK_ID", "USER")
-		);
-		
-		assertEquals(exceptionUser.getMessage(), "User with given username does not exist!");
-		assertEquals(exceptionDeck.getMessage(), "Deck with given id does not exist!");
+		assertNotNull(user.getGameAcc().getDefenseDeck());
 	}
 
 	@Test
-	void testSetAttack() {
-		Optional<User> user = Optional.of(new User() {{
-			setUsername("USER");
-			setGameAcc(new GameAcc());
-		}});
+	void setAttackDeck_whenUserDoesNotExist_shouldThrowUserNotFoundException() {
+		Mockito.when(this.userRepository.findByUsername("WRONG_USER"))
+			.thenReturn(Optional.empty());
 		
-		Optional<Deck> deck = Optional.of(new Deck() {{
-			setId("DECK_ID");
-			setName("DECK4");
-		}});
+		assertThrows(UserNotFoundException.class, () ->
+			this.service.setAttackDeck("DECK_ID", "WRONG_USER")
+		);
+	}
+	
+	@Test
+	void setAttackDeck_whenUserDeckDoesNotExist_shouldThrowDeckNotFoundException() {
+		Mockito.when(this.userRepository.findByUsername("USER"))
+			.thenReturn(Optional.of(new User() {{
+				setGameAcc(new GameAcc());
+			}}));
+		
+		Mockito.when(this.deckRepository.findById("WRONG_ID"))
+		.thenReturn(Optional.empty());
+		
+		assertThrows(DeckNotFoundException.class, () ->
+			this.service.setAttackDeck("WRONG_ID", "USER")
+		);
+	}
+	
+	@Test
+	void setAttackDeck() {
+		User user = new User();
+		user.setGameAcc(new GameAcc());
 		
 		Mockito.when(this.gameAccRepository.saveAndFlush(any()))
-			.thenReturn(user.get().getGameAcc());
+			.thenReturn(user.getGameAcc());
 		
 		Mockito.when(this.deckRepository.saveAndFlush(any()))
-			.thenReturn(deck.get());
+			.thenReturn(new Deck());
 
 		Mockito.when(this.userRepository.findByUsername("USER"))
-			.thenReturn(user);
+			.thenReturn(Optional.of(user));
 		
 		Mockito.when(this.deckRepository.findById("DECK_ID"))
-			.thenReturn(deck);
+			.thenReturn(Optional.of(new Deck()));
 		
-		this.service.setAttackDeck("DECK_ID", "USER");
+		this.service.setDefenseDeck("DECK_ID", "USER");
 		
-		assertEquals(user.get().getGameAcc().getAttackDeck().getName(), "DECK4");
-		
-		Exception exceptionUser = assertThrows(UserNotFoundException.class, () ->
-			this.service.setAttackDeck("CARD_ID", "WRONG_USER")
-		);
-		
-		Exception exceptionDeck = assertThrows(DeckNotFoundException.class, () ->
-			this.service.setAttackDeck("WRONG_DECK_ID", "USER")
-		);
-		
-		assertEquals(exceptionUser.getMessage(), "User with given username does not exist!");
-		assertEquals(exceptionDeck.getMessage(), "Deck with given id does not exist!");
+		assertNotNull(user.getGameAcc().getDefenseDeck());
 	}
-
+	
 	@Test
-	void testWonFight() {
-		Optional<User> user = Optional.of(new User() {{
-			setUsername("USER");
+	void wonFight_whenUserDoesNotExist_shouldThrowUserNotFoundException() {
+		Mockito.when(this.userRepository.findByUsername("WRONG_USER"))
+			.thenReturn(Optional.empty());
+		
+		assertThrows(UserNotFoundException.class, () ->
+			this.service.wonFight("WRONG_USER", "USER", "1", "1")
+		);
+	}
+	
+	@Test
+	void wonFight() {
+		User user =new User() {{
 			setGameAcc(new GameAcc() {{
 				setAttackTickets(3);
 				setBattlePoints(30L);
 				setGold(10L);
 			}});
-		}});
-		Optional<User> user2 = Optional.of(new User() {{
-			setUsername("USER2");
+		}};
+		User user2 = new User() {{
 			setGameAcc(new GameAcc() {{
 				setAttackTickets(3);
 				setBattlePoints(30L);
 				setGold(10L);
 			}});
-		}});
+		}};
 		
 		Mockito.when(this.fightRepository.saveAndFlush(any()))
 			.thenReturn(new Fight());
 		
-		Mockito.when(this.gameAccRepository.saveAndFlush(user.get().getGameAcc()))
-			.thenReturn(user.get().getGameAcc());
+		Mockito.when(this.gameAccRepository.saveAndFlush(user.getGameAcc()))
+			.thenReturn(user.getGameAcc());
 		
-		Mockito.when(this.gameAccRepository.saveAndFlush(user2.get().getGameAcc()))
-			.thenReturn(user2.get().getGameAcc());
+		Mockito.when(this.gameAccRepository.saveAndFlush(user2.getGameAcc()))
+			.thenReturn(user2.getGameAcc());
 		
 		Mockito.when(this.userRepository.findByUsername("USER"))
-			.thenReturn(user);
+			.thenReturn(Optional.of(user));
 		
 		Mockito.when(this.userRepository.findByUsername("USER2"))
-			.thenReturn(user2);
+			.thenReturn(Optional.of(user2));
 		
 		this.service.wonFight("USER2", "USER", "10", "4");
 		
-		assertEquals(user.get().getGameAcc().getAttackTickets(), 2);
-		assertEquals(user.get().getGameAcc().getBattlePoints(), 40);
-		assertEquals(user.get().getGameAcc().getGold(), 15);
+		assertEquals(user.getGameAcc().getAttackTickets(), 2);
+		assertEquals(user.getGameAcc().getBattlePoints(), 40);
+		assertEquals(user.getGameAcc().getGold(), 15);
 		
-		assertEquals(user2.get().getGameAcc().getAttackTickets(), 3);
-		assertEquals(user2.get().getGameAcc().getBattlePoints(), 26);
-		
-		Exception exceptionUser = assertThrows(UserNotFoundException.class, () ->
-			this.service.wonFight("WRONG_USER2", "USER", "10", "4")
-		);
-		
-		assertEquals(exceptionUser.getMessage(), "User with given username does not exist!");
+		assertEquals(user2.getGameAcc().getAttackTickets(), 3);
+		assertEquals(user2.getGameAcc().getBattlePoints(), 26);
 	}
 
 	@Test
-	void testLostFight() {
-		Optional<User> user = Optional.of(new User() {{
-			setUsername("USER");
+	void lostFight_whenUserDoesNotExist_shouldThrowUserNotFoundException() {
+		Mockito.when(this.userRepository.findByUsername("WRONG_USER"))
+			.thenReturn(Optional.empty());
+		
+		Mockito.when(this.userRepository.findByUsername("USER"))
+			.thenReturn(Optional.of(new User()));
+		
+		assertThrows(UserNotFoundException.class, () ->
+			this.service.lostFight("USER", "WRONG_USER", "1", "1")
+		);
+	}
+	
+	@Test
+	void lostFight() {
+		User user =new User() {{
 			setGameAcc(new GameAcc() {{
 				setAttackTickets(3);
 				setBattlePoints(30L);
 				setGold(10L);
 			}});
-		}});
-		Optional<User> user2 = Optional.of(new User() {{
-			setUsername("USER2");
+		}};
+		User user2 = new User() {{
 			setGameAcc(new GameAcc() {{
 				setAttackTickets(3);
 				setBattlePoints(30L);
 				setGold(10L);
 			}});
-		}});
+		}};
 		
 		Mockito.when(this.fightRepository.saveAndFlush(any()))
 			.thenReturn(new Fight());
 		
-		Mockito.when(this.gameAccRepository.saveAndFlush(user.get().getGameAcc()))
-			.thenReturn(user.get().getGameAcc());
+		Mockito.when(this.gameAccRepository.saveAndFlush(user.getGameAcc()))
+			.thenReturn(user.getGameAcc());
 		
-		Mockito.when(this.gameAccRepository.saveAndFlush(user2.get().getGameAcc()))
-			.thenReturn(user2.get().getGameAcc());
+		Mockito.when(this.gameAccRepository.saveAndFlush(user2.getGameAcc()))
+			.thenReturn(user2.getGameAcc());
 		
 		Mockito.when(this.userRepository.findByUsername("USER"))
-			.thenReturn(user);
+			.thenReturn(Optional.of(user));
 		
 		Mockito.when(this.userRepository.findByUsername("USER2"))
-			.thenReturn(user2);
+			.thenReturn(Optional.of(user2));
 		
-		this.service.lostFight("USER2", "USER", "10", "4");
+		this.service.wonFight("USER2", "USER", "10", "4");
 		
-		assertEquals(user.get().getGameAcc().getAttackTickets(), 2);
-		assertEquals(user.get().getGameAcc().getBattlePoints(), 20);
+		assertEquals(user.getGameAcc().getAttackTickets(), 2);
+		assertEquals(user.getGameAcc().getBattlePoints(), 26);
 		
-		assertEquals(user2.get().getGameAcc().getAttackTickets(), 3);
-		assertEquals(user2.get().getGameAcc().getBattlePoints(), 34);
-		
-		Exception exceptionUser = assertThrows(UserNotFoundException.class, () ->
-			this.service.wonFight("WRONG_USER2", "USER", "10", "4")
-		);
-		
-		assertEquals(exceptionUser.getMessage(), "User with given username does not exist!");
+		assertEquals(user2.getGameAcc().getAttackTickets(), 3);
+		assertEquals(user2.getGameAcc().getBattlePoints(), 40);
 	}
 
 	@Test
-	void testResetAttackTickets() {
-		Optional<User> user = Optional.of(new User() {{
-			setUsername("USER");
-			setGameAcc(new GameAcc() {{
-				setAttackTickets(10);
-				setBattlePoints(30L);
-				setGold(10L);
-			}});
-		}});
+	void resetAttackTickets() {
+		User user = new User();
+		user.setGameAcc(new GameAcc());
+		user.getGameAcc().setAttackTickets(0);
 		
 		List<GameAcc> gameAccs = new ArrayList<>();
-		gameAccs.add(user.get().getGameAcc());
+		gameAccs.add(user.getGameAcc());
 		
 		Mockito.when(this.gameAccRepository.findAll())
 			.thenReturn(gameAccs);
 		
 		this.service.resetAttackTickets();
 		
-		assertEquals(user.get().getGameAcc().getAttackTickets(), 3);
+		assertEquals(user.getGameAcc().getAttackTickets(), 3);
 	}
-
 }
