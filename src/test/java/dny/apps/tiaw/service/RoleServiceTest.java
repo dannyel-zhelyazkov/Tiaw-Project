@@ -25,7 +25,7 @@ class RoleServiceTest extends BaseServiceTest {
 	private RoleRepository roleRepository;
 
 	@Test
-	void testFindAllRoles() {
+	void findAllRoles() {
 		Role user = new Role("ROLE_USER");
 		Role mod = new Role("ROLE_MODERATOR");
 		Role admin = new Role("ROLE_ADMIN");
@@ -45,8 +45,19 @@ class RoleServiceTest extends BaseServiceTest {
 		assertEquals(roleServiceModels.size(), 4);
 	}
 
+	@Test 
+	void findByAuthority_whenAuthorityDoesNotExist_shouldThrowRoleNotFoundException() {
+		
+		Mockito.when(this.roleRepository.findByAuthority("WRONG_ROLE"))
+			.thenReturn(Optional.empty());
+		
+		assertThrows(RoleNotFoundException.class, () ->
+			this.service.findByAuthority("WRONG_ROLE")
+		);
+	}
+	
 	@Test
-	void testFindByAuthority() {
+	void findByAuthority() {
 		Optional<Role> role = Optional.of(new Role("ROLE_ADMIN"));
 		
 		Mockito.when(this.roleRepository.findByAuthority("ROLE_ADMIN"))
@@ -55,12 +66,5 @@ class RoleServiceTest extends BaseServiceTest {
 		RoleServiceModel roleServiceModel = this.service.findByAuthority("ROLE_ADMIN");
 		
 		assertEquals(roleServiceModel.getAuthority(), "ROLE_ADMIN");
-		
-		Exception exceptionRole = assertThrows(RoleNotFoundException.class, () ->
-			this.service.findByAuthority("WRONG_ROLE")
-		);
-		
-		assertEquals(exceptionRole.getMessage(), "Role with given name was not foud!");
 	}
-
 }
