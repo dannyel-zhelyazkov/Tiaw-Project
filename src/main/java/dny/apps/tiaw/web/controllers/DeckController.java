@@ -78,7 +78,7 @@ public class DeckController extends BaseController {
 		}
 		
 		DeckCreateServiceModel deckCreateServiceModel = this.modelMapper.map(model, DeckCreateServiceModel.class);
-		this.deckService.createDeck(deckCreateServiceModel, principal.getName());
+		this.deckService.createDeck(deckCreateServiceModel);
 		
 		return super.redirect("/decks/deck");
 	}
@@ -86,7 +86,7 @@ public class DeckController extends BaseController {
 	@PostMapping("/remove-deck/{id}")
 	@PreAuthorize("isAuthenticated()")
 	public ModelAndView deleteDeck(@PathVariable String id, Principal principal) {
-		this.deckService.deleteDeck(id, principal.getName());
+		this.deckService.deleteDeck(id);
 		return super.redirect("/decks/deck");
 	}
 	

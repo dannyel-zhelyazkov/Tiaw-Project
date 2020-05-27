@@ -55,7 +55,8 @@ public class DeckServiceImpl implements DeckService {
 				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));
 		
 		Deck deck = user.getGameAcc().getDecks().stream()
-				.filter(d -> d.getName().equals(deckName)).findFirst()
+				.filter(d -> d.getName().equals(deckName))
+				.findFirst()
 				.orElseThrow(() -> new DeckNotFoundException("Deck with given name does not exist!"));
 
 		return this.modelMapper.map(deck, DeckServiceModel.class); 
@@ -120,7 +121,7 @@ public class DeckServiceImpl implements DeckService {
 				.orElseThrow(() -> new CardNotFoundException("Card with given id does not exist!"));
 		
 		deck.getCards().forEach(c -> {
-			if(c.getName().equals(card.getName())) {
+			if(c.getId().equals(card.getId())) {
 				throw new DeckContainsCardException(String.format("%s is already in %s", card.getName(), deck.getName()));
 			}
 		});

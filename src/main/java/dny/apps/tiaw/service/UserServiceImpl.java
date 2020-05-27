@@ -103,7 +103,9 @@ public class UserServiceImpl implements UserService {
 		
 		user.setGameAcc(gameAcc);
         
-        return this.modelMapper.map(this.userRepository.saveAndFlush(user), UserServiceModel.class);
+		this.userRepository.saveAndFlush(user);
+		
+        return this.modelMapper.map(user, UserServiceModel.class);
     }
     
     //TODO

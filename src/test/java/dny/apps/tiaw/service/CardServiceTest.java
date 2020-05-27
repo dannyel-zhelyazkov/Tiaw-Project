@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -31,25 +32,28 @@ class CardServiceTest extends BaseServiceTest {
 	@MockBean
 	private CardRepository cardRepository;
 	
-	@Test
-	void findById_whenCardDoesNotExist_shoudlThrowCardNotFoundException() {
-		String id = "CARD_ID";
-		
-		Mockito.when(this.cardRepository.findById(id))
+	private Card card;
+	
+	@BeforeEach
+	public void setUp() {
+		Mockito.when(this.cardRepository.findById("WRONG_CARD_ID"))
 			.thenReturn(Optional.empty());
 		
-		assertThrows(CardNotFoundException.class, () -> this.service.findById(id));
+		card = new Card();
+		
+		Mockito.when(this.cardRepository.findById("CARD_ID"))
+			.thenReturn(Optional.of(card));
 	}
 	
 	@Test
-	void findById_whenCardExists_shouldReturnCard() {
-		Card card = new Card();
-		card.setId("CARD_ID");
-		card.setName("CARD");
+	void findById_whenCardDoesNotExist_shoudlThrowCardNotFoundException() {
+		assertThrows(CardNotFoundException.class, () -> 
+			this.service.findById("WRONG_CARD_ID")
+		);
+	}
 	
-		Mockito.when(this.cardRepository.findById("CARD_ID"))
-			.thenReturn(Optional.of(card));
-		
+	@Test
+	void findById_whenCardExists_shouldReturnCard() {		
 		CardServiceModel actual = this.service.findById("CARD_ID");
 		
 		assertEquals(card.getName(), actual.getName());
@@ -57,9 +61,9 @@ class CardServiceTest extends BaseServiceTest {
 
 	@Test
 	void findAllByRarity_whenRarityDoesNotExist_shouldThrowRarityNotFoundException() {
-		String rarity = "RARITY";
-		
-		assertThrows(RarityNotFoundException.class, () -> this.service.findAllByRarity(rarity));
+		assertThrows(RarityNotFoundException.class, () -> 
+			this.service.findAllByRarity("RARITY")
+		);
 	}
 	
 	@Test
@@ -110,10 +114,25 @@ class CardServiceTest extends BaseServiceTest {
 		assertEquals(cards.size(), actual.size());
 	}
 
+	private CardCreateServiceModel notValidCardCreateServiceModel() {
+		return new CardCreateServiceModel() {{
+			setName("Na");
+		}};
+	}
+	
+	private CardCreateServiceModel validCardCreateServiceModel() {
+		return new CardCreateServiceModel() {{
+			setName("Card");
+			setPower(10);
+			setDefense(15);
+			setUrl("Url");
+			setRarity(Rarity.Common);
+		}};
+	}
+	
 	@Test
 	void createCard_whenCardIsNotValid_shouldThrowInvalidCardCreateEditException() {
-		CardCreateServiceModel cardCreateServiceModel = new CardCreateServiceModel();
-		cardCreateServiceModel.setName("Ca");
+		CardCreateServiceModel cardCreateServiceModel = notValidCardCreateServiceModel();
 		
 		assertThrows(InvalidCardCreateEditException.class, () -> 
 			this.service.createCard(cardCreateServiceModel)
@@ -122,13 +141,7 @@ class CardServiceTest extends BaseServiceTest {
 	
 	@Test
 	void createCard_whenCardIsValid_shouldCreateCard() {
-		CardCreateServiceModel cardCreateServiceModel = new CardCreateServiceModel() {{
-			setName("Card");
-			setPower(10);
-			setDefense(15);
-			setUrl("Url");
-			setRarity(Rarity.Common);
-		}};
+		CardCreateServiceModel cardCreateServiceModel = validCardCreateServiceModel();
 		
 		this.service.createCard(cardCreateServiceModel);
 		
@@ -162,7 +175,7 @@ class CardServiceTest extends BaseServiceTest {
 	void updateCard_whenCardIsNotValid_shouldThrowInvalidCardCreateEditException() {
 		CardEditServiceModel cardEditServiceModel = notValidCardEditServiceModel();
 		
-		Mockito.when(this.cardRepository.findById("CARD_ID"))
+		Mockito.when(this.cardRepository.findById("WRONG_ID"))
 			.thenReturn(Optional.of(new Card()));
 		
 		assertThrows(InvalidCardCreateEditException.class, () -> 
@@ -185,16 +198,9 @@ class CardServiceTest extends BaseServiceTest {
 	@Test
 	void testUpdateCard() {
 		CardEditServiceModel cardEditServiceModel = validCardEditServiceModel();
-		
-		Card card = new Card();
-		card.setName("NAMEE");
-		card.setId("CARD_ID");
-		
+				
 		Mockito.when(this.cardRepository.saveAndFlush(any()))
 			.thenReturn(card);
-		
-		Mockito.when(this.cardRepository.findById("CARD_ID"))
-			.thenReturn(Optional.of(card));
 		
 		this.service.updateCard("CARD_ID", cardEditServiceModel);
 		
@@ -203,14 +209,8 @@ class CardServiceTest extends BaseServiceTest {
 	}
 
 	@Test
-	void testDeleteCard() {
-		Card card = new Card();
-		card.setId("CARD_ID");
-		
-		Mockito.when(this.cardRepository.findById("TEST_ID"))
-			.thenReturn(Optional.of(card));
-		
-		CardServiceModel  actual = this.service.deleteCard("TEST_ID");
+	void testDeleteCard() {		
+		CardServiceModel  actual = this.service.deleteCard("CARD_ID");
 		
 		Mockito.verify(this.cardRepository, Mockito.times(1))
 			.delete(card);
