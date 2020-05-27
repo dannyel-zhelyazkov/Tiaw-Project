@@ -79,9 +79,9 @@ public class DeckServiceImpl implements DeckService {
 	}
 	
 	@Override
-	public DeckServiceModel createDeck(DeckCreateServiceModel deckCreateServiceModel) {
+	public DeckServiceModel createDeck(DeckCreateServiceModel deckCreateServiceModel, String username) {
 		
-		if(!this.dekcValidationService.isValid(deckCreateServiceModel)) {
+		if(!this.dekcValidationService.isValid(deckCreateServiceModel, username)) {
 			throw new InvalidDeckCreateException("Invalid deck!");
 		}
 		

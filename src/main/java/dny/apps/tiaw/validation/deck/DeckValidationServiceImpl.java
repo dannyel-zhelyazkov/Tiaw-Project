@@ -3,28 +3,42 @@ package dny.apps.tiaw.validation.deck;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import dny.apps.tiaw.domain.entities.Deck;
+import dny.apps.tiaw.domain.entities.User;
 import dny.apps.tiaw.domain.models.service.DeckCreateServiceModel;
-import dny.apps.tiaw.repository.DeckRepository;
+import dny.apps.tiaw.error.user.UserNotFoundException;
+import dny.apps.tiaw.repository.UserRepository;
 
 @Service
 public class DeckValidationServiceImpl implements DeckValidationService {
 
-	private final DeckRepository dekcRepository;
+	private final UserRepository userRepository;
 	
 	@Autowired
-	public DeckValidationServiceImpl(DeckRepository dekcRepository) {
-		this.dekcRepository = dekcRepository;
+	public DeckValidationServiceImpl(UserRepository userRepository) {
+		this.userRepository = userRepository;
 	}
 	
 	@Override
-	public boolean isValid(DeckCreateServiceModel deckCreateServiceModel) {
-		if(this.dekcRepository.findByName(deckCreateServiceModel.getName()).isPresent() || 
-				deckCreateServiceModel.getName().length() < 3 || 
-				deckCreateServiceModel.getName().length() > 10) {
-			return false;
+	public boolean isValid(DeckCreateServiceModel deckCreateServiceModel, String username) {
+		return 	isNamePresented(deckCreateServiceModel.getName(), username) &&
+				nameLength(deckCreateServiceModel.getName());
+	}
+
+	private boolean isNamePresented(String name, String username) {
+		User user = this.userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));;
+				
+		for(Deck deck : user.getGameAcc().getDecks()) {
+			if(deck.getName().equals(name)) {
+				return false;
+			}
 		}
 		
 		return true;
 	}
-
+	
+	private boolean nameLength(String name) {
+		return name.length() >= 3 && name.length() <= 10;
+	}
 }

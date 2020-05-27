@@ -14,7 +14,7 @@ public interface DeckService {
 
 	Set<DeckServiceModel> findAllDecksByOwner(String owner);
 	
-	DeckServiceModel createDeck(DeckCreateServiceModel deckCreateServiceModel);
+	DeckServiceModel createDeck(DeckCreateServiceModel deckCreateServiceModel, String username);
 	
 	DeckServiceModel deleteDeck(String id);
 	

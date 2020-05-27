@@ -78,7 +78,7 @@ public class DeckController extends BaseController {
 		}
 		
 		DeckCreateServiceModel deckCreateServiceModel = this.modelMapper.map(model, DeckCreateServiceModel.class);
-		this.deckService.createDeck(deckCreateServiceModel);
+		this.deckService.createDeck(deckCreateServiceModel, principal.getName());
 		
 		return super.redirect("/decks/deck");
 	}
