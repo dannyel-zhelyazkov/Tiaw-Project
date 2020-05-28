@@ -1,23 +1,22 @@
 package dny.apps.tiaw.domain.entities;
 
-import java.util.Date;
-
+import java.sql.Timestamp;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "fights")
 public class Fight extends BaseEntity {
-	private Date datetime;
+	private Timestamp datetime;
 	private GameAcc p1;
 	private GameAcc p2;
 	
 	public Fight() {}
 
-	@Temporal(TemporalType.DATE)
-	public Date getDatetime() {
+	@Temporal(TemporalType.TIMESTAMP)
+	public Timestamp getDatetime() {
 		return datetime;
 	}
-	public void setDatetime(Date datetime) {
+	public void setDatetime(Timestamp datetime) {
 		this.datetime = datetime;
 	}
 	@OneToOne

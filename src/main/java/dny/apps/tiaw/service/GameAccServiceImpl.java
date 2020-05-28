@@ -1,6 +1,6 @@
 package dny.apps.tiaw.service;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -145,7 +145,7 @@ public class GameAccServiceImpl implements GameAccService {
 
 		fight.setP1(attacker);
 		fight.setP2(defender);	
-		fight.setDatetime(new Date());
+		fight.setDatetime(new Timestamp(System.currentTimeMillis()));
 
 		return this.fightRepository.saveAndFlush(fight);
 	}
