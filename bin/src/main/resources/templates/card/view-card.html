@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<th:block th:include="~{fragments/head}">
+</th:block>
+</head>
+<body>
+	<header>
+		<th:block th:include="~{fragments/nav}">
+		</th:block>
+	</header>
+	<main>
+		<div class="container-fluid">
+			<div class="align-self-center">
+				<th:block th:switch="${card.rarity}">
+		    	<div th:case="Common" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: grey !important">
+		    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+					<div class="card-body">
+						<h5 class="card-title" th:text="${card.name}"></h5>
+						<hr>
+						<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+						<hr>
+						<form th:action="@{/decks/remove-from-deck/{card}/{deck}(card=${card.id}, deck=${deckId})}" method="post">
+							<div class="text-center"><button class="btn bg-warning">REMOVE</button></div>
+						</form>
+					</div>
+		    	</div>
+		    	<div th:case="Uncommon" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: green !important">
+		    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+					<div class="card-body">
+						<h5 class="card-title" th:text="${card.name}"></h5>
+						<hr>
+						<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+						<hr>
+						<form th:action="@{/decks/remove-from-deck/{card}/{deck}(card=${card.id}, deck=${deckId})}" method="post">
+							<div class="text-center"><button class="btn bg-warning">REMOVE</button></div>
+						</form>
+					</div>
+		    	</div>
+		    	<div th:case="Rare" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: purple !important">
+		    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+					<div class="card-body">
+						<h5 class="card-title" th:text="${card.name}"></h5>
+						<hr>
+						<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+						<hr>
+						<form th:action="@{/decks/remove-from-deck/{card}/{deck}(card=${card.id}, deck=${deckId})}" method="post">
+							<div class="text-center"><button class="btn bg-warning">REMOVE</button></div>
+						</form>
+					</div>
+		    	</div>
+		    	<div th:case="Epic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: orange !important">
+		    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+					<div class="card-body">
+						<h5 class="card-title" th:text="${card.name}"></h5>
+						<hr>
+						<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+						<hr>
+						<form th:action="@{/decks/remove-from-deck/{card}/{deck}(card=${card.id}, deck=${deckId})}" method="post">
+							<div class="text-center"><button class="btn bg-warning">REMOVE</button></div>
+						</form>
+					</div>
+		    	</div>
+		    	<div th:case="Legendary" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: red !important">
+		    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+					<div class="card-body">
+						<h5 class="card-title" th:text="${card.name}"></h5>
+						<hr>
+						<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+						<hr>
+						<form th:action="@{/decks/remove-from-deck/{card}/{deck}(card=${card.id}, deck=${deckId})}" method="post">
+							<div class="text-center"><button class="btn bg-warning">REMOVE</button></div>
+						</form>
+					</div>
+		    	</div>
+		    	<div th:case="Mythic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: black !important">
+		    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+					<div class="card-body">
+						<h5 class="card-title" th:text="${card.name}"></h5>
+						<hr>
+						<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+						<hr>
+						<form th:action="@{/decks/remove-from-deck/{card}/{deck}(card=${card.id}, deck=${deckId})}" method="post">
+							<div class="text-center"><button class="btn bg-warning">REMOVE</button></div>
+						</form>
+					</div>
+		    	</div>
+		   	</th:block>
+			</div>
+    	</div>
+	</main>
+	<footer>
+		<th:block th:include="~{fragments/footer}">
+		</th:block>
+	</footer>
+</body>
+</html>

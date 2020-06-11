@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<th:block th:include="~{fragments/head}">
+</th:block>
+</head>
+<body>
+	<header>
+		<th:block th:include="~{fragments/nav}">
+		</th:block>
+	</header>
+	<main>
+		<div class="container-fluid">
+			<table class="table table-bordered table-dark mt-3">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Image</th>
+						<th scope="col">Name</th>
+						<th scope="col">Power</th>
+						<th scope="col">Defense</th>
+						<th scope="col">Price</th>
+						<th scope="col">Rarity</th>				
+						<th scope="col">Action</th>
+					</tr>
+				</thead>
+				<th:block  th:each="card, iter : ${cards}">
+				<tbody>
+					<tr>
+						<td scope="row" th:text="${iter.index + 1}"></td>
+						<td><img th:src="${card.url}" width="40" height="40" alt="Card"></td>
+						<td th:text="${card.name}"></td>
+						<td th:text="${card.power}"></td>
+						<td th:text="${card.price}"></td>
+						<td th:text="${card.defense}"></td>
+						<td th:text="${card.rarity}"></td>
+						<td>
+                    		<a th:href="@{/cards/edit/{id}(id=${card.id})}" class="btn btn-warning font-weight-bold text-white">Edit</a>
+                    		<a th:href="@{/cards/view/{id}(id=${card.id})}" class="btn btn-success font-weight-bold text-white">View</a>
+                    		<a th:href="@{/cards/delete/{id}(id=${card.id})}" class="btn btn-danger font-weight-bold text-white">Delete</a>
+                		</td>
+					</tr>
+				</tbody>
+				</th:block>
+			</table>
+		</div>
+	</main>
+	<footer>
+		<th:block th:include="~{fragments/footer}">
+		</th:block>
+	</footer>
+</body>
+</html>

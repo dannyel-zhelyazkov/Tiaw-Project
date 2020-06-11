@@ -1,0 +1,98 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html, body {
+	width: 100%;
+	height: 100%;
+	min-height: 100%;
+}
+
+.container-fluid {
+    background-color: burlywood;
+    display: flex;
+    flex-direction: column;
+    height: 861px;
+}
+
+.cards {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 3em;
+}
+
+.card-red, 
+.card-green, 
+.card-blue, 
+.card-violet,
+.card-yellow {
+    width: 12rem;
+    height: 17rem;
+    border-radius: .5em;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-red::before,
+.card-green::before,
+.card-blue::before,
+.card-violet::before,
+.card-yellow::before {
+    content: '';
+    position: absolute;
+    width: 10rem;
+    height: 15rem;
+    border-radius: .5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-red::before {
+    background-color: red;
+    content: 'Best';
+    font-size: 2em;
+}
+
+.card-green::before {
+    background-color: green;
+    content: 'Card';
+    font-size: 2em;
+}
+
+.card-blue::before {
+    background-color: blue;
+    content: 'Game';
+    font-size: 2em;
+}
+
+.card-violet::before {
+    background-color: violet;
+   	content: 'Login';
+	font-size: 2em;
+}
+
+.card-yellow::before {
+    background-color: yellow;
+    content: 'Register';
+    font-size: 2em;
+}
+
+footer {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	left: 0;
+}
+
+footer div p {
+	color: white;
+	font-size: 1.5em;	
+}
+
+.logout button {
+	border: none;
+}

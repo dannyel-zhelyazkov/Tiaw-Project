@@ -1,23 +1,27 @@
 package dny.apps.tiaw.domain.entities;
 
-import java.sql.Timestamp;
-import javax.persistence.*;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "fights")
 public class Fight extends BaseEntity {
-	private Timestamp datetime;
+	private LocalDateTime fightTime;
 	private GameAcc p1;
 	private GameAcc p2;
 	
 	public Fight() {}
 
-	@Temporal(TemporalType.TIMESTAMP)
-	public Timestamp getDatetime() {
-		return datetime;
+	@Column(name="fight_time", nullable = false, updatable = false, unique = false)
+	public LocalDateTime getDatetime() {
+		return fightTime;
 	}
-	public void setDatetime(Timestamp datetime) {
-		this.datetime = datetime;
+	public void setDatetime(LocalDateTime fightTime) {
+		this.fightTime = fightTime;
 	}
 	@OneToOne
 	public GameAcc getP1() {

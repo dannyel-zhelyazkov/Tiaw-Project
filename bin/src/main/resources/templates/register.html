@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:include="~{fragments/head}">
+    </th:block>
+</head>
+<body>
+<header>
+    <th:block th:include="~{fragments/nav}">
+    </th:block>
+</header>
+<main>
+	<div class="container-fluid">
+		<div class="d-flex justify-content-center">
+	 
+		    <form class="form w-25 align-self-center m-3" th:object="${bind}" th:action="@{/users/register}" th:method="post"  autocomplete="off">
+		    	<input type="hidden" name="_csrf" value="c95ccb2b-1afa-47bd-bf7b-a5b72739470b">
+		        <div class="form-group">
+		            <label class="font-weight-bold" for="username">Username</label>
+		            <input type="text" class="form-control" id="username" name="username" th:placeholder="Username" th:field="*{username}">
+		            <small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
+		        </div>
+		        <div class="form-group">
+		        	<label class="font-weight-bold" for="email">Email address</label>
+		            <input type="email" class="form-control" id="email" name="email" th:field="*{email}" th:placeholder="Email">
+		            <small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+		        </div>
+		        <div class="form-group">
+		            <label class="font-weight-bold" for="password">Password</label>
+		            <input type="password" class="form-control" id="password" name="password" th:field="*{password}" th:placeholder="Password">
+		            <small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+		        </div>
+		        <div class="form-group">
+		            <label class="font-weight-bold" for="confirm-password">Confirm Password</label>
+		            <input type="password" class="form-control" id="confirm-password" name="confirmPassword" th:field="*{confirmPassword}" th:placeholder="ConfirmPassword">
+		            <small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+		            <small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('valid')}" th:errors="*{valid}"></small>
+		        </div>
+		        <button type="submit" class="btn btn-primary">Register</button>
+		    </form>
+	 	</div>
+	 </div>
+</main>
+<footer>
+    <th:block th:include="~{fragments/footer}">
+    </th:block>
+</footer>
+</body>
+</html>

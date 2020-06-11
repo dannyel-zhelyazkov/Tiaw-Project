@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:include="~{fragments/head}">
+    </th:block>
+</head>
+<body>
+	<header>
+		<th:block th:include="~{fragments/nav}">
+    	</th:block>
+	</header>
+    <main>
+    	<div class="container-fluid">
+    		<div class="d-flex flex-column text-center mb-3"> 
+	    		<h1>Players</h1>
+	    		<div class="attack-tickets h3">
+	    			<span class="text-info" th:text="|You have ${current.attackTickets}/3 Attack Tickets|"></span>
+	    		</div>
+	    		<th:block th:if="${current.attackTickets == 0}">
+	    			<span class="h4 text-danger">You can't fight more. Please come tomorrow.</span>
+	    		</th:block>
+	    		<th:block th:if="${current.attackDeck == null}">
+		    		<div class="text-center">
+		    			<h3 class="text-danger">You don't have attack deck to fight others players. Add one from <a th:href="@{/decks/deck}">here</a></h3>
+		    		</div>
+		    	</<th:block>
+		    	<th:block th:if="${#lists.size(players) == 0}">
+		    		<div class="text-center">
+		    			<h3>No players to fight against</h3>
+		    		</div>
+		    	</th:block>
+	    	</div>
+	    	<div class="d-flex flex-column w-50 mx-auto">
+			    <th:block th:if="${players != null}">
+			    	<th:block th:each="player, iter: ${players}">
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text" th:text="${iter.index} + 1"></span>
+							    <span class="input-group-text" th:text="|CP: ${player.battlePoints}|"></span>
+							</div>
+						 	<input type="text" class="form-control" disabled="disabled" th:value="${player.username}" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
+							<th:block th:if="not ${player.username == current.username}">
+								<div class="input-group-append">
+									<th:block th:if="${current.attackDeck == null}">
+							    		<button class="btn btn-danger" type="button" disabled="disabled" id="button-addon2">Inspect</button>
+								    </th:block>
+								    <th:block th:if="${current.attackDeck != null}">
+								    	<a th:href="@{/fights/inspect/{name}(name=${player.username})}">
+								    		<button class="btn btn-secondary" type="button" id="button-addon2">Inspect</button>
+								    	</a>
+								    </th:block>
+								</div>
+					  		</th:block>
+						</div>
+			   		</th:block>
+			   	</th:block>
+	    	</div>
+    	</div>
+    </main>
+    <footer>
+    	<th:block th:include="~{fragments/footer}">
+    	</th:block>
+	</footer>
+</body>
+</html>

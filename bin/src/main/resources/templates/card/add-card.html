@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<th:block th:include="~{fragments/head}">
+</th:block>
+</head>
+<body>
+	<header>
+		<th:block th:include="~{fragments/nav}">
+		</th:block>
+	</header>
+	<main>
+		<div class="container-fluid">
+			<div class="d-flex justify-content-center">
+				<form class="form align-self-center m-3" th:object="${card}" th:action="@{/cards/add}" enctype="multipart/form-data" th:method="post">
+					<input type="hidden" name="_csrf" value="c95ccb2b-1afa-47bd-bf7b-a5b72739470b">
+					<div class="form-group">
+						<label for="name" class="font-weight-bold">Name</label> 
+						<input type="text" class="form-control" id="name" name="name" th:field="*{name}">
+						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+					</div>
+					<div class="form-group">
+						<label for="power" class="font-weight-bold">Power</label>
+						<input type="number" class="form-control" id="power" name="power" th:field="*{power}">
+						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('power')}" th:errors="*{power}"></small>
+					</div>
+					<div class="form-group">
+						<label for="defense" class="font-weight-bold">Defense</label>
+						<input type="number" class="form-control" id="defense" name="defense" th:field="*{defense}">
+						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('defense')}" th:errors="*{defense}"></small>
+					</div>
+					<div class="form-group">
+						<label for="image" class="font-weight-bold">Image</label>
+						<input type="file" class="form-control-file" id="image" name="image" th:field="*{image}">
+						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></small>
+						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('valid')}" th:errors="*{valid}"></small>
+					</div>
+					<div class="form-group">
+						<label for="rarity" class="font-weight-bold">Rarity</label>
+						<select id="rarity" name="rarity" th:field="*{rarity}">
+							<option th:each="rarity : ${T(dny.apps.tiaw.domain.entities.Rarity).values()}" th:value="${rarity}" th:text="${rarity}"></option>
+						</select>
+						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('rarity')}" th:errors="*{rarity}"></small>
+					</div>
+					<button type="submit" class="btn btn-primary">Add</button>
+				</form>
+			</div>
+		</div>
+	</main>
+	<footer>
+		<th:block th:include="~{fragments/footer}">
+		</th:block>
+	</footer>
+</body>
+</html>

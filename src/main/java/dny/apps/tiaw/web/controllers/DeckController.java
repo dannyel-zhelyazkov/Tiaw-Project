@@ -9,6 +9,8 @@ import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import dny.apps.tiaw.domain.models.binding.DeckAddBindingModel;
@@ -28,7 +31,9 @@ import dny.apps.tiaw.error.deck.DeckContainsCardException;
 import dny.apps.tiaw.error.deck.DeckNotFoundException;
 import dny.apps.tiaw.error.deck.DeckSizeException;
 import dny.apps.tiaw.error.deck.InvalidDeckCreateException;
+import dny.apps.tiaw.domain.models.view.CardViewModel;
 import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
+import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.DeckService;
 import dny.apps.tiaw.service.UserService;
 import dny.apps.tiaw.web.annotations.PageTitle;
@@ -38,25 +43,32 @@ import dny.apps.tiaw.web.annotations.PageTitle;
 public class DeckController extends BaseController {
 	private final UserService userService;
 	private final DeckService deckService;
+	private final CardService cardService;
 	private final ModelMapper modelMapper;
 
 	@Autowired
-	public DeckController(UserService userService, DeckService deckService, ModelMapper modelMapper) {
+	public DeckController(UserService userService, DeckService deckService, CardService cardService, ModelMapper modelMapper) {
+		this.cardService = cardService;
 		this.userService = userService;
 		this.deckService = deckService;
 		this.modelMapper = modelMapper;
 	}
-	
+		
 	@GetMapping("/deck")
 	@PreAuthorize("isAuthenticated()")
 	@PageTitle("Deck")
-	public ModelAndView deck(ModelAndView modelAndView, Principal principal) {
+	public ModelAndView deck(ModelAndView modelAndView, Principal principal, @RequestParam(defaultValue = "0") int page) {
 		Type listDeckViewModelType = new TypeToken<List<DeckViewModel>>() {}.getType();
+		Type pageCardViewModel = new TypeToken<Page<CardViewModel>>() {}.getType();
 		
 		List<DeckViewModel> deckViewModels = this.modelMapper
 				.map(this.deckService.findAllDecksByOwner(principal.getName()), listDeckViewModelType);
 		
+		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAll(PageRequest.of(page, 4)), pageCardViewModel);
+		
 		modelAndView.addObject("bind", new DeckAddBindingModel());
+		modelAndView.addObject("cards", cards);
+		modelAndView.addObject("currentPage", page);
 		modelAndView.addObject("decks", deckViewModels);
 		modelAndView.addObject("username", principal.getName());
 		return super.view("/deck/deck", modelAndView);

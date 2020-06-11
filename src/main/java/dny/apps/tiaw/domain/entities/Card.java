@@ -1,6 +1,12 @@
 package dny.apps.tiaw.domain.entities;
 
-import javax.persistence.*;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "cards")
@@ -11,6 +17,7 @@ public class Card extends BaseEntity {
 	private Rarity rarity;
 	private String url;
 	private Integer price;
+	private LocalDateTime releaseDate;
 
 	public Card(){}
 
@@ -55,5 +62,12 @@ public class Card extends BaseEntity {
 	}
 	public void setPrice(Integer price) {
 		this.price = price;
+	}
+	@Column(name="release_date", nullable = false, unique = false, updatable = false)
+	public LocalDateTime getReleaseDate() {
+		return releaseDate;
+	}
+	public void setReleaseDate(LocalDateTime releaseDate) {
+		this.releaseDate = releaseDate;
 	}
 }

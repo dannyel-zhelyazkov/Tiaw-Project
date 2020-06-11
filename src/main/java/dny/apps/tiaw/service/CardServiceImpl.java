@@ -1,11 +1,16 @@
 package dny.apps.tiaw.service;
 
+import java.lang.reflect.Type;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import dny.apps.tiaw.domain.entities.Card;
@@ -57,8 +62,15 @@ public class CardServiceImpl implements CardService{
 	@Override
 	public List<CardServiceModel> findAll() {
 		return this.cardRepository.findAll().stream()
+				.sorted((m,n) -> m.getReleaseDate().compareTo(n.getReleaseDate()))
 				.map(c -> this.modelMapper.map(c, CardServiceModel.class))
 				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public Page<CardServiceModel> findAll(PageRequest pageRequest) {
+		Type pageCardServiceModel = new TypeToken< Page<CardServiceModel>>() {}.getType();
+		return this.modelMapper.map(this.cardRepository.findAll(pageRequest), pageCardServiceModel);
 	}
 	
 	@Override
@@ -82,6 +94,8 @@ public class CardServiceImpl implements CardService{
 		} else if(card.getRarity().toString().equals("Mythic")) {
 			card.setPrice(340);
 		}
+		
+		card.setReleaseDate(LocalDateTime.now());
 		
 		this.cardRepository.saveAndFlush(card);
 		
