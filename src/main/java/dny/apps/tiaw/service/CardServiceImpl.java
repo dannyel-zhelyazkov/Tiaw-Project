@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -21,18 +22,22 @@ import dny.apps.tiaw.domain.models.service.CardServiceModel;
 import dny.apps.tiaw.error.card.CardNotFoundException;
 import dny.apps.tiaw.error.card.InvalidCardCreateEditException;
 import dny.apps.tiaw.error.rarity.RarityNotFoundException;
+import dny.apps.tiaw.error.user.UserNotFoundException;
 import dny.apps.tiaw.repository.CardRepository;
+import dny.apps.tiaw.repository.UserRepository;
 import dny.apps.tiaw.validation.card.CardValidationService;
 
 @Service
 public class CardServiceImpl implements CardService{
 	private final CardRepository cardRepository;
+	private final UserRepository userRepository;
 	private final ModelMapper modelMapper;
 	private final CardValidationService cardValidationService;
 
 	@Autowired
-	public CardServiceImpl(CardRepository cardRepository, ModelMapper modelMapper, CardValidationService cardValidationService) {
+	public CardServiceImpl(CardRepository cardRepository, UserRepository userRepository, ModelMapper modelMapper, CardValidationService cardValidationService) {
 		this.cardRepository = cardRepository;
+		this.userRepository = userRepository;
 		this.modelMapper = modelMapper;
 		this.cardValidationService = cardValidationService;
 	}
@@ -45,18 +50,29 @@ public class CardServiceImpl implements CardService{
 	}
 	
 	@Override
-	public List<CardServiceModel> findAllByRarity(String rarity) {		
+	public Page<CardServiceModel> findAllByOwner(PageRequest pageRequest, String owner) {
+		Type pageCardServiceModel = new TypeToken< Page<CardServiceModel>>() {}.getType();
+		
+		List<Card> listCards =  this.userRepository.findByUsername(owner)
+				.orElseThrow(() -> new UserNotFoundException("User with gien username does not exist!"))
+				.getGameAcc().getCards();
+		
+		Page<Card> cards = new PageImpl<>(listCards, pageRequest, listCards.size());
+		
+		return this.modelMapper.map(cards, pageCardServiceModel);
+	}
+	
+	@Override
+	public Page<CardServiceModel> findAllByRarity(PageRequest pageRequest, Rarity rarity) {
 		if(!Arrays.asList(Rarity.values()).stream()
-				.map(r -> r.toString())
 				.collect(Collectors.toList())
 				.contains(rarity)) {
 			throw new RarityNotFoundException("Invalid rarity!");
 		}
 		
-		return this.cardRepository.findAll().stream()
-				.filter(c-> c.getRarity().toString().equals(rarity))
-				.map(c->this.modelMapper.map(c, CardServiceModel.class))
-				.collect(Collectors.toList());
+		Type pageCardServiceModel = new TypeToken< Page<CardServiceModel>>() {}.getType();
+		
+		return this.modelMapper.map(this.cardRepository.findAllByRarity(pageRequest, rarity), pageCardServiceModel);
 	}
 	
 	@Override
@@ -70,6 +86,7 @@ public class CardServiceImpl implements CardService{
 	@Override
 	public Page<CardServiceModel> findAll(PageRequest pageRequest) {
 		Type pageCardServiceModel = new TypeToken< Page<CardServiceModel>>() {}.getType();
+		
 		return this.modelMapper.map(this.cardRepository.findAll(pageRequest), pageCardServiceModel);
 	}
 	

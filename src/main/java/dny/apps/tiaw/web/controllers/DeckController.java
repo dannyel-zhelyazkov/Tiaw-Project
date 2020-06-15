@@ -64,13 +64,14 @@ public class DeckController extends BaseController {
 		List<DeckViewModel> deckViewModels = this.modelMapper
 				.map(this.deckService.findAllDecksByOwner(principal.getName()), listDeckViewModelType);
 		
-		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAll(PageRequest.of(page, 4)), pageCardViewModel);
+		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAllByOwner(PageRequest.of(page, 4), principal.getName()), pageCardViewModel);
 		
 		modelAndView.addObject("bind", new DeckAddBindingModel());
 		modelAndView.addObject("cards", cards);
 		modelAndView.addObject("currentPage", page);
 		modelAndView.addObject("decks", deckViewModels);
 		modelAndView.addObject("username", principal.getName());
+		
 		return super.view("/deck/deck", modelAndView);
 	}
 	

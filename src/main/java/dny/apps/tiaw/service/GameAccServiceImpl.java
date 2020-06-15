@@ -6,6 +6,9 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import dny.apps.tiaw.domain.entities.Card;
@@ -16,6 +19,8 @@ import dny.apps.tiaw.domain.entities.User;
 import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
 import dny.apps.tiaw.error.card.CardNotFoundException;
 import dny.apps.tiaw.error.deck.DeckNotFoundException;
+import dny.apps.tiaw.error.gameacc.GameAccOwnCardException;
+import dny.apps.tiaw.error.gameacc.NotEnoughGoldException;
 import dny.apps.tiaw.error.user.UserNotFoundException;
 import dny.apps.tiaw.repository.CardRepository;
 import dny.apps.tiaw.repository.DeckRepository;
@@ -69,8 +74,9 @@ public class GameAccServiceImpl implements GameAccService {
 	}
 
 	@Override
-	public List<GameAccServiceModel> findAllFightGameAccs() {
-		return this.userRepository.findAll().stream()
+	public Page<GameAccServiceModel> findAllFightGameAccs(PageRequest pageRequest) {
+		List<GameAccServiceModel> models = this.userRepository.findAll(pageRequest).getContent()
+				.stream()
 				.filter(u -> u.getGameAcc().getDefenseDeck() != null)
 				.sorted((u, u1) -> u1.getGameAcc().getBattlePoints().compareTo(u.getGameAcc().getBattlePoints()))
 				.map(u -> {
@@ -80,6 +86,10 @@ public class GameAccServiceImpl implements GameAccService {
 
 					return gameAccServiceModel;
 				}).collect(Collectors.toList());
+		
+		Page<GameAccServiceModel> page = new PageImpl<>(models, pageRequest, models.size());
+		
+		return page;
 	}
 	
 	@Override
@@ -87,13 +97,20 @@ public class GameAccServiceImpl implements GameAccService {
 		User user = this.userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));
 		GameAcc gameAcc = user.getGameAcc();
+		
 		Card card = this.cardRepository.findById(cardId)
 				.orElseThrow(() -> new CardNotFoundException("Card with given id does not exist!"));
 
-		if (gameAcc.getGold() >= card.getPrice() && !gameAcc.getCards().contains(card)) {
-			gameAcc.getCards().add(card);
-			gameAcc.setGold(gameAcc.getGold() - card.getPrice());
+		if(gameAcc.getCards().contains(card)) {
+			throw new GameAccOwnCardException("Already own this card!");
 		}
+		
+		if(gameAcc.getGold() < card.getPrice()) {
+			throw new NotEnoughGoldException("Not enough gold for Card: " + card.getName());
+		}
+		
+		gameAcc.getCards().add(card);
+		gameAcc.setGold(gameAcc.getGold() - card.getPrice());
 
 		return this.modelMapper.map(this.gameAccRepository.saveAndFlush(gameAcc), GameAccServiceModel.class);
 	}

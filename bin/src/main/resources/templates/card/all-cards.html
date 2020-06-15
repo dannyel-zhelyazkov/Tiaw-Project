@@ -33,8 +33,8 @@
 						<td><img th:src="${card.url}" width="40" height="40" alt="Card"></td>
 						<td th:text="${card.name}"></td>
 						<td th:text="${card.power}"></td>
-						<td th:text="${card.price}"></td>
 						<td th:text="${card.defense}"></td>
+						<td th:text="${card.price}"></td>
 						<td th:text="${card.rarity}"></td>
 						<td>
                     		<a th:href="@{/cards/edit/{id}(id=${card.id})}" class="btn btn-warning font-weight-bold text-white">Edit</a>

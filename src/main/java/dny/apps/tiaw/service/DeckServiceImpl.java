@@ -96,7 +96,7 @@ public class DeckServiceImpl implements DeckService {
 		User user = this.userRepository.findByUsername(username)
 			.orElseThrow(() -> new UserNotFoundException("User with given username does not exist!"));
 		
-		user.getGameAcc().getDecks().add(this.deckRepository.findByName(deckCreateServiceModel.getName()).get());
+		user.getGameAcc().getDecks().add(deck);
 		
 		this.gameAccRepository.saveAndFlush(user.getGameAcc());
 		

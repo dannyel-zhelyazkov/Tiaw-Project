@@ -41,6 +41,7 @@
     		</th:block>
     		<div class="card-deck" style="width: fit-content; height: fit-content;">
 			<th:block th:each="card, iter: ${cards}">
+			<h1 th:text="{card.rarity}=='Common'"></h1>
 				<th:block th:switch="${card.rarity}">
 		    		<div th:case="Common" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: grey !important">
 		    			<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">

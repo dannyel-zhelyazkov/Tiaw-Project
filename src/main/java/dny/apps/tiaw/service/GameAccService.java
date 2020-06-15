@@ -2,6 +2,9 @@ package dny.apps.tiaw.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
 
 public interface GameAccService {
@@ -9,7 +12,7 @@ public interface GameAccService {
 	
 	List<GameAccServiceModel> findAll();
 	
-	List<GameAccServiceModel> findAllFightGameAccs();
+	Page<GameAccServiceModel> findAllFightGameAccs(PageRequest pageRequest);
 	
 	GameAccServiceModel buyCard(String cardId, String username);
 	

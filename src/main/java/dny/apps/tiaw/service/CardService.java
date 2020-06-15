@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import dny.apps.tiaw.domain.entities.Rarity;
 import dny.apps.tiaw.domain.models.service.CardCreateServiceModel;
 import dny.apps.tiaw.domain.models.service.CardEditServiceModel;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
@@ -12,8 +13,12 @@ import dny.apps.tiaw.domain.models.service.CardServiceModel;
 public interface CardService {
 	CardServiceModel findById(String id);
 
-	List<CardServiceModel> findAllByRarity(String rarity);
-
+	Page<CardServiceModel> findAllByOwner(PageRequest pageRequest, String owner);
+	
+	Page<CardServiceModel> findAllByRarity(PageRequest pageRequest, Rarity rarity);
+	
+	Page<CardServiceModel> findAll(PageRequest pageRequest);
+	
 	List<CardServiceModel> findAll();
 
 	CardServiceModel createCard(CardCreateServiceModel cardCreateServiceModel);
@@ -21,6 +26,4 @@ public interface CardService {
 	CardServiceModel updateCard(String id, CardEditServiceModel cardEditServiceModel);
 
 	CardServiceModel deleteCard(String id);
-
-	Page<CardServiceModel> findAll(PageRequest pageRequest);
 }

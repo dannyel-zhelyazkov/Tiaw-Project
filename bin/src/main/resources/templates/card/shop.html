@@ -40,10 +40,13 @@
 	            </div>
             <div class="col-md-9 mt-3">       
                 <h1 class="font-weight-bold">Cards</h1>
-                
                 <div class="cards-data">
-                	                     
                 </div>
+                <div id="carouselExampleInterval" class="carousel slide" data-ride="carousel">
+					<div class="carousel-inner bg-dark">
+						
+					</div>
+				</div>
             </div>
             </div>
     	</div>
@@ -90,8 +93,7 @@
 						</div>`;
 			}
 			else {
-				return `<div class="col-md-3">
-				<div class="card border" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: ${color} !important">
+				return `<div class="card border" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: ${color} !important">
 					<img src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 					<div class="card-body">
 						<h5 class="card-title">${card.name}</h5>
@@ -103,8 +105,7 @@
 						<form action="/buy-card/${card.id}" method="post">
 							<div class="text-center"><button class="btn btn-warning">$${card.price}</button></div>
 						</form>
-				</div>
-			</div>`;
+				</div>`;
 			}
 	    }
 		
@@ -134,12 +135,13 @@
 			fetch('http://localhost:8080/cards/fetch/' + rarity)
 	        .then((response) => response.json())
 	        .then((json) => {
-	            $('.cards-data').empty();
+	            $('.carousel-inner').empty();
 	            if (json.length == 0) {
-	                $('.cards-data').append(`<h1 class="text-center font-weight-bold">There are no cards in the ${rarity} rarity.</h1>`)
+	                $('.carousel-inner').append(`<h1 class="text-center font-weight-bold">There are no cards in the ${rarity} rarity.</h1>`)
 	            } else {
-	                for (let i = 0; i < json.length; i+=4) {
-	                    $('.cards-data').append('<div class="cards-row row row-cols-1 row-cols-md-4">');
+	            	var data_interval = 2000;
+	            	for (let i = 0; i < json.length; i+=4) {
+	            		$('.cards-data').append('<div class="cards-row row row-cols-1 row-cols-md-4">');
 	                    if(i < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i]));
 	                    if(i + 1 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 1]));
 	                    if(i + 2 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 2]));

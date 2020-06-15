@@ -1,15 +1,18 @@
 package dny.apps.tiaw.web.controllers;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.security.Principal;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -19,16 +22,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import dny.apps.tiaw.domain.entities.Rarity;
 import dny.apps.tiaw.domain.models.binding.CardCreateBindingModel;
 import dny.apps.tiaw.domain.models.binding.CardDeleteBindingModel;
 import dny.apps.tiaw.domain.models.binding.CardEditBindingModel;
 import dny.apps.tiaw.domain.models.service.CardCreateServiceModel;
 import dny.apps.tiaw.domain.models.service.CardEditServiceModel;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
-import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
 import dny.apps.tiaw.domain.models.view.CardViewModel;
 import dny.apps.tiaw.error.card.CardNotFoundException;
 import dny.apps.tiaw.error.card.InvalidCardCreateEditException;
@@ -157,46 +161,29 @@ public class CardController extends BaseController {
 	@GetMapping("/shop")
 	@PreAuthorize("isAuthenticated()")
 	@PageTitle("Shop")
-	public ModelAndView shop(ModelAndView modelAndView, Principal principal) {
+	public ModelAndView shop(ModelAndView modelAndView, Principal principal, @RequestParam(defaultValue = "0") int page) {
+		Type pageCardViewModel = new TypeToken<Page<CardViewModel>>() {}.getType();
+		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAll(PageRequest.of(page, 4)), pageCardViewModel);
+		
+		modelAndView.addObject("cards", cards);
+		modelAndView.addObject("currentPage", page);
 		modelAndView.addObject("gold", this.userService.findByUsername(principal.getName()).getGameAcc().getGold());
+		
 		return super.view("/card/shop", modelAndView);
 	}
 
-	@GetMapping("/fetch/{rarity}")
+	@GetMapping("/shop/{rarity}")
 	@ResponseBody
-	public List<CardViewModel> fetchByRarityGet(@PathVariable String rarity, Principal principal) {
-		GameAccServiceModel gameAccServiceModel = this.modelMapper
-				.map(this.userService.findByUsername(principal.getName()).getGameAcc(), GameAccServiceModel.class);
+	public ModelAndView fetchByRarity(ModelAndView modelAndView, @PathVariable String rarity, Principal principal, @RequestParam(defaultValue = "0") int page) {
+		Type pageCardViewModel = new TypeToken<Page<CardViewModel>>() {}.getType();
+		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAllByRarity(PageRequest.of(page, 4), Rarity.valueOf(rarity)), pageCardViewModel);
 		
-		if (rarity.equals("all")) {
-			return this.cardService.findAll().stream()
-					.filter(card -> {
-						Iterator<CardServiceModel> cards = gameAccServiceModel.getCards().iterator();
-						while(cards.hasNext()) {
-							if(cards.next().getName().equals(card.getName())) {
-								return false;
-							}
-						}
-						
-						return true;
-					})
-					.map(card -> this.modelMapper.map(card, CardViewModel.class))
-					.collect(Collectors.toList());
-		}
-
-		return this.cardService.findAllByRarity(rarity).stream()
-				.filter(card -> {
-					Iterator<CardServiceModel> cards = gameAccServiceModel.getCards().iterator();
-					while(cards.hasNext()) {
-						if(cards.next().getName().equals(card.getName())) {
-							return false;
-						}
-					}
-					
-					return true;
-				})
-				.map(card -> this.modelMapper.map(card, CardViewModel.class))
-				.collect(Collectors.toList());
+		modelAndView.addObject("cards", cards);
+		modelAndView.addObject("rarity", rarity);
+		modelAndView.addObject("currentPage", page);
+		modelAndView.addObject("gold", this.userService.findByUsername(principal.getName()).getGameAcc().getGold());
+		
+		return super.view("/card/shop", modelAndView);
 	}
 
 	@GetMapping("/user-cards/{user}")

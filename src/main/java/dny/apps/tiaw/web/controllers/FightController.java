@@ -3,23 +3,26 @@ package dny.apps.tiaw.web.controllers;
 import java.lang.reflect.Type;
 import java.security.Principal;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
 import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
+import dny.apps.tiaw.domain.models.view.GameAccAttackViewModel;
 import dny.apps.tiaw.domain.models.view.GameAccFightViewModel;
 import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.DeckService;
@@ -43,16 +46,17 @@ public class FightController extends BaseController {
 	@GetMapping("/fight")
 	@PreAuthorize("isAuthenticated()")
 	@PageTitle("Fight")
-	public ModelAndView fightGet(ModelAndView modelAndView, Principal principal) {
-		modelAndView.addObject("current", 
-				this.modelMapper.map(this.gameAccService.findByUser(principal.getName()),
-						GameAccFightViewModel.class));
+	public ModelAndView fightGet(ModelAndView modelAndView, Principal principal,  @RequestParam(defaultValue = "0") int page) {
+		GameAccAttackViewModel currentPlayer = this.modelMapper.map(this.gameAccService.findByUser(principal.getName()), GameAccAttackViewModel.class);
+		modelAndView.addObject("current", currentPlayer);
 		
-		Type listGameAccFightViewModel = new TypeToken<List<GameAccFightViewModel>>(){}.getType(); 
-		List<GameAccFightViewModel> gameAccFightViewModel = this.modelMapper
-				.map(this.gameAccService.findAllFightGameAccs(), listGameAccFightViewModel);
+		Type pageGameAccFightViewModel = new TypeToken<Page<GameAccFightViewModel>>(){}.getType();
 		
-		modelAndView.addObject("players", gameAccFightViewModel);
+		Page<GameAccFightViewModel> players = this.modelMapper
+				.map(this.gameAccService.findAllFightGameAccs(PageRequest.of(page, 5)), pageGameAccFightViewModel);
+		
+		modelAndView.addObject("players", players);
+		modelAndView.addObject("currentPage", page);
 		return super.view("/fight/fight", modelAndView); 
 	}
 	

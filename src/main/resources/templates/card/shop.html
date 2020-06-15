@@ -12,42 +12,162 @@
 		</th:block>
 	</header>
 	<main>
-		<div class="container-fluid d-flex">
-			<div class="align-self-center m-3 bg-info" style="width: fit-content">
-				<p class="h3 p-3 text-white">You have $<span class="gold" th:text="${gold}"></span></p>
-			</div>
-            <div class="d-flex flex-row">
-	            <div class="products-navigation col-md-3 mt-3 mb-3">
-	                <h2 class="font-weight-bold">Navigation</h2>
-	                <form class="d-flex flex-column">
-	                    <div class="custom-control custom-radio m-3">
-	                        <input type="radio" id="allRadio" name="selection"
-	                               class="custom-control-input"
-	                               value="all"
-	                               checked="checked">
-	                        <label class="h4 custom-control-label" for="allRadio">All</label>
-	                    </div>
-	                    <th:block th:each="rarity : ${T(dny.apps.tiaw.domain.entities.Rarity).values()}">
-	                        <div class="custom-control custom-radio mt-3">
-	                            <input type="radio" th:id="|*{rarity}Radio|" name="selection"
-	                                   class="custom-control-input"
-	                                   th:value="*{rarity}">
-	                            <label class="h4 custom-control-label ml-3" th:for="|*{rarity}Radio|"
-	                                   th:text="*{rarity}"></label>
-	                        </div>
-	                    </th:block>
-	                </form>
-	            </div>
-            <div class="col-md-9 mt-3">       
-                <h1 class="font-weight-bold">Cards</h1>
-                <div class="cards-data">
-                </div>
-                <div id="carouselExampleInterval" class="carousel slide" data-ride="carousel">
-					<div class="carousel-inner bg-dark">
-						
-					</div>
+		<div class="container-fluid d-flex flex-row">
+			<div class="mt-3 col-md-3">
+				<div class="align-self-center m-3 p-3 bg-info" style="width: auto;">
+					<p class="h3 text-white">Bank: $<span class="gold" th:text="${gold}"></span></p>
 				</div>
-            </div>
+				<h1 class="ml-3">Rarity</h1>
+				<div class="rarities mr-3 pr-3">
+					<form th:action="@{/cards/shop}" method="get">
+				  		<button class="btn btn-light m-3 w-100" type="submit"><span class="h4">All</span></button>
+				  	</form>
+					<form th:action="@{/cards/shop/{rarity}(rarity='Common')}" method="get">
+				  		<button class="btn btn-secondary m-3 w-100" type="submit"><span class="h4">Common</span></button>
+				  	</form>
+				  	<form th:action="@{/cards/shop/{rarity}(rarity='Uncommon')}" method="get">
+				  		<button class="btn btn-success m-3 w-100" type="submit"><span class="h4">Uncommon</span></button>
+				  	</form>
+				  	<form th:action="@{/cards/shop/{rarity}(rarity='Rare')}" method="get">
+				  		<button class="btn btn-info m-3 w-100" type="submit"><span class="h4">Rare</span></button>
+				  	</form>
+				  	<form th:action="@{/cards/shop/{rarity}(rarity='Epic')}" method="get">
+				  		<button class="btn btn-warning m-3 w-100" type="submit"><span class="h4">Epic</span></button>
+				  	</form>
+				  	<form th:action="@{/cards/shop/{rarity}(rarity='Legendary')}" method="get">
+				  		<button class="btn btn-danger m-3 w-100" type="submit"><span class="h4">Legendary</span></button>
+				  	</form>
+				  	<form th:action="@{/cards/shop/{rarity}(rarity='Mythic')}" method="get">
+				  		<button class="btn btn-dark m-3 w-100" type="submit"><span class="h4">Mythic</span></button>
+				  	</form>
+			  	</div>
+			</div>
+            <div class="mt-3 col-md-9">
+            	<h1 class="text-white">
+	            	<span th:if="${rarity}==null" class="text-light" th:text="All"></span>
+	            	<span th:if="${rarity}=='Common'" class="text-secondary" th:text="${rarity}"></span>
+	            	<span th:if="${rarity}=='Uncommon'" class="text-success" th:text="${rarity}"></span>
+	            	<span th:if="${rarity}=='Rare'" class="text-info" th:text="${rarity}"></span>
+	            	<span th:if="${rarity}=='Epic'" class="text-warning" th:text="${rarity}"></span>
+	            	<span th:if="${rarity}=='Legendary'" class="text-danger" th:text="${rarity}"></span>
+	            	<span th:if="${rarity}=='Mythic'" class="text-dark" th:text="${rarity}"></span>
+	            	Cards
+            	</h1>
+            	<hr>
+            	<h3 th:if="${cards.content.empty} == true" class="empty-cards" >Coming soon...</h3>
+            	<div th:if="${cards.content.empty} == false" class="cards-pagination">
+					<nav aria-label="...">
+						<ul class="pagination pagination-lg">
+						  	<li class="page-item" th:classappend="${currentPage}==0?'disabled':''">
+						  		<a class="page-link" th:href="@{/cards/shop(page=${currentPage-1})}" >Previous</a>
+						  	</li>
+						 	<li class="page-item" th:each="i : ${#numbers.sequence(0, cards.totalPages-1)}" th:classappend="${currentPage}==${i}?'active':''">
+					    		<a class="page-link active" th:href="@{/cards/shop(page=${i})}" th:text="${i+1}"></a>
+					    	</li>
+						  	<li class="page-item" th:classappend="${currentPage}==${cards.totalPages-1}?'disabled':''">
+						  		<a class="page-link" th:href="@{/cards/shop(page=${currentPage+1})}" >Next</a>
+						  	</li>
+						</ul>
+					</nav>
+				</div>
+	           	<div class="card-deck">
+	           		<th:block th:each="card, iter: ${cards.content}">
+	           		<th:block th:switch="${card.rarity}">
+	           			<div class="col-md-3">
+		           			<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Common}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: grey !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+								</div>
+							</div>
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Uncommon}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: green !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+								</div>
+							</div>
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Rare}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: purple !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+								</div>
+							</div>
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Epic}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: orange !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+								</div>
+							</div>
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Legendary}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: red !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+								</div>
+							</div>
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Mythic}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: black !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</th:block>
+	           		</th:block>
+	           	</div>
             </div>
     	</div>
 	</main>
@@ -55,101 +175,5 @@
 		<th:block th:include="~{fragments/footer}">
 		</th:block>
 	</footer>
-	<script>
-		function formatCard(card) {
-			let color = ''; 
-			if(card.rarity == 'Common') {
-				color = 'grey';
-			}else if(card.rarity == 'Uncommon') {
-				color = 'green';
-			}else if(card.rarity == 'Rare') {
-				color = 'purple';
-			}else if(card.rarity == 'Epic') {
-				color = 'orange';
-			}else if(card.rarity == 'Legendary') {
-				color = 'red';
-			}else if(card.rarity == 'Mythic') {
-				color = 'black';
-			}
-			
-			let ugold = parseInt($('.gold').text());
-			
-			if(ugold < card.price) {
-				return `<div class="col-md-3">
-							<div class="card border" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: ${color} !important">
-								<img src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
-								<div class="card-body">
-									<h5 class="card-title">${card.name}</h5>
-									<hr>
-									<p class="card-text d-flex justify-content-between">
-										<span class="bg-danger rounded p-1">Attack:	${card.power}</span>
-										<span class="bg-success rounded p-1">Defense: ${card.defense}</span></p>
-									<hr>
-									<div class="text-center">
-										<button disabled="disabled" class="btn btn-secondary">$${card.price}</button>
-										<small id="passwordHelpBlock" class="form-text text-danger">Not enough gold</small>
-									</div>
-							</div>
-						</div>`;
-			}
-			else {
-				return `<div class="card border" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: ${color} !important">
-					<img src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
-					<div class="card-body">
-						<h5 class="card-title">${card.name}</h5>
-						<hr>
-						<p class="card-text d-flex justify-content-between">
-							<span class="bg-danger rounded p-1">Attack:	${card.power}</span>
-							<span class="bg-success rounded p-1">Defense: ${card.defense}</span></p>
-						<hr>
-						<form action="/buy-card/${card.id}" method="post">
-							<div class="text-center"><button class="btn btn-warning">$${card.price}</button></div>
-						</form>
-				</div>`;
-			}
-	    }
-		
-		function fn () {
-		        fetch('http://localhost:8080/cards/fetch/all')
-		        .then((response) => response.json())
-		        .then((json) => {
-		            $('.cards-data').empty();
-		            if (json.length == 0) {
-		                $('.cards-data').append(`<h1 class="text-center font-weight-bold">There are no cards yet.</h1>`)
-		            } else {
-		            	for (let i = 0; i < json.length; i+=4) {
-		            		$('.cards-data').append('<div class="cards-row row row-cols-1 row-cols-md-4">');
-		                    if(i < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i]));
-		                    if(i + 1 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 1]));
-		                    if(i + 2 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 2]));
-		                    if(i + 3 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 3]));
-		                }
-		            }
-		        })   
-	    }
-		
-		fn();
-		
-		$('input[type=radio][name=selection]').change(function () {
-			var rarity = $(this).val();
-			fetch('http://localhost:8080/cards/fetch/' + rarity)
-	        .then((response) => response.json())
-	        .then((json) => {
-	            $('.carousel-inner').empty();
-	            if (json.length == 0) {
-	                $('.carousel-inner').append(`<h1 class="text-center font-weight-bold">There are no cards in the ${rarity} rarity.</h1>`)
-	            } else {
-	            	var data_interval = 2000;
-	            	for (let i = 0; i < json.length; i+=4) {
-	            		$('.cards-data').append('<div class="cards-row row row-cols-1 row-cols-md-4">');
-	                    if(i < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i]));
-	                    if(i + 1 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 1]));
-	                    if(i + 2 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 2]));
-	                    if(i + 3 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 3]));
-	                }
-	            }
-	        })
-		})
-	</script>
 </body>
 </html>

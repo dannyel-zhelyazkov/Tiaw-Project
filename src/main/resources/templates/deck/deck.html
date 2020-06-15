@@ -40,114 +40,158 @@
             	</th:block>        	
             </div>
             <div class="mt-3 col-md-9">
-            	<h1>Cards</h1>
-				
+            	<h1>Cards</h1>				
             	<hr/>
-            	<div class="card-deck">
-            	<div class="card" th:each="card : ${cards.content}" style="-webkit-transform: scale(0.8, 0.8);">
-						<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
-						<div class="card-body">
-							<h5 class="card-title" th:text="|${card.name}|"></h5>
-							<hr>
-							<p class="card-text d-flex justify-content-between">
-								<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
-								<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
-							</p>
-							<hr>
-							<form action="/decks/add-to-deck/${card.id}" method="post"><div class="input-group mb-3">
-								<input type="text" name="name" class="form-control" placeholder="Deck Name..." aria-describedby="button-addon2">
-								<div class="input-group-append">
-								<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
-								</div>
-							</form>
-						</div>
-					</div>
-            	</div>
-	            	
-	            	
-            </div>
-            <nav aria-label="...">
+            	<div th:if="${cards.content.empty} == false" class="cards-pagination">
+					<nav aria-label="...">
 						<ul class="pagination pagination-lg">
 						  	<li class="page-item" th:classappend="${currentPage}==0?'disabled':''">
-						  		<a class="page-link" th:href="@{/decks/deck(page=${currentPage-1})}" >Previous</a>
+						  		<a class="page-link" th:href="@{/cards/shop(page=${currentPage-1})}" >Previous</a>
 						  	</li>
 						 	<li class="page-item" th:each="i : ${#numbers.sequence(0, cards.totalPages-1)}" th:classappend="${currentPage}==${i}?'active':''">
-			    				<a class="page-link active" th:href="@{/decks/deck(page=${i})}" th:text="${i+1}"></a>
-			    			</li>
+					    		<a class="page-link active" th:href="@{/cards/shop(page=${i})}" th:text="${i+1}"></a>
+					    	</li>
 						  	<li class="page-item" th:classappend="${currentPage}==${cards.totalPages-1}?'disabled':''">
-						  		<a class="page-link" th:href="@{/decks/deck(page=${currentPage+1})}" >Next</a>
+						  		<a class="page-link" th:href="@{/cards/shop(page=${currentPage+1})}" >Next</a>
 						  	</li>
 						</ul>
 					</nav>
+				</div>
+				<h3 th:if="${cards.content.empty} == true" class="empty-cards">You don't have any cards. Buy some from the <a th:href="@{/cards/shop}">Shop</a>.</h3>
+			   	<div class="card-deck">
+	           		<th:block th:each="card, iter: ${cards.content}">
+	           		<th:block th:switch="${card.rarity}">
+	           			<div class="col-md-3">
+		           			<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Common}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: grey !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/decks/add-to-deck/{cardId}(cardId=${card.id})}" method="post">
+										<div class="input-group mb-3">
+											<input type="text" name="name" class="form-control" placeholder="Deck Name..." aria-describedby="button-addon2">
+											<div class="input-group-append">
+												<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Uncommon}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: green !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/decks/add-to-deck/{cardId}(cardId=${card.id})}" method="post">
+										<div class="input-group mb-3">
+											<input type="text" name="name" class="form-control" placeholder="Deck Name..." aria-describedby="button-addon2">
+											<div class="input-group-append">
+												<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Rare}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: purple !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/decks/add-to-deck/{cardId}(cardId=${card.id})}" method="post">
+										<div class="input-group mb-3">
+											<input type="text" name="name" class="form-control" placeholder="Deck Name..." aria-describedby="button-addon2">
+											<div class="input-group-append">
+												<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Epic}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: orange !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/decks/add-to-deck/{cardId}(cardId=${card.id})}" method="post">
+										<div class="input-group mb-3">
+											<input type="text" name="name" class="form-control" placeholder="Deck Name..." aria-describedby="button-addon2">
+											<div class="input-group-append">
+												<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Legendary}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: red !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/decks/add-to-deck/{cardId}(cardId=${card.id})}" method="post">
+										<div class="input-group mb-3">
+											<input type="text" name="name" class="form-control" placeholder="Deck Name..." aria-describedby="button-addon2">
+											<div class="input-group-append">
+												<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Mythic}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: black !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:action="@{/decks/add-to-deck/{cardId}(cardId=${card.id})}" method="post">
+										<div class="input-group mb-3">
+											<input type="text" name="name" class="form-control" placeholder="Deck Name..." aria-describedby="button-addon2">
+											<div class="input-group-append">
+												<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</th:block>
+	           		</th:block>
+	           	</div>
+            </div> 
     	</div>
     </main>
     <footer>
     	<th:block th:include="~{fragments/footer}">
     	</th:block>
 	</footer>
-	<script th:inline="javascript">
-		/*<![CDATA[*/
-			
-		function formatCard(card) {
-			let color = ''; 
-			if(card.rarity == 'Common') {
-				color = 'grey';
-			}else if(card.rarity == 'Uncommon') {
-				color = 'green';
-			}else if(card.rarity == 'Rare') {
-				color = 'purple';
-			}else if(card.rarity == 'Epic') {
-				color = 'orange';
-			}else if(card.rarity == 'Legendary') {
-				color = 'red';
-			}else if(card.rarity == 'Mythic') {
-				color = 'black';
-			} 
-			
-			/*[+
-			
-			var htmlResult = `<div class="col-md-3"><div class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: ${color} !important">
-				<img src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
-				<div class="card-body">
-					<h5 class="card-title">${card.name}</h5>
-					<hr>
-					<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1">Attack:
-							${card.power}</span><span class="bg-success rounded p-1">Defense: ${card.defense}</span></p>
-					<hr>
-					<form action="/decks/add-to-deck/${card.id}" method="post"><div class="input-group mb-3">
-						<input type="text" name="name" class="form-control" placeholder="Deck Name..." aria-describedby="button-addon2">
-						<div class="input-group-append">
-							<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
-						</div>
-					</form>
-				</div>
-			</div></div>`;
-			
-			+]*/
-			
-			return htmlResult;
-	    }
-	    function showCards () {
-	    	let username = $('.username').text();
-	        fetch('http://localhost:8080/cards/user-cards/' + username)
-	            .then((response) => response.json())
-	            .then((json) => {
-	                $('.cards-data').empty();
-	                if (json.length == 0) {
-	                    $('.cards-data').append(`<h1 class="text-center font-weight-bold">You dont have cards yet. You can buy from the <a href="/cards/shop">SHOP<a></h1>`)
-	                } else {
-	                	for (let i = 0; i < json.length; i+=4) {
-	                        $('.cards-data').append('<div class="cards-row row row-cols-1 row-cols-md-4">');
-	                        if(i < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i]));
-	                        if(i + 1 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 1]));
-	                        if(i + 2 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 2]));
-	                        if(i + 3 < json.length) $('.cards-data .cards-row:last-child').append(formatCard(json[i + 3]));
-	                    }
-	                }
-	            })
-	    };
-	    showCards();
-	    /*]]>*/
-	</script>
 </body>
 </html>
