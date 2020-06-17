@@ -25,7 +25,7 @@ import dny.apps.tiaw.error.rarity.RarityNotFoundException;
 import dny.apps.tiaw.error.user.UserNotFoundException;
 import dny.apps.tiaw.repository.CardRepository;
 import dny.apps.tiaw.repository.UserRepository;
-import dny.apps.tiaw.validation.card.CardValidationService;
+import dny.apps.tiaw.validation.service.CardValidationService;
 
 @Service
 public class CardServiceImpl implements CardService{
@@ -50,12 +50,20 @@ public class CardServiceImpl implements CardService{
 	}
 	
 	@Override
+	public CardServiceModel findByName(String name) {
+		return this.cardRepository.findByName(name)
+				.map(c->this.modelMapper.map(c, CardServiceModel.class))
+				.orElseThrow(() -> new CardNotFoundException("Card with given name does not exist!"));
+	}
+	
+	@Override
 	public Page<CardServiceModel> findAllByOwner(PageRequest pageRequest, String owner) {
 		Type pageCardServiceModel = new TypeToken< Page<CardServiceModel>>() {}.getType();
 		
 		List<Card> listCards =  this.userRepository.findByUsername(owner)
-				.orElseThrow(() -> new UserNotFoundException("User with gien username does not exist!"))
-				.getGameAcc().getCards();
+				.orElseThrow(() -> new UserNotFoundException("GameAcc with given username does not exist!"))
+				.getGameAcc()
+				.getCards();
 		
 		Page<Card> cards = new PageImpl<>(listCards, pageRequest, listCards.size());
 		

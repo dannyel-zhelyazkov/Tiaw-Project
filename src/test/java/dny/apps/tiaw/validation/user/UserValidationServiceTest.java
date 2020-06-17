@@ -14,6 +14,7 @@ import dny.apps.tiaw.domain.entities.User;
 import dny.apps.tiaw.domain.models.service.UserRegisterServiceModel;
 import dny.apps.tiaw.repository.UserRepository;
 import dny.apps.tiaw.service.BaseServiceTest;
+import dny.apps.tiaw.validation.service.UserValidationService;
 
 class UserValidationServiceTest extends BaseServiceTest {
 

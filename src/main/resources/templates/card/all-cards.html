@@ -13,6 +13,32 @@
 	</header>
 	<main>
 		<div class="container-fluid">
+			<div class="cards-pagination mt-3 d-flex flex-row justify-content-between" th:if="${cards.content.empty} == false">
+				<div class="list-group">
+					<a class="list-group-item list-group-item-action" th:href="@{/cards/all(page=${currentPage-1})}"
+						th:classappend="${currentPage}==0?'disabled':'active'">
+						Previous
+					</a>
+				</div>
+				<form th:action="@{/cards/search}" th:object="${card}" method="post">
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text" id="basic-addon1">@</span>
+						</div>
+						<input type="text" class="form-control" name="name" placeholder="Card Name" aria-label="Card name" aria-describedby="basic-addon1" th:field="*{name}">
+						<div class="input-group-append">
+							<button type="submit" class="btn btn-secondary ml-3">Search</button>
+						</div>
+					</div>
+					<small id="nameHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+				</form>
+				<div class="list-group">
+					<a class="list-group-item list-group-item-action" th:href="@{/cards/all(page=${currentPage+1})}"
+						th:classappend="${currentPage}==${cards.totalPages - 1}?'disabled':'active'">
+						Next
+					</a>
+				</div>
+			</div>
 			<table class="table table-bordered table-dark mt-3">
 				<thead>
 					<tr>
@@ -26,10 +52,10 @@
 						<th scope="col">Action</th>
 					</tr>
 				</thead>
-				<th:block  th:each="card, iter : ${cards}">
+				<th:block  th:each="card, iter : ${cards.content}">
 				<tbody>
 					<tr>
-						<td scope="row" th:text="${iter.index + 1}"></td>
+						<td scope="row" th:text="${iter.index + 1 + (currentPage * cards.size)}"></td>
 						<td><img th:src="${card.url}" width="40" height="40" alt="Card"></td>
 						<td th:text="${card.name}"></td>
 						<td th:text="${card.power}"></td>

@@ -1,5 +1,7 @@
 package dny.apps.tiaw.domain.models.service;
 
+import java.time.LocalDateTime;
+
 import dny.apps.tiaw.domain.entities.Rarity;
 
 public class CardServiceModel extends BaseServiceModel {
@@ -9,6 +11,7 @@ public class CardServiceModel extends BaseServiceModel {
 	private Rarity rarity;
 	private String url;
 	private Integer price;
+	private LocalDateTime releaseDate;
 	
 	public CardServiceModel() {}
 
@@ -58,5 +61,13 @@ public class CardServiceModel extends BaseServiceModel {
 
 	public void setPrice(Integer price) {
 		this.price = price;
+	}
+	
+	public LocalDateTime getReleaseDate() {
+		return releaseDate;
+	}
+	
+	public void setReleaseDate(LocalDateTime releaseDate) {
+		this.releaseDate = releaseDate;
 	}
 }

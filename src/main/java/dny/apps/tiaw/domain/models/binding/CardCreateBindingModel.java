@@ -17,38 +17,30 @@ public class CardCreateBindingModel {
 	public CardCreateBindingModel() {
 	}
 
-	@NotNull
-	@Size(min = 3, max = 20, message = "Name must be between 3 and 20 symbols long.")
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	@PositiveOrZero(message = "Power must be 0 or positive.")
-	@NotNull(message = "Power must be not empty")
 	public Integer getPower() {
 		return power;
 	}
 	public void setPower(Integer power) {
 		this.power = power;
 	}
-	@PositiveOrZero(message = "Defense must be 0 or positive.")
-	@NotNull(message = "Defense must be not empty")
 	public Integer getDefense() {
 		return defense;
 	}
 	public void setDefense(Integer defense) {
 		this.defense = defense;
 	}
-	@NotNull(message = "Rarity must be not empty")
 	public Rarity getRarity() {
 		return rarity;
 	}
 	public void setRarity(Rarity rarity) {
 		this.rarity = rarity;
 	}
-	@NotNull(message = "Image url must be not empty.")
 	public MultipartFile getImage() {
 		return image;
 	}

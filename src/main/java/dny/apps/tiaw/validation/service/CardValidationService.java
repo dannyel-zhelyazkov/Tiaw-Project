@@ -1,4 +1,4 @@
-package dny.apps.tiaw.validation.card;
+package dny.apps.tiaw.validation.service;
 
 import dny.apps.tiaw.domain.models.service.CardCreateServiceModel;
 import dny.apps.tiaw.domain.models.service.CardEditServiceModel;

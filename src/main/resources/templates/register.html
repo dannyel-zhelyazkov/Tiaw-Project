@@ -35,7 +35,6 @@
 		            <label class="font-weight-bold" for="confirm-password">Confirm Password</label>
 		            <input type="password" class="form-control" id="confirm-password" name="confirmPassword" th:field="*{confirmPassword}" th:placeholder="ConfirmPassword">
 		            <small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
-		            <small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('valid')}" th:errors="*{valid}"></small>
 		        </div>
 		        <button type="submit" class="btn btn-primary">Register</button>
 		    </form>

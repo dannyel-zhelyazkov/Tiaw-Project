@@ -12,9 +12,11 @@ public interface GameAccService {
 	
 	List<GameAccServiceModel> findAll();
 	
-	Page<GameAccServiceModel> findAllFightGameAccs(PageRequest pageRequest);
+	Page<GameAccServiceModel> findAllGameAccFightModels(PageRequest pageRequest);
 	
-	GameAccServiceModel buyCard(String cardId, String username);
+	GameAccServiceModel buyCardById(String cardId, String username);
+	
+	GameAccServiceModel buyCardByName(String cardName, String username);
 	
 	GameAccServiceModel setDefenseDeck(String deckId, String username);
 	

@@ -7,6 +7,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="game_accs")
 public class GameAcc extends BaseEntity {
+	private String username;
 	private List<Deck> decks;
 	private List<Card> cards;
 	private Deck defenseDeck;
@@ -17,6 +18,13 @@ public class GameAcc extends BaseEntity {
 	
 	public GameAcc() {}
 	
+	@Column(name="username", nullable = false, updatable = false, unique = true)
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
 	@ManyToMany(cascade = CascadeType.ALL)
     public List<Deck> getDecks() {
 		return decks;

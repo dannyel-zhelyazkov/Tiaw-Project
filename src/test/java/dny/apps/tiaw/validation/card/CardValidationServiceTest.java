@@ -15,6 +15,7 @@ import dny.apps.tiaw.domain.models.service.CardCreateServiceModel;
 import dny.apps.tiaw.domain.models.service.CardEditServiceModel;
 import dny.apps.tiaw.repository.CardRepository;
 import dny.apps.tiaw.service.BaseServiceTest;
+import dny.apps.tiaw.validation.service.CardValidationService;
 
 class CardValidationServiceTest extends BaseServiceTest {
 

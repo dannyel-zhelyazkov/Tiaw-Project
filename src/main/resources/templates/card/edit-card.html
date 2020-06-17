@@ -21,6 +21,10 @@
 						<input type="text" class="form-control" id="name" name="name" th:value="${card.name}" th:field="*{name}">
 						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>				
 					</div>
+					<div class="form-group" hidden>
+						<label for="oldName" class="font-weight-bold">OldName</label>
+						<input type="text" class="form-control" id="oldName" name="oldName" th:value="${card.oldName}">				
+					</div>
 					<div class="form-group">
 						<label for="power" class="font-weight-bold">Power</label>
 						<input type="number" class="form-control" id="power" name="power" th:value="${card.power}" th:field="*{power}">

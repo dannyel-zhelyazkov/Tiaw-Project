@@ -11,8 +11,142 @@
     	</th:block>
 	</header>
     <main>
-    	<div class="container-fluid">
-    		<p class="h3">Welcome to the most epic CARD GAME</p>
+    	<div class="container-fluid d-flex flex-row">
+    		<div class="col-md-3">
+    			<h1>Match History</h1>
+    			<h3 th:if="${fights.empty} == true" class="text-danger">DON'T BE COWARD! <a th:href="@{/fights/fight}">FIGHT</a></h3>
+    			<ul class="list-group" th:each="fight: ${fights}">
+			  		<li th:if="${fight.winner} == ${username}" class="list-group-item list-group-item-primary mb-3">
+			  			<h5>
+			  				You won <span th:text="${fight.winnerWonPoints}"></span> from <a th:href="@{/fights/inspect/{name}(name=${fight.loser})}" th:text="${fight.loser}"></a> <span th:text="${fight.fightTime}"></span>
+			  			</h5>
+			  		</li>
+			  		<li th:if="${fight.loser} == ${username}" class="list-group-item list-group-item-danger mb-3">
+			  			<h5>
+			  				You lost <span th:text="${fight.loserLostPoints}"></span> from <a th:href="@{/fights/inspect/{name}(name=${fight.winner})}" th:text="${fight.winner}"></a> <span th:text="${fight.fightTime}"></span>
+			  			</h5>
+			  		</li>
+				</ul>
+    		</div>
+    		<div class="col-md-9">
+    			<h1 class="text-center text-light rounded bg-danger w-25 mx-auto m-3 p-3"><span>CARDS ON SALE</span></h1>
+    			<div class="card-deck">
+	           		<th:block th:each="card: ${cards}">
+	           		<th:block th:switch="${card.rarity}">
+	           			<div class="col-md-3">
+		           			<div th:case="Common" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: grey !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-name/{name}(name=${card.name})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
+								</div>
+							</div>
+							<div th:case="Uncommon" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: green !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-name/{name}(name=${card.name})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
+								</div>
+							</div>
+							<div th:case="Rare" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: purple !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-name/{name}(name=${card.name})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
+								</div>
+							</div>
+							<div th:case="Epic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: orange !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-name/{name}(name=${card.name})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
+								</div>
+							</div>
+							<div th:case="Legendary" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: red !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-name/{name}(name=${card.name})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
+								</div>
+							</div>
+							<div th:case="Mythic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: black !important">
+					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
+								<div class="card-body">
+									<h5 class="card-title" th:text="|${card.name}|"></h5>
+									<hr>
+									<p class="card-text d-flex justify-content-between">
+										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+									</p>
+									<hr>
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-name/{name}(name=${card.name})}" method="post">
+										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</th:block>
+	           		</th:block>
+	           	</div>
+    		</div>
     	</div>
     </main>
     <footer>

@@ -11,30 +11,46 @@ import javax.persistence.Table;
 @Table(name = "fights")
 public class Fight extends BaseEntity {
 	private LocalDateTime fightTime;
-	private GameAcc p1;
-	private GameAcc p2;
+	private GameAcc winner;
+	private GameAcc loser;
+	private Integer winnerWonPoints;
+	private Integer loserLostPoints;
 	
 	public Fight() {}
 
 	@Column(name="fight_time", nullable = false, updatable = false, unique = false)
-	public LocalDateTime getDatetime() {
+	public LocalDateTime getFightTime() {
 		return fightTime;
 	}
-	public void setDatetime(LocalDateTime fightTime) {
+	public void setFightTime(LocalDateTime fightTime) {
 		this.fightTime = fightTime;
 	}
 	@OneToOne
-	public GameAcc getP1() {
-		return p1;
+	public GameAcc getWinner() {
+		return winner;
 	}
-	public void setP1(GameAcc p1) {
-		this.p1 = p1;
+	public void setWinner(GameAcc winner) {
+		this.winner = winner;
 	}
 	@OneToOne
-	public GameAcc getP2() {
-		return p2;
+	public GameAcc getLoser() {
+		return loser;
 	}
-	public void setP2(GameAcc p2) {
-		this.p2 = p2;
+	public void setLoser(GameAcc loser) {
+		this.loser = loser;
+	}
+	@Column(name="winner_won_points", nullable = false, updatable = false, unique = false)
+	public Integer getWinnerWonPoints() {
+		return winnerWonPoints;
+	}
+	public void setWinnerWonPoints(Integer winnerWonPoints) {
+		this.winnerWonPoints = winnerWonPoints;
+	}
+	@Column(name="loser_lost_points", nullable = false, updatable = false, unique = false)
+	public Integer getLoserLostPoints() {
+		return loserLostPoints;
+	}
+	public void setLoserLostPoints(Integer loserLostPoints) {
+		this.loserLostPoints = loserLostPoints;
 	}
 }

@@ -21,6 +21,9 @@
 						<div class="form-gorup">
 							<input type="text" class="form-control" name="name" placeholder="Deck Name..." th:field="*{name}">
 						</div>
+						<div class="form-group" hidden>
+							<input type="text" class="form-control" id="oldName" th:value="${username}" name="username">
+						</div>
 					  	<div class="input-group-append">
 					    	<button class="btn btn-success" type="submit" id="button-addon2">ADD</button>
 					  	</div>	
@@ -48,9 +51,6 @@
 						  	<li class="page-item" th:classappend="${currentPage}==0?'disabled':''">
 						  		<a class="page-link" th:href="@{/cards/shop(page=${currentPage-1})}" >Previous</a>
 						  	</li>
-						 	<li class="page-item" th:each="i : ${#numbers.sequence(0, cards.totalPages-1)}" th:classappend="${currentPage}==${i}?'active':''">
-					    		<a class="page-link active" th:href="@{/cards/shop(page=${i})}" th:text="${i+1}"></a>
-					    	</li>
 						  	<li class="page-item" th:classappend="${currentPage}==${cards.totalPages-1}?'disabled':''">
 						  		<a class="page-link" th:href="@{/cards/shop(page=${currentPage+1})}" >Next</a>
 						  	</li>

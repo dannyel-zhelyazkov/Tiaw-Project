@@ -23,7 +23,7 @@ import dny.apps.tiaw.repository.CardRepository;
 import dny.apps.tiaw.repository.DeckRepository;
 import dny.apps.tiaw.repository.GameAccRepository;
 import dny.apps.tiaw.repository.UserRepository;
-import dny.apps.tiaw.validation.deck.DeckValidationService;
+import dny.apps.tiaw.validation.service.DeckValidationService;
 
 @Service
 public class DeckServiceImpl implements DeckService {
@@ -107,6 +107,10 @@ public class DeckServiceImpl implements DeckService {
 	public DeckServiceModel deleteDeck(String id, String username) {
 		Deck deck = this.deckRepository.findById(id)
 				.orElseThrow(() -> new DeckNotFoundException("Deck with given id does not exist!"));
+		
+		if(deck.getName().equals("StartDeck")) {
+			return null;
+		}
 		
 		deck.getCards().clear();
 		

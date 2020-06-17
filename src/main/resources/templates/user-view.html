@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<th:block th:include="~{fragments/head}">
+</th:block>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script> 
+    <script src="http://malsup.github.com/jquery.form.js"></script> 
+    <script src="../js/jquery.twbsPagination.js" type="text/javascript"></script>
+</head>
+<body>
+	<header>
+		<th:block th:include="~{fragments/nav}">
+		</th:block>
+	</header>
+	<main>
+		<div class="container-fluid">
+			<table class="table table-bordered table-dark mt-3">
+				<thead>
+					<tr>
+						<th scope="col">ID</th>
+						<th scope="col">Username</th>
+						<th scope="col">Email</th>
+						<th scope="col">Role</th>
+						<th scope="col">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<th scope="row" th:text="${user.id}"></th>
+						<td th:text="${user.username}"></td>
+						<td th:text="${user.email}"></td>
+						<td>
+							<th:block th:each="role: ${user.authorities}">
+								<span th:if="${role.authority} == 'ROLE_ADMIN'" th:text="${role.authority}" class="bg-danger mr-3 p-1 border rounded"></span>
+								<span th:if="${role.authority} == 'ROLE_MODERATOR'" th:text="${role.authority}" class="bg-info mr-3 p-1 border rounded"></span>
+								<span th:if="${role.authority} == 'ROLE_USER'" th:text="${role.authority}" class="bg-success mr-3 p-1 border rounded"></span>
+							</th:block>
+						</td>
+						<td class="m-3">
+							<div class="row">
+		                        <th:block th:if="${#lists.size(user.authorities)} == 1">
+		                            <form th:action="@{/users/set-moderator/{id}(id=${user.id})}" th:method="post" class="ml-3 mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark bg-info">MODERATOR</button>
+		                            </form>
+		                            <form th:action="@{/users/set-admin/{id}(id=${user.id})}" th:method="post" class="ml-3 mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark bg-danger">ADMIN</button>
+		                            </form>
+		                        </th:block>
+		                        <th:block th:if="${#lists.size(user.authorities)} == 2">
+		                            <form th:action="@{/users/set-user/{id}(id=${user.id})}" th:method="post" class="ml-3 mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark bg-success">USER</button>
+		                            </form>
+		                            <form th:action="@{/users/set-admin/{id}(id=${user.id})}" th:method="post" class="ml-3 mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark bg-danger">ADMIN</button>
+		                            </form>
+		                        </th:block>
+		                        <th:block th:if="${#lists.size(user.authorities)} == 3">
+		                            <form th:action="@{/users/set-user/{id}(id=${user.id})}" th:method="post" class="ml-3 mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark  bg-success">USER</button>
+		                            </form>
+		                            <form th:action="@{/users/set-moderator/{id}(id=${user.id})}" th:method="post" class="ml-3 mx-1">
+		                                <input type="hidden" name="_csrf" value="80417983-fe8b-45c7-963e-31f6915a1560">
+		                                <button class="btn btn-dark bg-info">MODERATOR</button>
+		                            </form>
+		                        </th:block>
+                        	</div>					
+                    	</td>
+					</tr>
+				</tbody>
+				</th:block>
+			</table>
+		</div>
+	</main>
+	<footer>
+		<th:block th:include="~{fragments/footer}">
+		</th:block>
+	</footer>
+</body>
+</html>

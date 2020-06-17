@@ -25,7 +25,7 @@
 		    			<h3 class="text-danger">You don't have attack deck to fight others players. Add one from <a th:href="@{/decks/deck}">here</a></h3>
 		    		</div>
 		    	</<th:block>
-		    	<th:block th:if="${#lists.size(players) == 0}">
+		    	<th:block th:if="${players.content.empty} == true">
 		    		<div class="text-center">
 		    			<h3>No players to fight against</h3>
 		    		</div>
@@ -60,9 +60,6 @@
 					  	<li class="page-item" th:classappend="${currentPage}==0?'disabled':''">
 					  		<a class="page-link" th:href="@{/fights/fight(page=${currentPage-1})}" >Previous</a>
 					  	</li>
-					 	<li class="page-item" th:each="i : ${#numbers.sequence(0, players.totalPages-1)}" th:classappend="${currentPage}==${i}?'active':''">
-				    		<a class="page-link active" th:href="@{/fights/fight(page=${i})}" th:text="${i+1}"></a>
-				    	</li>
 					  	<li class="page-item" th:classappend="${currentPage}==${players.totalPages-1}?'disabled':''">
 					  		<a class="page-link" th:href="@{/fights/fight(page=${currentPage+1})}" >Next</a>
 					  	</li>

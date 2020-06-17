@@ -13,6 +13,8 @@ import dny.apps.tiaw.domain.models.service.CardServiceModel;
 public interface CardService {
 	CardServiceModel findById(String id);
 
+	CardServiceModel findByName(String name);
+	
 	Page<CardServiceModel> findAllByOwner(PageRequest pageRequest, String owner);
 	
 	Page<CardServiceModel> findAllByRarity(PageRequest pageRequest, Rarity rarity);

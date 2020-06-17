@@ -6,13 +6,12 @@ import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
-
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -30,6 +29,7 @@ import dny.apps.tiaw.domain.entities.Rarity;
 import dny.apps.tiaw.domain.models.binding.CardCreateBindingModel;
 import dny.apps.tiaw.domain.models.binding.CardDeleteBindingModel;
 import dny.apps.tiaw.domain.models.binding.CardEditBindingModel;
+import dny.apps.tiaw.domain.models.binding.CardSearchBindingModel;
 import dny.apps.tiaw.domain.models.service.CardCreateServiceModel;
 import dny.apps.tiaw.domain.models.service.CardEditServiceModel;
 import dny.apps.tiaw.domain.models.service.CardServiceModel;
@@ -40,6 +40,9 @@ import dny.apps.tiaw.error.rarity.RarityNotFoundException;
 import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.CloudinaryService;
 import dny.apps.tiaw.service.UserService;
+import dny.apps.tiaw.validation.controller.CardCreateValidaor;
+import dny.apps.tiaw.validation.controller.CardEditValidator;
+import dny.apps.tiaw.validation.controller.CardSearchValidator;
 import dny.apps.tiaw.web.annotations.PageTitle;
 
 @Controller
@@ -49,14 +52,21 @@ public class CardController extends BaseController {
 	private final CardService cardService;
 	private final UserService userService;
 	private final ModelMapper modelMapper;
+	private final CardCreateValidaor cardCreateValidator;
+	private final CardEditValidator cardEditValidator;
+	private final CardSearchValidator cardSerSearchValidator;
 	private final CloudinaryService cloudinaryService;
 
 	@Autowired
 	public CardController(CardService cardService, UserService userService, ModelMapper modelMapper,
+			CardCreateValidaor cardCreateValidator, CardEditValidator cardEditValidator, CardSearchValidator cardSerSearchValidator, 
 			CloudinaryService cloudinaryService) {
 		this.cardService = cardService;
 		this.userService = userService;
 		this.modelMapper = modelMapper;
+		this.cardCreateValidator = cardCreateValidator;
+		this.cardEditValidator = cardEditValidator;
+		this.cardSerSearchValidator = cardSerSearchValidator;
 		this.cloudinaryService = cloudinaryService;
 	}
 
@@ -70,7 +80,10 @@ public class CardController extends BaseController {
 
 	@PostMapping("/add")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
-	public ModelAndView addCardPost(@Valid @ModelAttribute("card") CardCreateBindingModel model, BindingResult reuslt) throws IOException {
+	public ModelAndView addCardPost(@ModelAttribute("card") CardCreateBindingModel model, BindingResult reuslt) throws IOException {
+		
+		this.cardCreateValidator.validate(model, reuslt);
+		
 		if(reuslt.hasErrors()) {
 			return super.view("/card/add-card");
 		}
@@ -86,33 +99,63 @@ public class CardController extends BaseController {
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
 	@PageTitle("Cards")
-	public ModelAndView allCardsGet(ModelAndView model) {
-		model.addObject("cards", this.cardService.findAll().stream()
-				.map(c -> this.modelMapper.map(c, CardViewModel.class))
-				.collect(Collectors.toList()));
-
-		return super.view("/card/all-cards", model);
+	public ModelAndView allCardsGet(ModelAndView modelAndView, @RequestParam(defaultValue = "0") int page) {
+		
+		Type pageCardViewModeType = new TypeToken<Page<CardViewModel>> () {}.getType();
+		
+		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAll(PageRequest.of(page, 6, Sort.by("releaseDate"))),pageCardViewModeType);
+		
+		modelAndView.addObject("card", new CardSearchBindingModel());
+		modelAndView.addObject("cards", cards);
+		modelAndView.addObject("currentPage", page);
+		return super.view("/card/all-cards", modelAndView);
 	}
+	
+	@PostMapping("/search")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ModelAndView search(ModelAndView modelAndView, @ModelAttribute("card") CardSearchBindingModel model, BindingResult result, @RequestParam(defaultValue = "0") int page) {
+		
+		this.cardSerSearchValidator.validate(model, result);
+
+		if(result.hasErrors()) {
+			Type pageCardViewModeType = new TypeToken<Page<CardViewModel>> () {}.getType();
+			
+			Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAll(PageRequest.of(page, 6, Sort.by("releaseDate"))),pageCardViewModeType);
+			
+			modelAndView.addObject("cards", cards);
+			modelAndView.addObject("currentPage", page);
+			
+			return super.view("/card/all-cards", modelAndView);
+		}
+		
+    	CardViewModel card = this.modelMapper.map(this.cardService.findByName(model.getName()), CardViewModel.class);
+    	
+    	modelAndView.addObject("card", card);
+    	
+    	return super.view("/card/card-search", modelAndView);
+    }
 
 	@GetMapping("/edit/{id}")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
 	@PageTitle("Edit Card")
-	public ModelAndView editCardGet(@PathVariable String id, ModelAndView model) {
+	public ModelAndView editCardGet(@PathVariable String id, ModelAndView modelAndView) {
 		CardServiceModel cardServiceModel = this.cardService.findById(id);
 
 		CardEditBindingModel card = this.modelMapper.map(cardServiceModel, CardEditBindingModel.class);
+		card.setOldName(card.getName());
+		
+		modelAndView.addObject("card", card);
+		modelAndView.addObject("cardId", id);
 
-		model.addObject("card", card);
-		model.addObject("cardId", id);
-
-		return super.view("/card/edit-card", model);
+		return super.view("/card/edit-card", modelAndView);
 	}
 
 	@PostMapping("/edit/{id}")
 	@PreAuthorize("hasRole('ROLE_MODERATOR')")
-	public ModelAndView editCardPost(@PathVariable String id, @Valid @ModelAttribute("card") CardEditBindingModel model, BindingResult reuslt, ModelAndView modelAndView) {
+	public ModelAndView editCardPost(@PathVariable String id, @ModelAttribute("card") CardEditBindingModel model, BindingResult reuslt, ModelAndView modelAndView) {
+		this.cardEditValidator.validate(model, reuslt);
+		
 		if(reuslt.hasErrors()) {
-			modelAndView.addObject("card", model);
 			modelAndView.addObject("cardId", id);
 
 			return super.view("/card/edit-card", modelAndView);
@@ -163,7 +206,7 @@ public class CardController extends BaseController {
 	@PageTitle("Shop")
 	public ModelAndView shop(ModelAndView modelAndView, Principal principal, @RequestParam(defaultValue = "0") int page) {
 		Type pageCardViewModel = new TypeToken<Page<CardViewModel>>() {}.getType();
-		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAll(PageRequest.of(page, 4)), pageCardViewModel);
+		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAll(PageRequest.of(page, 4, Sort.by("releaseDate"))), pageCardViewModel);
 		
 		modelAndView.addObject("cards", cards);
 		modelAndView.addObject("currentPage", page);
@@ -176,7 +219,7 @@ public class CardController extends BaseController {
 	@ResponseBody
 	public ModelAndView fetchByRarity(ModelAndView modelAndView, @PathVariable String rarity, Principal principal, @RequestParam(defaultValue = "0") int page) {
 		Type pageCardViewModel = new TypeToken<Page<CardViewModel>>() {}.getType();
-		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAllByRarity(PageRequest.of(page, 4), Rarity.valueOf(rarity)), pageCardViewModel);
+		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAllByRarity(PageRequest.of(page, 4, Sort.by("releaseDate")), Rarity.valueOf(rarity)), pageCardViewModel);
 		
 		modelAndView.addObject("cards", cards);
 		modelAndView.addObject("rarity", rarity);

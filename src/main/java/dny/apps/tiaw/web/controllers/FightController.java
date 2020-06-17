@@ -10,6 +10,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +24,11 @@ import org.springframework.web.servlet.ModelAndView;
 import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
 import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
 import dny.apps.tiaw.domain.models.view.GameAccAttackViewModel;
-import dny.apps.tiaw.domain.models.view.GameAccFightViewModel;
+import dny.apps.tiaw.domain.models.view.GameAccDefenseViewModel;
 import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.DeckService;
 import dny.apps.tiaw.service.GameAccService;
+import dny.apps.tiaw.service.UserService;
 import dny.apps.tiaw.web.annotations.PageTitle;
 
 @Controller
@@ -37,7 +39,7 @@ public class FightController extends BaseController {
 	private final ModelMapper modelMapper;
 	
 	@Autowired
-	public FightController(GameAccService gameAccService, DeckService deckService, CardService cardService, ModelMapper modelMapper) {
+	public FightController(GameAccService gameAccService, UserService userService, DeckService deckService, CardService cardService, ModelMapper modelMapper) {
 		this.gameAccService = gameAccService;
 		this.deckService = deckService;
 		this.modelMapper = modelMapper;
@@ -50,10 +52,10 @@ public class FightController extends BaseController {
 		GameAccAttackViewModel currentPlayer = this.modelMapper.map(this.gameAccService.findByUser(principal.getName()), GameAccAttackViewModel.class);
 		modelAndView.addObject("current", currentPlayer);
 		
-		Type pageGameAccFightViewModel = new TypeToken<Page<GameAccFightViewModel>>(){}.getType();
+		Type pageGameAccDefenseViewModelType = new TypeToken<Page<GameAccDefenseViewModel>>(){}.getType();
 		
-		Page<GameAccFightViewModel> players = this.modelMapper
-				.map(this.gameAccService.findAllFightGameAccs(PageRequest.of(page, 5)), pageGameAccFightViewModel);
+		Page<GameAccDefenseViewModel> players = this.modelMapper
+				.map(this.gameAccService.findAllGameAccFightModels(PageRequest.of(page, 10, Sort.by("battlePoints").descending())), pageGameAccDefenseViewModelType);
 		
 		modelAndView.addObject("players", players);
 		modelAndView.addObject("currentPage", page);

@@ -2,6 +2,8 @@ package dny.apps.tiaw.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import dny.apps.tiaw.domain.models.service.UserRegisterServiceModel;
@@ -14,7 +16,9 @@ public interface UserService extends UserDetailsService {
 
     UserServiceModel editUserProfile(UserServiceModel userServiceModel, String oldPassword);
 
-    List<UserServiceModel> findAllUsers();
+    List<UserServiceModel> findAll();
+    
+    Page<UserServiceModel> findAll(Pageable pageRequest);
 
     void setUserRole(String id, String role);
 }

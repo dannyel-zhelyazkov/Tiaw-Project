@@ -1,4 +1,4 @@
-package dny.apps.tiaw.validation.card;
+package dny.apps.tiaw.validation.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class CardValidationServiceImpl implements CardValidationService {
 	
 	@Override
 	public boolean isValid(CardCreateServiceModel cardCreateServiceModel) {
-		if(isNamePresented(cardCreateServiceModel.getName()) ||
+		if(isNamePresented(cardCreateServiceModel.getName(), "") ||
 				isNameLengthInvalid(cardCreateServiceModel.getName()) ||
 				isPowerNegative(cardCreateServiceModel.getPower()) || 
 				isDefenseNegative(cardCreateServiceModel.getDefense()) || 
@@ -34,7 +34,7 @@ public class CardValidationServiceImpl implements CardValidationService {
 
 	@Override
 	public boolean isValid(CardEditServiceModel cardEditServiceModel) {
-		if(isNamePresented(cardEditServiceModel.getName()) ||
+		if(isNamePresented(cardEditServiceModel.getName(), cardEditServiceModel.getOldName()) ||
 				isNameLengthInvalid(cardEditServiceModel.getName()) ||
 				isPowerNegative(cardEditServiceModel.getPower()) ||
 				isDefenseNegative(cardEditServiceModel.getDefense())) {
@@ -48,16 +48,16 @@ public class CardValidationServiceImpl implements CardValidationService {
 		return name.length() < 3 || name.length() > 20;
 	}
 	
-	private boolean isNamePresented(String name) {
-		return this.cardRepository.findByName(name).isPresent();
+	private boolean isNamePresented(String name, String oldName) {
+		return this.cardRepository.findByName(name).isPresent() && !name.equals(oldName);
 	}
 	
 	private boolean isPowerNegative(Integer power) {
-		return power < 0;
+		return power < 0 || power == null;
 	}
 	
 	private boolean isDefenseNegative(Integer defense) {
-		return defense < 0;
+		return defense < 0 || defense == null;
 	}
 	
 	private boolean isUrlNull(String url) {

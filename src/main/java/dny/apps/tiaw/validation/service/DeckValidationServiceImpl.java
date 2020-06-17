@@ -1,4 +1,4 @@
-package dny.apps.tiaw.validation.deck;
+package dny.apps.tiaw.validation.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

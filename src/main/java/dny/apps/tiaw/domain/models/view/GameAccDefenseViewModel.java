@@ -1,11 +1,11 @@
 package dny.apps.tiaw.domain.models.view;
 
-public class GameAccFightViewModel {
+public class GameAccDefenseViewModel {
 	private String username;
 	private DeckCardsViewModel defenseDeck;
 	private Long battlePoints;
 	
-	public GameAccFightViewModel() {}
+	public GameAccDefenseViewModel() {}
 
 	public String getUsername() {
 		return username;

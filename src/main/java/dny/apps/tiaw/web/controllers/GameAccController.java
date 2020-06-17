@@ -20,13 +20,19 @@ public class GameAccController extends BaseController {
 		this.gameAccService = gameAccService;
 	}
 	
-	@PostMapping("/buy-card/{id}")
+	@PostMapping("/buy-card-id/{id}")
 	@PreAuthorize("isAuthenticated()")
-	public ModelAndView buyCardPost(@PathVariable String id, Principal principal, ModelAndView modelAndView) {
-		this.gameAccService.buyCard(id, principal.getName());
+	public ModelAndView buyCardById(@PathVariable String id, Principal principal, ModelAndView modelAndView) {
+		this.gameAccService.buyCardById(id, principal.getName());
 		return super.redirect("/decks/deck");
 	}
 	
+	@PostMapping("/buy-card-name/{name}")
+	@PreAuthorize("isAuthenticated()")
+	public ModelAndView buyCardByName(@PathVariable String name, Principal principal, ModelAndView modelAndView) {
+		this.gameAccService.buyCardByName(name, principal.getName());
+		return super.redirect("/decks/deck");
+	}
 	
 	@PostMapping("/set-defense/{id}")
 	@PreAuthorize("isAuthenticated()")

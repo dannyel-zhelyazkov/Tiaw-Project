@@ -18,6 +18,7 @@ import dny.apps.tiaw.domain.models.service.DeckCreateServiceModel;
 import dny.apps.tiaw.error.user.UserNotFoundException;
 import dny.apps.tiaw.repository.UserRepository;
 import dny.apps.tiaw.service.BaseServiceTest;
+import dny.apps.tiaw.validation.service.DeckValidationService;
 
 class DeckValidationServiceTest extends BaseServiceTest {
 	

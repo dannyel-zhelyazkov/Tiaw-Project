@@ -61,9 +61,7 @@
 						  	<li class="page-item" th:classappend="${currentPage}==0?'disabled':''">
 						  		<a class="page-link" th:href="@{/cards/shop(page=${currentPage-1})}" >Previous</a>
 						  	</li>
-						 	<li class="page-item" th:each="i : ${#numbers.sequence(0, cards.totalPages-1)}" th:classappend="${currentPage}==${i}?'active':''">
-					    		<a class="page-link active" th:href="@{/cards/shop(page=${i})}" th:text="${i+1}"></a>
-					    	</li>
+						 	
 						  	<li class="page-item" th:classappend="${currentPage}==${cards.totalPages-1}?'disabled':''">
 						  		<a class="page-link" th:href="@{/cards/shop(page=${currentPage+1})}" >Next</a>
 						  	</li>
@@ -84,9 +82,12 @@
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
 									<hr>
-									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-id/{id}(id=${card.id})}" method="post">
 										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
 									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
 								</div>
 							</div>
 							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Uncommon}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: green !important">
@@ -99,9 +100,12 @@
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
 									<hr>
-									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-id/{id}(id=${card.id})}" method="post">
 										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
 									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
 								</div>
 							</div>
 							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Rare}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: purple !important">
@@ -114,9 +118,12 @@
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
 									<hr>
-									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-id/{id}(id=${card.id})}" method="post">
 										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
 									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
 								</div>
 							</div>
 							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Epic}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: orange !important">
@@ -129,9 +136,12 @@
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
 									<hr>
-									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-id/{id}(id=${card.id})}" method="post">
 										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
 									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
 								</div>
 							</div>
 							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Legendary}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: red !important">
@@ -144,9 +154,12 @@
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
 									<hr>
-									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-id/{id}(id=${card.id})}" method="post">
 										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
 									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
 								</div>
 							</div>
 							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Mythic}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: black !important">
@@ -159,9 +172,14 @@
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
 									<hr>
-									<form th:action="@{/buy-card/{id}(id=${card.id})}" method="post">
-										<div class="text-center"><button class="btn btn-warning" th:text="|$${card.price}|"></button></div>
+									<form th:if="${gold} >= ${card.price}" th:action="@{/buy-card-id/{id}(id=${card.id})}" method="post">
+										<div class="text-center">
+											<button class="btn btn-warning" th:text="|$${card.price}|"></button>
+										</div>
 									</form>
+									<div th:if="${gold} < ${card.price}" class="text-center">
+											<button class="btn btn-warning disabled" th:text="|$${card.price}|"></button>
+									</div>
 								</div>
 							</div>
 						</div>

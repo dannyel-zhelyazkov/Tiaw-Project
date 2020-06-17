@@ -2,6 +2,7 @@ package dny.apps.tiaw.domain.models.service;
 
 public class CardEditServiceModel {
 	private String name;
+	private String oldName;
 	private Integer power;
 	private Integer defense;
 	private Integer price;
@@ -13,6 +14,12 @@ public class CardEditServiceModel {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getOldName() {
+		return oldName;
+	}
+	public void setOldName(String oldName) {
+		this.oldName = oldName;
 	}
 	public Integer getPower() {
 		return power;
