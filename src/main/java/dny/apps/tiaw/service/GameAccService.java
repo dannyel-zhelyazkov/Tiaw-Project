@@ -12,7 +12,7 @@ public interface GameAccService {
 	
 	List<GameAccServiceModel> findAll();
 	
-	Page<GameAccServiceModel> findAllGameAccFightModels(PageRequest pageRequest);
+	Page<GameAccServiceModel> findAllGameAccFight(PageRequest pageRequest);
 	
 	GameAccServiceModel buyCardById(String cardId, String username);
 	

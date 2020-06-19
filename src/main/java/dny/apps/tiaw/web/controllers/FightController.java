@@ -55,7 +55,7 @@ public class FightController extends BaseController {
 		Type pageGameAccDefenseViewModelType = new TypeToken<Page<GameAccDefenseViewModel>>(){}.getType();
 		
 		Page<GameAccDefenseViewModel> players = this.modelMapper
-				.map(this.gameAccService.findAllGameAccFightModels(PageRequest.of(page, 10, Sort.by("battlePoints").descending())), pageGameAccDefenseViewModelType);
+				.map(this.gameAccService.findAllGameAccFight(PageRequest.of(page, 10, Sort.by("battlePoints").descending())), pageGameAccDefenseViewModelType);
 		
 		modelAndView.addObject("players", players);
 		modelAndView.addObject("currentPage", page);

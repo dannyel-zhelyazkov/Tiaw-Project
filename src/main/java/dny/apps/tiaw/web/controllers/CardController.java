@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import dny.apps.tiaw.domain.entities.Rarity;
 import dny.apps.tiaw.domain.models.binding.CardCreateBindingModel;
 import dny.apps.tiaw.domain.models.binding.CardDeleteBindingModel;
 import dny.apps.tiaw.domain.models.binding.CardEditBindingModel;
@@ -219,7 +218,7 @@ public class CardController extends BaseController {
 	@ResponseBody
 	public ModelAndView fetchByRarity(ModelAndView modelAndView, @PathVariable String rarity, Principal principal, @RequestParam(defaultValue = "0") int page) {
 		Type pageCardViewModel = new TypeToken<Page<CardViewModel>>() {}.getType();
-		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAllByRarity(PageRequest.of(page, 4, Sort.by("releaseDate")), Rarity.valueOf(rarity)), pageCardViewModel);
+		Page<CardViewModel> cards = this.modelMapper.map(this.cardService.findAllByRarity(PageRequest.of(page, 4, Sort.by("releaseDate")), rarity), pageCardViewModel);
 		
 		modelAndView.addObject("cards", cards);
 		modelAndView.addObject("rarity", rarity);

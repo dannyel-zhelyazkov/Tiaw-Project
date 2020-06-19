@@ -71,7 +71,7 @@ public class GameAccServiceImpl implements GameAccService {
 	}
 	
 	@Override
-	public Page<GameAccServiceModel> findAllGameAccFightModels(PageRequest pageRequest) {
+	public Page<GameAccServiceModel> findAllGameAccFight(PageRequest pageRequest) {
         Type pageGameAccServiceModelType = new TypeToken<Page<GameAccServiceModel>>() {}.getType();
 		
         return this.modelMapper.map(this.gameAccRepository.findAllByDefenseDeckNotNull(pageRequest), pageGameAccServiceModelType);

@@ -44,7 +44,7 @@ public class SaleCardServiceImpl implements SaleCardService {
 	}
 	
 	@Override
-	public List<SaleCardServiceModel> setForSale() {
+	public List<SaleCardServiceModel> setOnSale() {
 		this.saleCardRepository.deleteAll();
 		List<Card> cards = this.cardRepository.findAll();
 		

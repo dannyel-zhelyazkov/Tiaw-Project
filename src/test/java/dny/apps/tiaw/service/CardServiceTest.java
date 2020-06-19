@@ -1,8 +1,12 @@
 package dny.apps.tiaw.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +17,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import dny.apps.tiaw.domain.entities.Card;
 import dny.apps.tiaw.domain.entities.Rarity;
@@ -61,9 +68,9 @@ class CardServiceTest extends BaseServiceTest {
 
 	@Test
 	void findAllByRarity_whenRarityDoesNotExist_shouldThrowRarityNotFoundException() {
-//		assertThrows(RarityNotFoundException.class, () -> 
-//			this.service.findAllByRarity("RARITY")
-//		);
+		assertThrows(RarityNotFoundException.class, () -> 
+			this.service.findAllByRarity(PageRequest.of(0, 1), "WRONG_ENUM")
+		);
 	}
 	
 	@Test
@@ -72,34 +79,32 @@ class CardServiceTest extends BaseServiceTest {
 			setRarity(Rarity.Common);
 		}};
 		Card card2 = new Card() {{
-			setRarity(Rarity.Uncommon);
-		}};
-		Card card3 = new Card() {{
-			setRarity(Rarity.Uncommon);
-		}};
-		Card card4 = new Card() {{
 			setRarity(Rarity.Common);
 		}};
 		
 		List<Card> cards = new ArrayList<>();
 		cards.add(card1);
 		cards.add(card2);
-		cards.add(card3);
-		cards.add(card4);
 		
-		Mockito.when(this.cardRepository.findAll())
-			.thenReturn(cards);
 		
-		//List<CardServiceModel> actual = this.service.findAllByRarity("Common");
+		Page<Card> pageCards = new PageImpl<>(cards, PageRequest.of(0, 1), cards.size());
 		
-		//assertTrue(actual.size() == 2);
+		Mockito.when(this.cardRepository.findAllByRarity(PageRequest.of(0, 1), Rarity.Common))
+			.thenReturn(pageCards);
+		
+		Page<CardServiceModel> actual = this.service.findAllByRarity(PageRequest.of(0, 1), "Common");
+		
+		assertEquals(actual.getTotalPages(), 2);
 	}
 
 	@Test
 	void findAll() {
 		Card card1 = new Card();
+		card1.setReleaseDate(LocalDateTime.now());
 		Card card2 = new Card();
+		card2.setReleaseDate(LocalDateTime.now().minus(1, ChronoUnit.DAYS));
 		Card card3 = new Card();
+		card3.setReleaseDate(LocalDateTime.now().minus(3, ChronoUnit.DAYS));
 		
 		List<Card> cards = new ArrayList<>();
 		cards.add(card1);
@@ -111,7 +116,9 @@ class CardServiceTest extends BaseServiceTest {
 		
 		List<CardServiceModel> actual = this.service.findAll();
 		
-		assertEquals(cards.size(), actual.size());
+		assertEquals(cards.get(0).getReleaseDate(), actual.get(2).getReleaseDate());
+		assertEquals(cards.get(1).getReleaseDate(), actual.get(1).getReleaseDate());
+		assertEquals(cards.get(2).getReleaseDate(), actual.get(0).getReleaseDate());
 	}
 
 	private CardCreateServiceModel notValidCardCreateServiceModel() {
@@ -174,24 +181,17 @@ class CardServiceTest extends BaseServiceTest {
 	@Test
 	void updateCard_whenCardIsNotValid_shouldThrowInvalidCardCreateEditException() {
 		CardEditServiceModel cardEditServiceModel = notValidCardEditServiceModel();
-		
-		Mockito.when(this.cardRepository.findById("WRONG_ID"))
-			.thenReturn(Optional.of(new Card()));
-		
+			
 		assertThrows(InvalidCardCreateEditException.class, () -> 
-			this.service.updateCard("CARD_ID",cardEditServiceModel)
+			this.service.updateCard("CARD_ID", cardEditServiceModel)
 		);
 	}
 	
 	@Test
 	void updateCard_whenCardDoesNotExist_shouldThrowCardNotFoundException() {
-		CardEditServiceModel cardEditServiceModel = validCardEditServiceModel();
-		
-		Mockito.when(this.cardRepository.findById("WRONG_ID"))
-			.thenReturn(Optional.empty());
-		
+		CardEditServiceModel cardEditServiceModel = validCardEditServiceModel();		
 		assertThrows(CardNotFoundException.class, () -> 
-			this.service.updateCard("WRONG_ID", cardEditServiceModel)
+			this.service.updateCard("WRONG_CARD_ID", cardEditServiceModel)
 		);
 	}
 	

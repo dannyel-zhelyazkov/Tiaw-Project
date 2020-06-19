@@ -25,6 +25,6 @@ public class ScheduledTasks {
 	
 	@Scheduled(cron = "*/60 * * * * *")
 	public void cardsOnSale() {
-		this.saleCardService.setForSale();
+		this.saleCardService.setOnSale();
 	}
 }

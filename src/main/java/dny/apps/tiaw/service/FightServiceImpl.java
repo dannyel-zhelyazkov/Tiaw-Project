@@ -62,5 +62,7 @@ public class FightServiceImpl implements FightService {
 		fight.setWinnerWonPoints(winnerWonPoints);
 		fight.setLoserLostPoints(loserLostPoints);
 
-		return this.modelMapper.map(this.fightRepository.saveAndFlush(fight), FightServiceModel.class);
+		this.fightRepository.saveAndFlush(fight);
+		
+		return this.modelMapper.map(fight, FightServiceModel.class);
 	}}

@@ -28,7 +28,8 @@ public class CardCreateValidaor implements org.springframework.validation.Valida
 		CardCreateBindingModel cardCreateBindingModel = (CardCreateBindingModel) target;
 		
 		if(this.cardRepository.findByName(cardCreateBindingModel.getName()).isPresent()) {
-			errors.reject("name", 
+			errors.rejectValue("name", 
+					String.format(ValidationConstants.CARD_NAME_ALREADY_EXISTS, cardCreateBindingModel.getName()),
 					String.format(ValidationConstants.CARD_NAME_ALREADY_EXISTS, cardCreateBindingModel.getName())
 			);
 		}

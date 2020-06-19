@@ -7,5 +7,5 @@ import dny.apps.tiaw.domain.models.service.SaleCardServiceModel;
 public interface SaleCardService {
 	List<SaleCardServiceModel> findAll();
 	
-	List<SaleCardServiceModel> setForSale();
+	List<SaleCardServiceModel> setOnSale();
 }

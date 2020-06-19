@@ -71,8 +71,9 @@ public class CardServiceImpl implements CardService{
 	}
 	
 	@Override
-	public Page<CardServiceModel> findAllByRarity(PageRequest pageRequest, Rarity rarity) {
+	public Page<CardServiceModel> findAllByRarity(PageRequest pageRequest, String rarity) {
 		if(!Arrays.asList(Rarity.values()).stream()
+				.map(r -> r.toString())
 				.collect(Collectors.toList())
 				.contains(rarity)) {
 			throw new RarityNotFoundException("Invalid rarity!");
@@ -80,7 +81,7 @@ public class CardServiceImpl implements CardService{
 		
 		Type pageCardServiceModel = new TypeToken< Page<CardServiceModel>>() {}.getType();
 		
-		return this.modelMapper.map(this.cardRepository.findAllByRarity(pageRequest, rarity), pageCardServiceModel);
+		return this.modelMapper.map(this.cardRepository.findAllByRarity(pageRequest, Enum.valueOf(Rarity.class, rarity)), pageCardServiceModel);
 	}
 	
 	@Override
