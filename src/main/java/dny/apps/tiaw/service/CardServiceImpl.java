@@ -58,14 +58,17 @@ public class CardServiceImpl implements CardService{
 	
 	@Override
 	public Page<CardServiceModel> findAllByOwner(PageRequest pageRequest, String owner) {
-		Type pageCardServiceModel = new TypeToken< Page<CardServiceModel>>() {}.getType();
+		Type pageCardServiceModel = new TypeToken<Page<CardServiceModel>>() {}.getType();
 		
 		List<Card> listCards =  this.userRepository.findByUsername(owner)
 				.orElseThrow(() -> new UserNotFoundException("GameAcc with given username does not exist!"))
 				.getGameAcc()
 				.getCards();
+	
+		int start = (int) pageRequest.getOffset();
+		int end = (start + pageRequest.getPageSize()) > listCards.size() ? listCards.size() : (start + pageRequest.getPageSize());
 		
-		Page<Card> cards = new PageImpl<>(listCards, pageRequest, listCards.size());
+		Page<Card> cards = new PageImpl<>(listCards.subList(start, end), pageRequest, listCards.size());
 		
 		return this.modelMapper.map(cards, pageCardServiceModel);
 	}

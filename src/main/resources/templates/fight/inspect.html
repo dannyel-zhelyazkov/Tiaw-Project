@@ -14,7 +14,7 @@
 	</header>
     <main>
     	<div class="container-fluid">
-    		<p class="h1 d-flex fles-row">
+    		<div class="h1 d-flex fles-row">
     			<span class="def" th:text="|${name}|"></span>
     			<span th:text="|'s Defense Deck:|"></span>
     			<span class="text-success ml-3" th:text="|${deck.name}"></span>
@@ -22,11 +22,11 @@
 					<button type="button" class="btn btn-danger ml-3 align-self-center" disabled="disabled">Fight</button>
     			</th:block>
     			<th:block th:if="${attackTickets > 0}">
-    				<button onclick="battle()" type="button" class="btn btn-success ml-3 align-self-center" data-toggle="modal" data-target=".bd-example-modal-sm">Fight</button>
+    				<button onclick="battle()" type="button" class="btn btn-success ml-3 align-self-center" data-toggle="modal" data-target=".bd-example-modal-lg">Fight</button>
     			</th:block>
-				<div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+				<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
 					aria-hidden="true">
-					<div class="modal-dialog modal-sm" role="document">
+					<div class="modal-dialog modal-lg" role="document">
 						<div class="modal-content">
 							<div class="battle m-3">
 			
@@ -34,7 +34,7 @@
 						</div>
 					</div>
 				</div>
-    		</p>
+    		</div>
     		<hr>
     		<th:block th:if="${#lists.isEmpty(cards)}">
     			<h3>Deck is empty</h3>
@@ -43,7 +43,7 @@
 			<th:block th:each="card, iter: ${cards}">
 				<th:block th:switch="${card.rarity}">
 		    		<div class="col-md-2">
-		    			<div th:case="Common" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: grey !important">
+		    			<div th:case="Common" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: grey !important">
 		    			<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 						<div class="card-body">
 							<h5 class="card-title" th:text="${card.name}"></h5>
@@ -52,7 +52,7 @@
 						    <hr>
 					    </div>
 		    		</div>
-		    		<div th:case="Uncommon" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: green !important">
+		    		<div th:case="Uncommon" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: green !important">
 		    			<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 						<div class="card-body">
 							<h5 class="card-title" th:text="${card.name}"></h5>
@@ -70,7 +70,7 @@
 							<hr>
 						</div>
 		    		</div>
-		    		<div th:case="Epic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: orange !important">
+		    		<div th:case="Epic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: orange !important">
 			    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 						<div class="card-body">
 							<h5 class="card-title" th:text="${card.name}"></h5>
@@ -79,7 +79,7 @@
 							<hr>
 						</div>
 		    		</div>
-		    		<div th:case="Legendary" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: red !important">
+		    		<div th:case="Legendary" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: red !important">
 			    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 						<div class="card-body">
 							<h5 class="card-title" th:text="${card.name}"></h5>
@@ -88,7 +88,7 @@
 							<hr>
 						</div>
 		    		</div>
-		    		<div th:case="Mythic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:3px !important; border-color: black !important">
+		    		<div th:case="Mythic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: black !important">
 			    		<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 						<div class="card-body">
 							<h5 class="card-title" th:text="${card.name}"></h5>
@@ -144,14 +144,14 @@
 		    		
 		    		while(att_defense >= 0 && def_defense >= 0) {
 		    			if (att_cards[att_card_index].defense >= 0) {
-			    		    btl.innerHTML += `<h3>${att_cards[att_card_index].name} VS ${def_cards[def_card_index].name}</h3>
-			    		    <div class="info">
-			    		    <img src="${att_cards[att_card_index].url}" width="35px" height="35px" alt="">
-			    		    (<span>${att_cards[att_card_index].power}</span>;<span>${att_cards[att_card_index].defense}</span>)
-			    		    attacked
-			    		    <img src="${def_cards[def_card_index].url}" width="35px" height="35px" alt="">
-			    		    (<span>${def_cards[def_card_index].power}</span>;<span>${def_cards[def_card_index].defense}</span>)
-			    		    </div>`
+			    		    btl.innerHTML += `<h5>${att_cards[att_card_index].name} VS ${def_cards[def_card_index].name}</h5>
+				    		    <div class="info">
+				    		    	<img src="${att_cards[att_card_index].url}" width="35px" height="35px" alt="">
+				    		    	(<span>${att_cards[att_card_index].power}</span>;<span>${att_cards[att_card_index].defense}</span>)
+				    		    	attacked
+				    		    	<img src="${def_cards[def_card_index].url}" width="35px" height="35px" alt="">
+				    		    	(<span>${def_cards[def_card_index].power}</span>;<span>${def_cards[def_card_index].defense}</span>)
+				    		    </div>`
 			    		    def_cards[def_card_index].defense -= att_cards[att_card_index].power;
 			    		    def_defense -= att_cards[att_card_index].power;
 			    		} else {
@@ -160,13 +160,14 @@
 			    		}
 		    			
 			    		if (def_cards[def_card_index].defense >= 0) {
-			    		    btl.innerHTML += `<div class="info">
-			    		    <img src="${def_cards[def_card_index].url}" width="35px" height="35px" alt="">
-			    		    (<span class="power-p1-c1">${def_cards[def_card_index].power}</span>;<span>${def_cards[def_card_index].defense}</span>)
-			    		    attacked
-			    		    <img src="${att_cards[att_card_index].url}" width="35px" height="35px" alt="">
-			    		    (<span>${att_cards[att_card_index].power}</span>;<span>${att_cards[att_card_index].defense}</span>)
-			    		    </div>`
+			    		    btl.innerHTML += 
+				    		    `<div class="info">
+					    		    <img src="${def_cards[def_card_index].url}" width="35px" height="35px" alt="">
+					    		    (<span class="power-p1-c1">${def_cards[def_card_index].power}</span>;<span>${def_cards[def_card_index].defense}</span>)
+					    		    attacked
+					    		    <img src="${att_cards[att_card_index].url}" width="35px" height="35px" alt="">
+					    		    (<span>${att_cards[att_card_index].power}</span>;<span>${att_cards[att_card_index].defense}</span>)
+				    		    </div>`
 			    		    att_cards[att_card_index].defense -= def_cards[def_card_index].power;
 			    		    att_defense -= def_cards[def_card_index].power;
 			    		} else {

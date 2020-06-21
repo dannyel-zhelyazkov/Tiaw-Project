@@ -60,6 +60,6 @@ public class HomeController extends BaseController {
 		modelAndView.addObject("username", principal.getName());
 		modelAndView.addObject("gold", this.userService.findByUsername(principal.getName()).getGameAcc().getGold());
 		
-		return super.view("home", modelAndView);
+		return super.view("/user/home", modelAndView);
 	}
 }

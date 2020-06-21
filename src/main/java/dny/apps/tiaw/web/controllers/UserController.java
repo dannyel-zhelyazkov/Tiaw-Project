@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import dny.apps.tiaw.domain.models.binding.UserSearchBindingModel;
 import dny.apps.tiaw.domain.models.service.UserRegisterServiceModel;
 import dny.apps.tiaw.domain.models.view.UserProfileViewModel;
 import dny.apps.tiaw.domain.models.view.UserViewModel;
+import dny.apps.tiaw.error.user.UserNotFoundException;
 import dny.apps.tiaw.service.UserService;
 import dny.apps.tiaw.validation.controller.UserRegisterValidator;
 import dny.apps.tiaw.validation.controller.UserSearchValidator;
@@ -83,7 +85,7 @@ public class UserController extends BaseController{
 		model.addObject("model", 
 				this.modelMapper.map(this.userService.findByUsername(principal.getName()), 
 					UserProfileViewModel.class));
-		return super.view("profile", model);
+		return super.view("/user/profile", model);
 	}
 	
 	@GetMapping("/all")
@@ -98,7 +100,7 @@ public class UserController extends BaseController{
        modelAndView.addObject("user", new UserSearchBindingModel());
        modelAndView.addObject("users", users);
        modelAndView.addObject("currentPage", page);
-       return super.view("all-users", modelAndView);
+       return super.view("/user/all-users", modelAndView);
     }
 	
 	@PostMapping("/search")
@@ -115,14 +117,14 @@ public class UserController extends BaseController{
 		       
 		       modelAndView.addObject("users", users);
 		       modelAndView.addObject("currentPage", page);
-		       return super.view("all-users", modelAndView);
+		       return super.view("/user/all-users", modelAndView);
 		}
 		
     	UserViewModel user = this.modelMapper.map(this.userService.findByUsername(model.getUsername()), UserViewModel.class);
     	
     	modelAndView.addObject("user", user);
     	
-    	return super.view("user-search", modelAndView);
+    	return super.view("/user/user-view", modelAndView);
     }
 
     @PostMapping("/set-user/{id}")
@@ -147,5 +149,13 @@ public class UserController extends BaseController{
         this.userService.setUserRole(id, "admin");
 
         return super.redirect("/users/all");
+    }
+    
+    @ExceptionHandler(UserNotFoundException.class)
+    public ModelAndView userNotFound(UserNotFoundException ex, ModelAndView modelAndView) {
+    	modelAndView.addObject("message", ex.getMessage());
+    	modelAndView.addObject("error", "User Error");
+    	
+    	return super.view("erro", modelAndView);
     }
 }

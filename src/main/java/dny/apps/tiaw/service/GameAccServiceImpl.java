@@ -90,7 +90,7 @@ public class GameAccServiceImpl implements GameAccService {
 			throw new GameAccOwnCardException("You already own this card!");
 		}
 		
-		if(gameAcc.getGold() < card.getPrice()) {
+		if(gameAcc.getGold() < card.getPrice() / 2) {
 			throw new NotEnoughGoldException("Not enough gold for Card: " + card.getName());
 		}
 		

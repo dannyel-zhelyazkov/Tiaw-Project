@@ -13,6 +13,7 @@
     <main>
     	<div class="container-fluid">
             <div class="d-flex justify-content-center">
+           			<p th:if="${loginError}" class="error">Wrong user or password</p>
             		<div class="card-violet m-3"></div>
             		<form class="form w-25 m-3 align-self-center" th:object="${user}" th:action="@{/users/login}" th:method="post">
 		            	<input type="hidden" name="_csrf" value="c95ccb2b-1afa-47bd-bf7b-a5b72739470b">

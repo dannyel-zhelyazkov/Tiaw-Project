@@ -34,7 +34,7 @@
 	           		<th:block th:each="card: ${cards}">
 	           		<th:block th:switch="${card.rarity}">
 	           			<div class="col-md-3">
-		           			<div th:case="Common" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: grey !important">
+		           			<div th:case="Common" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: grey !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
@@ -52,7 +52,7 @@
 									</div>
 								</div>
 							</div>
-							<div th:case="Uncommon" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: green !important">
+							<div th:case="Uncommon" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: green !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
@@ -70,7 +70,7 @@
 									</div>
 								</div>
 							</div>
-							<div th:case="Rare" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: purple !important">
+							<div th:case="Rare" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: purple !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
@@ -88,7 +88,7 @@
 									</div>
 								</div>
 							</div>
-							<div th:case="Epic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: orange !important">
+							<div th:case="Epic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: orange !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
@@ -106,7 +106,7 @@
 									</div>
 								</div>
 							</div>
-							<div th:case="Legendary" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: red !important">
+							<div th:case="Legendary" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: red !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
@@ -124,7 +124,7 @@
 									</div>
 								</div>
 							</div>
-							<div th:case="Mythic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: black !important">
+							<div th:case="Mythic" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: black !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>

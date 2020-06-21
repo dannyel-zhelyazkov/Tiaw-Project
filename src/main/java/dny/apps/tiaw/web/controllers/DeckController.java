@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,13 +24,9 @@ import org.springframework.web.servlet.ModelAndView;
 import dny.apps.tiaw.domain.models.binding.DeckAddBindingModel;
 import dny.apps.tiaw.domain.models.service.DeckCreateServiceModel;
 import dny.apps.tiaw.domain.models.service.GameAccServiceModel;
-import dny.apps.tiaw.domain.models.view.DeckViewModel;
-import dny.apps.tiaw.error.deck.DeckContainsCardException;
-import dny.apps.tiaw.error.deck.DeckNotFoundException;
-import dny.apps.tiaw.error.deck.DeckSizeException;
-import dny.apps.tiaw.error.deck.InvalidDeckCreateException;
 import dny.apps.tiaw.domain.models.view.CardViewModel;
 import dny.apps.tiaw.domain.models.view.DeckCardsViewModel;
+import dny.apps.tiaw.domain.models.view.DeckViewModel;
 import dny.apps.tiaw.service.CardService;
 import dny.apps.tiaw.service.DeckService;
 import dny.apps.tiaw.service.UserService;
@@ -161,23 +156,5 @@ public class DeckController extends BaseController {
 		this.deckService.removeCard(deck, card);
 	
 		return super.redirect("/decks/deck-cards/" + deck);
-	}
-	
-	@ExceptionHandler(DeckNotFoundException.class)
-	public ModelAndView deckNotFound(DeckNotFoundException ex) {
-		ModelAndView modelAndView = new ModelAndView("/deck/deck-error");
-		
-		modelAndView.addObject("message", ex.getMessage());
-		
-		return modelAndView;
-	}
-	
-	@ExceptionHandler({DeckSizeException.class, DeckContainsCardException.class, InvalidDeckCreateException.class, DeckSizeException.class})
-	public ModelAndView fullDeck(Throwable ex) {
-		ModelAndView modelAndView = new ModelAndView("/deck/deck-error");
-		
-		modelAndView.addObject("message", ex.getMessage());
-		
-		return modelAndView;
 	}
 }

@@ -49,10 +49,10 @@
 					<nav aria-label="...">
 						<ul class="pagination pagination-lg">
 						  	<li class="page-item" th:classappend="${currentPage}==0?'disabled':''">
-						  		<a class="page-link" th:href="@{/cards/shop(page=${currentPage-1})}" >Previous</a>
+						  		<a class="page-link" th:href="@{/decks/deck(page=${currentPage-1})}" >Previous</a>
 						  	</li>
 						  	<li class="page-item" th:classappend="${currentPage}==${cards.totalPages-1}?'disabled':''">
-						  		<a class="page-link" th:href="@{/cards/shop(page=${currentPage+1})}" >Next</a>
+						  		<a class="page-link" th:href="@{/decks/deck(page=${currentPage+1})}" >Next</a>
 						  	</li>
 						</ul>
 					</nav>
@@ -62,7 +62,7 @@
 	           		<th:block th:each="card, iter: ${cards.content}">
 	           		<th:block th:switch="${card.rarity}">
 	           			<div class="col-md-3">
-		           			<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Common}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: grey !important">
+		           			<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Common}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: grey !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
@@ -82,7 +82,7 @@
 									</form>
 								</div>
 							</div>
-							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Uncommon}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: green !important">
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Uncommon}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: green !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
@@ -102,7 +102,7 @@
 									</form>
 								</div>
 							</div>
-							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Rare}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: purple !important">
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Rare}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: purple !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
@@ -122,7 +122,7 @@
 									</form>
 								</div>
 							</div>
-							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Epic}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: orange !important">
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Epic}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: orange !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
@@ -142,7 +142,7 @@
 									</form>
 								</div>
 							</div>
-							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Legendary}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: red !important">
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Legendary}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: red !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
@@ -162,7 +162,7 @@
 									</form>
 								</div>
 							</div>
-							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Mythic}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:4px !important; border-color: black !important">
+							<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Mythic}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: black !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>

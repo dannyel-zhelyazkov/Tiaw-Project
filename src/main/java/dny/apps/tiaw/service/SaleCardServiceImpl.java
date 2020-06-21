@@ -32,6 +32,7 @@ public class SaleCardServiceImpl implements SaleCardService {
 	@Override
 	public List<SaleCardServiceModel> findAll() {
 		return this.saleCardRepository.findAll().stream()
+				.sorted((sc1, sc2) -> sc1.getPrice().compareTo(sc2.getPrice()))
 				.map(sc -> this.modelMapper.map(sc, SaleCardServiceModel.class))
 				.collect(Collectors.toList());
 	}
@@ -60,6 +61,8 @@ public class SaleCardServiceImpl implements SaleCardService {
 			contains = false;
 			saleCard = generateRandomCard(cards);
 			
+			if(saleCard.getName().equals("Dao") || saleCard.getName().equals("Da")) continue;
+			
 			for(int j = 0; j < saleCards.size(); j++) {
 				if(saleCards.get(j).getName().equals(saleCard.getName())) {
 					contains = true;
@@ -75,7 +78,6 @@ public class SaleCardServiceImpl implements SaleCardService {
 		}
 		
 		return saleCards.stream()
-				.sorted((sc1, sc2) -> sc2.getPrice().compareTo(sc1.getPrice()))
 				.map(sc -> this.modelMapper.map(sc, SaleCardServiceModel.class))
 				.collect(Collectors.toList());
 	}

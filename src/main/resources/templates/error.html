@@ -13,8 +13,8 @@
 	</header>
 	<main>
 		<div class="container-fluid">
-			<div class="h3 m-3"><span th:text="|Error: ${message}|"></span></div>
-		</div>
+			<h1 th:text="${message}"></h1>
+        </div>
 	</main>
 	<footer>
 		<th:block th:include="~{fragments/footer}">
