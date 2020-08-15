@@ -42,13 +42,16 @@
     		<div class="card-deck" style="width: fit-content; height: fit-content;">
 			<th:block th:each="card, iter: ${cards}">
 				<th:block th:switch="${card.rarity}">
-		    		<div class="col-md-2">
+		    		<div class="card-deck">
 		    			<div th:case="Common" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: grey !important">
 		    			<img th:src="${card.url}" style="width: 17rem; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 						<div class="card-body">
 							<h5 class="card-title" th:text="${card.name}"></h5>
 						    <hr>
-						    <p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+						    <p class="card-text text-center">
+							    <span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+								<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+							</p>
 						    <hr>
 					    </div>
 		    		</div>
@@ -57,7 +60,10 @@
 						<div class="card-body">
 							<h5 class="card-title" th:text="${card.name}"></h5>
 							<hr>
-							<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+							<p class="card-text text-center">
+							    <span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+								<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+							</p>
 							<hr>
 						</div>
 		    		</div>
@@ -66,7 +72,10 @@
 						<div class="card-body">
 							<h5 class="card-title" th:text="${card.name}"></h5>
 							<hr>
-							<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+							<p class="card-text text-center">
+							    <span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+								<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+							</p>
 							<hr>
 						</div>
 		    		</div>
@@ -75,7 +84,10 @@
 						<div class="card-body">
 							<h5 class="card-title" th:text="${card.name}"></h5>
 							<hr>
-							<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+							<p class="card-text text-center">
+							    <span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+								<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+							</p>
 							<hr>
 						</div>
 		    		</div>
@@ -84,7 +96,10 @@
 						<div class="card-body">
 							<h5 class="card-title" th:text="${card.name}"></h5>
 							<hr>
-							<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+							<p class="card-text text-center">
+							    <span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+								<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+							</p>
 							<hr>
 						</div>
 		    		</div>
@@ -93,7 +108,10 @@
 						<div class="card-body">
 							<h5 class="card-title" th:text="${card.name}"></h5>
 							<hr>
-							<p class="card-text d-flex justify-content-between"><span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span><span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span></p>
+							<p class="card-text text-center">
+							    <span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
+								<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
+							</p>
 							<hr>
 						</div>
 			        </div>
@@ -146,10 +164,10 @@
 		    			if (att_cards[att_card_index].defense >= 0) {
 			    		    btl.innerHTML += `<h5>${att_cards[att_card_index].name} VS ${def_cards[def_card_index].name}</h5>
 				    		    <div class="info">
-				    		    	<img src="${att_cards[att_card_index].url}" width="35px" height="35px" alt="">
+				    		    	<img src="${att_cards[att_card_index].url}" width="50px" height="50px" alt="">
 				    		    	(<span>${att_cards[att_card_index].power}</span>;<span>${att_cards[att_card_index].defense}</span>)
 				    		    	attacked
-				    		    	<img src="${def_cards[def_card_index].url}" width="35px" height="35px" alt="">
+				    		    	<img src="${def_cards[def_card_index].url}" width="50px" height="50px" alt="">
 				    		    	(<span>${def_cards[def_card_index].power}</span>;<span>${def_cards[def_card_index].defense}</span>)
 				    		    </div>`
 			    		    def_cards[def_card_index].defense -= att_cards[att_card_index].power;
@@ -162,10 +180,10 @@
 			    		if (def_cards[def_card_index].defense >= 0) {
 			    		    btl.innerHTML += 
 				    		    `<div class="info">
-					    		    <img src="${def_cards[def_card_index].url}" width="35px" height="35px" alt="">
+					    		    <img src="${def_cards[def_card_index].url}" width="50px" height="50px" alt="">
 					    		    (<span class="power-p1-c1">${def_cards[def_card_index].power}</span>;<span>${def_cards[def_card_index].defense}</span>)
 					    		    attacked
-					    		    <img src="${att_cards[att_card_index].url}" width="35px" height="35px" alt="">
+					    		    <img src="${att_cards[att_card_index].url}" width="50px" height="50px" alt="">
 					    		    (<span>${att_cards[att_card_index].power}</span>;<span>${att_cards[att_card_index].defense}</span>)
 				    		    </div>`
 			    		    att_cards[att_card_index].defense -= def_cards[def_card_index].power;

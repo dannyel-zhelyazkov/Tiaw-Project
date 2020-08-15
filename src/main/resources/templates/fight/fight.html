@@ -18,7 +18,7 @@
 	    			<span class="text-info" th:text="|You have ${current.attackTickets}/3 Attack Tickets|"></span>
 	    		</div>
 	    		<th:block th:if="${current.attackTickets == 0}">
-	    			<span class="h4 text-danger">You can't fight more. Please come tomorrow.</span>
+	    			<span class="h4 text-danger">No more fight tickets. Please come tomorrow.</span>
 	    		</th:block>
 	    		<th:block th:if="${current.attackDeck == null}">
 		    		<div class="text-center">
@@ -36,7 +36,7 @@
 						<div class="input-group mb-3">
 							<div class="input-group-prepend">
 								<span class="input-group-text" th:text="${iter.index} + 1"></span>
-							    <span class="input-group-text" th:text="|CP: ${player.battlePoints}|"></span>
+							    <span class="input-group-text" style="width:5em; height:2.38em" th:text="|CP: ${player.battlePoints}|"></span>
 							</div>
 						 	<input type="text" class="form-control" disabled="disabled" th:value="${player.username}" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
 							<th:block th:if="not ${player.username == current.username}">

@@ -19,29 +19,29 @@
 					<div class="form-group">
 						<label for="name" class="font-weight-bold">Name</label> 
 						<input type="text" class="form-control" id="name" name="name" th:field="*{name}">
-						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+						<small id="passwordHelpBlock" class="form-text text-danger h6" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
 					</div>
 					<div class="form-group">
 						<label for="power" class="font-weight-bold">Power</label>
 						<input type="number" class="form-control" id="power" name="power" th:field="*{power}">
-						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('power')}" th:errors="*{power}"></small>
+						<small id="passwordHelpBlock" class="form-text text-danger h6" th:if="${#fields.hasErrors('power')}" th:errors="*{power}"></small>
 					</div>
 					<div class="form-group">
 						<label for="defense" class="font-weight-bold">Defense</label>
 						<input type="number" class="form-control" id="defense" name="defense" th:field="*{defense}">
-						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('defense')}" th:errors="*{defense}"></small>
+						<small id="passwordHelpBlock" class="form-text text-danger h6" th:if="${#fields.hasErrors('defense')}" th:errors="*{defense}"></small>
 					</div>
 					<div class="form-group">
 						<label for="image" class="font-weight-bold">Image</label>
 						<input type="file" class="form-control-file" id="image" name="image" th:field="*{image}">
-						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></small>
+						<small id="passwordHelpBlock" class="form-text text-danger h6" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></small>
 					</div>
 					<div class="form-group">
 						<label for="rarity" class="font-weight-bold">Rarity</label>
 						<select id="rarity" name="rarity" th:field="*{rarity}">
 							<option th:each="rarity : ${T(dny.apps.tiaw.domain.entities.Rarity).values()}" th:value="${rarity}" th:text="${rarity}"></option>
 						</select>
-						<small id="passwordHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('rarity')}" th:errors="*{rarity}"></small>
+						<small id="passwordHelpBlock" class="form-text text-danger h6" th:if="${#fields.hasErrors('rarity')}" th:errors="*{rarity}"></small>
 					</div>
 					<button type="submit" class="btn btn-primary">Add</button>
 				</form>

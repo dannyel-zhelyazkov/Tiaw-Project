@@ -31,7 +31,7 @@
 						<input type="text" class="form-control" name="username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" th:field="*{username}">
 						<button type="submit" class="btn btn-secondary ml-3">Search</button>
 					</div>
-					<small id="nameHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
+					<small id="nameHelpBlock" class="form-text text-danger h6" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
 				</form>
 				<div class="list-group">
 					<a class="list-group-item list-group-item-action" th:href="@{/users/all(page=${currentPage+1})}"

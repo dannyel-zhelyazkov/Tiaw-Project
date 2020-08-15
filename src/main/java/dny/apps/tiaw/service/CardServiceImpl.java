@@ -24,6 +24,7 @@ import dny.apps.tiaw.error.card.InvalidCardCreateEditException;
 import dny.apps.tiaw.error.rarity.RarityNotFoundException;
 import dny.apps.tiaw.error.user.UserNotFoundException;
 import dny.apps.tiaw.repository.CardRepository;
+import dny.apps.tiaw.repository.GameAccRepository;
 import dny.apps.tiaw.repository.UserRepository;
 import dny.apps.tiaw.validation.service.CardValidationService;
 
@@ -31,13 +32,16 @@ import dny.apps.tiaw.validation.service.CardValidationService;
 public class CardServiceImpl implements CardService{
 	private final CardRepository cardRepository;
 	private final UserRepository userRepository;
+	private final GameAccRepository gameAccRepository;
 	private final ModelMapper modelMapper;
 	private final CardValidationService cardValidationService;
 
 	@Autowired
-	public CardServiceImpl(CardRepository cardRepository, UserRepository userRepository, ModelMapper modelMapper, CardValidationService cardValidationService) {
+	public CardServiceImpl(CardRepository cardRepository, UserRepository userRepository, ModelMapper modelMapper, 
+			CardValidationService cardValidationService, GameAccRepository gameAccRepository) {
 		this.cardRepository = cardRepository;
 		this.userRepository = userRepository;
+		this.gameAccRepository = gameAccRepository;
 		this.modelMapper = modelMapper;
 		this.cardValidationService = cardValidationService;
 	}
@@ -151,6 +155,12 @@ public class CardServiceImpl implements CardService{
 	public CardServiceModel deleteCard(String id) {
 		Card card = this.cardRepository.findById(id)
 				.orElseThrow(() -> new CardNotFoundException("Card with given id does not exist!"));
+		
+		this.gameAccRepository.findAll()
+			.forEach(ga -> {
+				ga.getCards().removeIf(c -> c.getName().equals(card.getName()));
+				ga.getDecks().forEach(d -> d.getCards().removeIf(c -> c.getName().equals(card.getName())));
+			});
 		
         this.cardRepository.delete(card);
 

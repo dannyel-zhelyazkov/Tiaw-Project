@@ -30,7 +30,7 @@
 							<button type="submit" class="btn btn-secondary ml-3">Search</button>
 						</div>
 					</div>
-					<small id="nameHelpBlock" class="form-text text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+					<small id="nameHelpBlock" class="form-text text-danger h6" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
 				</form>
 				<div class="list-group">
 					<a class="list-group-item list-group-item-action" th:href="@{/cards/all(page=${currentPage+1})}"

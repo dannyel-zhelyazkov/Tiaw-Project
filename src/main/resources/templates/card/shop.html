@@ -71,13 +71,13 @@
 	           	<div class="card-deck">
 	           		<th:block th:each="card, iter: ${cards.content}">
 	           		<th:block th:switch="${card.rarity}">
-	           			<div class="col-md-3">
+	           			<div class="col-md-3 card-deck">
 		           			<div th:case="${T(dny.apps.tiaw.domain.entities.Rarity).Common}" class="card" style="-webkit-transform: scale(0.8, 0.8); border-width:8px !important; border-color: grey !important">
 					           	<img th:src="${card.url}" style="width: auto; height: 12rem;" class="card-img-top img-thumbnail px-auto" alt="Card Image">
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
@@ -95,7 +95,7 @@
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
@@ -113,7 +113,7 @@
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
@@ -131,7 +131,7 @@
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
@@ -149,7 +149,7 @@
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
@@ -167,7 +167,7 @@
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>

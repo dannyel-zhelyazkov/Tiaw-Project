@@ -208,6 +208,7 @@ public class GameAccServiceImpl implements GameAccService {
 		attackerAcc.getGameAcc().setAttackTickets(attackerAcc.getGameAcc().getAttackTickets() - 1);
 		
 		defenderAcc.getGameAcc().setBattlePoints(defenderAcc.getGameAcc().getBattlePoints() + Integer.parseInt(ebp));
+		defenderAcc.getGameAcc().setGold(defenderAcc.getGameAcc().getGold() + 5L);
 
 		this.gameAccRepository.saveAndFlush(defenderAcc.getGameAcc());
 		return this.modelMapper.map(this.gameAccRepository.saveAndFlush(attackerAcc.getGameAcc()),

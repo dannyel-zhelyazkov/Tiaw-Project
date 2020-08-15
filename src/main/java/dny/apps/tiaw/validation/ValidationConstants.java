@@ -21,7 +21,7 @@ public class ValidationConstants {
 
     public final static String CARD_NAME_ALREADY_EXISTS = "Card with name %s already exists!";
     
-    public final static String INVALID_CARD_NAME = "Card name must be betwenn 3 and 20 characters long!";
+    public final static String INVALID_CARD_NAME = "Card name must be between 3 and 20 characters long!";
     
     public final static String INVALID_CARD_POWER = "Power must be 0 or above!";
     

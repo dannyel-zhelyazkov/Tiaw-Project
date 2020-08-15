@@ -13,23 +13,23 @@
     <main>
     	<div class="container-fluid d-flex flex-row">
     		<div class="col-md-3">
-    			<h1>Match History</h1>
+    			<h1 class="mb-3 pb-3">Match History</h1>
     			<h3 th:if="${fights.empty} == true" class="text-danger">DON'T BE COWARD! <a th:href="@{/fights/fight}">FIGHT</a></h3>
     			<ul class="list-group" th:each="fight: ${fights}">
 			  		<li th:if="${fight.winner} == ${username}" class="list-group-item list-group-item-primary mb-3">
 			  			<h5>
-			  				You won <span th:text="${fight.winnerWonPoints}"></span> from <a th:href="@{/fights/inspect/{name}(name=${fight.loser})}" th:text="${fight.loser}"></a> <span th:text="${fight.fightTime}"></span>
+			  				Won <span th:text="${fight.winnerWonPoints}"></span> bp from <a th:href="@{/fights/inspect/{name}(name=${fight.loser})}" th:text="${fight.loser}"></a> <span th:text="${fight.fightTime}"></span>
 			  			</h5>
 			  		</li>
 			  		<li th:if="${fight.loser} == ${username}" class="list-group-item list-group-item-danger mb-3">
 			  			<h5>
-			  				You lost <span th:text="${fight.loserLostPoints}"></span> from <a th:href="@{/fights/inspect/{name}(name=${fight.winner})}" th:text="${fight.winner}"></a> <span th:text="${fight.fightTime}"></span>
+			  				Lost <span th:text="${fight.loserLostPoints}"></span> bp from <a th:href="@{/fights/inspect/{name}(name=${fight.winner})}" th:text="${fight.winner}"></a> <span th:text="${fight.fightTime}"></span>
 			  			</h5>
 			  		</li>
 				</ul>
     		</div>
     		<div class="col-md-9">
-    			<h1 class="text-center text-light rounded bg-danger w-25 mx-auto m-3 p-3"><span>CARDS ON SALE</span></h1>
+    			<div class="h1 text-center text-info mt-3 display-3 font-weight-bold">CARDS ON SALE</div>
     			<div class="card-deck">
 	           		<th:block th:each="card: ${cards}">
 	           		<th:block th:switch="${card.rarity}">
@@ -39,7 +39,7 @@
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
@@ -57,7 +57,7 @@
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
@@ -75,7 +75,7 @@
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
@@ -93,7 +93,7 @@
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
@@ -111,7 +111,7 @@
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
@@ -129,7 +129,7 @@
 								<div class="card-body">
 									<h5 class="card-title" th:text="|${card.name}|"></h5>
 									<hr>
-									<p class="card-text d-flex justify-content-between">
+									<p class="card-text text-center">
 										<span class="bg-danger rounded p-1" th:text="|Attack: ${card.power}|"></span>
 										<span class="bg-success rounded p-1" th:text="|Defense: ${card.defense}|"></span>
 									</p>
